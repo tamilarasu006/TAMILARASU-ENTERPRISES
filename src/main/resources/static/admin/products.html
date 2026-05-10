@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Products — Admin — TAMILARASU ENTERPRISES</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    /* ── Page-level overrides ── */
+    body { background: var(--bg); }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.75rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .page-header h2 { margin: 0; font-size: 1.5rem; }
+
+    /* ── Catalog banner ── */
+    .catalog-banner {
+      background: var(--primary-gradient);
+      border-radius: 20px;
+      padding: 1.75rem 2rem;
+      color: white;
+      margin-bottom: 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      box-shadow: 0 8px 24px rgba(26,92,56,0.25);
+      position: relative;
+      overflow: hidden;
+    }
+    .catalog-banner::before {
+      content: '📦';
+      position: absolute;
+      right: 2rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 5rem;
+      opacity: 0.1;
+      pointer-events: none;
+    }
+    .catalog-banner h3 { color: white; margin: 0 0 0.3rem; font-size: 1.2rem; }
+    .catalog-banner p  { color: rgba(255,255,255,0.78); margin: 0; font-size: 0.875rem; }
+
+    /* ── Table card ── */
+    .table-card {
+      background: white;
+      border-radius: 18px;
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      border: 1.5px solid var(--border);
+    }
+    .table-toolbar {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      background: var(--bg);
+    }
+    .search-box {
+      padding: 0.55rem 1rem;
+      border: 1.5px solid var(--border);
+      border-radius: 50px;
+      font-size: 0.875rem;
+      width: 260px;
+      font-family: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .search-box:focus {
+      outline: none;
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 3px rgba(45,138,86,0.1);
+    }
+
+    /* ── Product thumbnail ── */
+    .product-thumb {
+      width: 46px;
+      height: 46px;
+      border-radius: 10px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .product-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .product-name-cell { display: flex; align-items: center; gap: 0.75rem; }
+
+    /* ── Modal overrides ── */
+    .modal { max-width: 620px; }
+    .modal-header {
+      background: var(--primary-gradient);
+      border-radius: 20px 20px 0 0;
+    }
+    .modal-header h3 { color: white; }
+    .modal-close-btn {
+      background: rgba(255,255,255,0.18);
+      border: none;
+      color: white;
+      border-radius: 8px;
+      padding: 0.4rem 0.75rem;
+      cursor: pointer;
+      font-size: 1rem;
+      line-height: 1;
+      transition: background 0.2s;
+    }
+    .modal-close-btn:hover { background: rgba(255,255,255,0.3); }
+
+    /* ── Form helpers ── */
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .char-count { font-size: 0.75rem; color: var(--text-muted); text-align: right; margin-top: 0.2rem; }
+    .char-count.warn { color: var(--warning); }
+
+    /* ── Image preview strip ── */
+    .image-previews {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 0.6rem;
+    }
+    .image-preview-item {
+      width: 64px;
+      height: 64px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      overflow: hidden;
+      position: relative;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+    .image-preview-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .image-preview-item .remove-img {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      background: rgba(192,57,43,0.85);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      font-size: 0.6rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    /* ── Empty state in table ── */
+    .table-empty {
+      text-align: center;
+      padding: 3.5rem 2rem;
+      color: var(--text-muted);
+    }
+    .table-empty .icon { font-size: 3rem; margin-bottom: 0.75rem; display: block; }
+    .table-empty h4 { color: var(--text); margin-bottom: 0.35rem; }
+
+    /* ── Import result ── */
+    .import-result {
+      border-radius: 12px;
+      padding: 0.875rem 1.1rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: 1.25rem;
+    }
+    .import-result.success { background: var(--success-bg); color: var(--success); border: 1px solid rgba(26,122,60,0.2); }
+    .import-result.error   { background: var(--danger-bg);  color: var(--danger);  border: 1px solid rgba(192,57,43,0.2); }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .form-row { grid-template-columns: 1fr; }
+      .catalog-banner { padding: 1.25rem; }
+      .catalog-banner::before { display: none; }
+      .search-box { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="/admin/index.html" class="navbar-brand">🏢 TE Admin</a>
+    <div class="nav-menu" id="nav-menu">
+      <a href="/index.html">← Store</a>
+      <span id="admin-user" style="color:rgba(255,255,255,0.8);font-size:0.85rem;font-weight:500"></span>
+      <a href="#" onclick="logout(event)">Logout</a>
+    </div>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="admin-layout">
+  <nav class="admin-sidebar">
+    <a href="/admin/index.html">📊 Dashboard</a>
+    <a href="/admin/products.html" class="active">📦 Products</a>
+    <a href="/admin/inventory.html">🏭 Inventory</a>
+    <a href="/admin/orders.html">📋 Orders</a>
+    <a href="/admin/reports.html">📈 Reports</a>
+  </nav>
+
+  <div class="admin-content">
+    <!-- Catalog Banner -->
+    <div class="catalog-banner">
+      <div>
+        <h3>Product Catalog Management</h3>
+        <p>Add, edit, and manage all products in your store</p>
+      </div>
+      <div class="flex gap-2 flex-wrap">
+        <button class="btn btn-accent" onclick="openCreateModal()">➕ Add New Product</button>
+        <label class="btn btn-secondary" style="cursor:pointer">
+          📥 Import CSV
+          <input type="file" id="csv-import-input" accept=".csv" style="display:none" onchange="importCsv(this)">
+        </label>
+        <button class="btn btn-secondary" onclick="exportCsv()">📤 Export CSV</button>
+      </div>
+    </div>
+
+    <div id="import-result" class="hidden"></div>
+
+    <!-- Products Table -->
+    <div class="table-card">
+      <div class="table-toolbar">
+        <div class="flex items-center gap-2">
+          <span style="font-weight:700;font-size:0.95rem">All Products</span>
+          <span id="product-count" class="badge badge-primary"></span>
+        </div>
+        <input type="text" class="search-box" id="table-search" placeholder="🔍 Search by name or category…" oninput="filterTable(this.value)">
+      </div>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Status</th>
+              <th style="text-align:right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="products-tbody">
+            <tr><td colspan="6" style="padding:2.5rem;text-align:center"><div class="spinner" style="margin:0 auto"></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Product Modal -->
+<div class="modal-overlay hidden" id="product-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-title">➕ Add New Product</h3>
+      <button class="modal-close-btn" onclick="closeModal()" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="modal-error" class="alert alert-danger hidden" style="margin-bottom:1rem"></div>
+      <input type="hidden" id="edit-product-id">
+
+      <!-- Name -->
+      <div class="form-group">
+        <label class="form-label" for="p-name">Product Name <span style="color:var(--danger)">*</span></label>
+        <input type="text" id="p-name" class="form-control" placeholder="e.g. Premium Cotton Fabric" maxlength="120" oninput="updateCharCount('p-name','name-count',120)" required>
+        <div class="char-count" id="name-count">0 / 120</div>
+        <div class="invalid-feedback" id="p-name-error"></div>
+      </div>
+
+      <!-- Description -->
+      <div class="form-group">
+        <label class="form-label" for="p-description">Description</label>
+        <textarea id="p-description" class="form-control" placeholder="Describe the product — material, specifications, use case…" rows="3" maxlength="1000" oninput="updateCharCount('p-description','desc-count',1000)"></textarea>
+        <div class="char-count" id="desc-count">0 / 1000</div>
+      </div>
+
+      <!-- Price + Stock -->
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="p-price">Price (₹) <span style="color:var(--danger)">*</span></label>
+          <input type="number" id="p-price" class="form-control" placeholder="0.00" min="0.01" step="0.01" required>
+          <div class="invalid-feedback" id="p-price-error"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="p-stock">Initial Stock Qty</label>
+          <input type="number" id="p-stock" class="form-control" placeholder="0" min="0" value="0">
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.25rem">Set to 0 if managing via Inventory</div>
+        </div>
+      </div>
+
+      <!-- Category -->
+      <div class="form-group">
+        <label class="form-label" for="p-category-id">Category <span style="color:var(--danger)">*</span></label>
+        <select id="p-category-id" class="form-control" required>
+          <option value="">— Select a category —</option>
+        </select>
+        <div class="invalid-feedback" id="p-category-error"></div>
+      </div>
+
+      <!-- Images -->
+      <div class="form-group">
+        <label class="form-label" for="p-images">
+          Product Images
+          <span style="color:var(--text-muted);font-weight:400;font-size:0.8rem">(up to 5 URLs, one per line)</span>
+        </label>
+        <textarea id="p-images" class="form-control" placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg" rows="3" oninput="previewImages()"></textarea>
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.25rem">Paste direct image URLs. Leave blank if no images.</div>
+        <div class="image-previews" id="image-previews"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" id="save-btn" onclick="saveProduct()">💾 Save Product</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirm Modal -->
+<div class="modal-overlay hidden" id="delete-modal">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-header" style="background:linear-gradient(135deg,#c0392b,#a93226)">
+      <h3>Remove Product</h3>
+      <button class="modal-close-btn" onclick="closeDeleteModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="margin:0;font-size:0.95rem">Are you sure you want to remove <strong id="delete-product-name"></strong> from the catalog?</p>
+      <p class="text-muted mt-2" style="font-size:0.85rem">This hides the product from customers but preserves all order history.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+      <button class="btn btn-danger" id="confirm-delete-btn" onclick="confirmDelete()">🗑 Remove Product</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+<script src="/js/api.js"></script>
+<script>
+  /* ── State ── */
+  let allProducts = [];
+  let pendingDeleteId = null;
+
+  /* ── Init ── */
+  document.getElementById('hamburger').addEventListener('click', () => {
+    document.getElementById('nav-menu').classList.toggle('open');
+  });
+
+  /* ── Auth ── */
+  async function checkAdmin() {
+    try {
+      const user = await window.api.get('/api/auth/me');
+      if (user.role !== 'ADMIN') { window.location.href = '/index.html'; return null; }
+      document.getElementById('admin-user').textContent = '👤 ' + user.name;
+      return user;
+    } catch { window.location.href = '/login.html'; return null; }
+  }
+
+  async function logout(e) {
+    e.preventDefault();
+    await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+    window.location.href = '/login.html';
+  }
+
+  /* ── Categories ── */
+  async function loadCategories() {
+    try {
+      const cats = await window.api.get('/api/categories');
+      const sel = document.getElementById('p-category-id');
+      // Clear existing options except placeholder
+      while (sel.options.length > 1) sel.remove(1);
+      cats.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = c.name;
+        sel.appendChild(opt);
+      });
+    } catch (e) { console.error('Failed to load categories', e); }
+  }
+
+  /* ── Products ── */
+  async function loadProducts() {
+    try {
+      // Fetch all pages — use a large page size
+      const data = await window.api.get('/api/products?page=0&size=200');
+      allProducts = data.content || [];
+      const count = data.totalElements || allProducts.length;
+      document.getElementById('product-count').textContent = count + ' product' + (count !== 1 ? 's' : '');
+      renderTable(allProducts);
+    } catch (e) {
+      document.getElementById('products-tbody').innerHTML =
+        `<tr><td colspan="6" style="color:var(--danger);padding:2rem;text-align:center">Failed to load products: ${esc(e.message)}</td></tr>`;
+    }
+  }
+
+  function renderTable(products) {
+    const tbody = document.getElementById('products-tbody');
+    if (!products.length) {
+      tbody.innerHTML = `
+        <tr><td colspan="6">
+          <div class="table-empty">
+            <span class="icon">📦</span>
+            <h4>No products yet</h4>
+            <p>Click "Add New Product" to get started</p>
+            <button class="btn btn-primary btn-sm mt-2" onclick="openCreateModal()">➕ Add First Product</button>
+          </div>
+        </td></tr>`;
+      return;
+    }
+    tbody.innerHTML = products.map(p => {
+      const thumb = p.imageUrl
+        ? `<div class="product-thumb"><img src="${esc(p.imageUrl)}" alt="${esc(p.name)}" onerror="this.parentElement.innerHTML='📦'"></div>`
+        : `<div class="product-thumb">📦</div>`;
+      const stockNum = p.quantity !== undefined ? p.quantity : '—';
+      const stockColor = p.quantity === 0 ? 'color:var(--danger)' : p.quantity <= 5 ? 'color:var(--warning)' : '';
+      return `
+        <tr>
+          <td>
+            <div class="product-name-cell">
+              ${thumb}
+              <div>
+                <div style="font-weight:600;color:var(--text)">${esc(p.name)}</div>
+                <div style="font-size:0.72rem;color:var(--text-muted)">ID #${p.id}</div>
+              </div>
+            </div>
+          </td>
+          <td><span class="badge badge-primary">${esc(p.categoryName || '—')}</span></td>
+          <td style="font-weight:700;color:var(--primary);font-family:'Poppins',sans-serif">₹${Number(p.price).toLocaleString('en-IN',{minimumFractionDigits:2})}</td>
+          <td style="font-weight:600;${stockColor}">${stockNum}</td>
+          <td><span class="badge ${p.outOfStock ? 'badge-danger' : 'badge-success'}">${p.outOfStock ? '⚠ Out of Stock' : '✓ In Stock'}</span></td>
+          <td style="text-align:right">
+            <div class="flex gap-1 justify-end">
+              <button class="btn btn-secondary btn-sm" onclick="openEditModal(${p.id})" title="Edit product">✏️ Edit</button>
+              <button class="btn btn-danger btn-sm" onclick="openDeleteModal(${p.id},'${esc(p.name).replace(/'/g,"\\'")}')">🗑</button>
+            </div>
+          </td>
+        </tr>`;
+    }).join('');
+  }
+
+  function filterTable(q) {
+    const lq = q.toLowerCase();
+    const filtered = q
+      ? allProducts.filter(p =>
+          p.name.toLowerCase().includes(lq) ||
+          (p.categoryName || '').toLowerCase().includes(lq) ||
+          String(p.id).includes(lq))
+      : allProducts;
+    renderTable(filtered);
+  }
+
+  /* ── Modal helpers ── */
+  function clearModalErrors() {
+    document.getElementById('modal-error').classList.add('hidden');
+    ['p-name','p-price','p-category-id'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove('is-invalid');
+      const errEl = document.getElementById(id + '-error');
+      if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
+    });
+  }
+
+  function showFieldError(fieldId, msg) {
+    const el = document.getElementById(fieldId);
+    if (el) el.classList.add('is-invalid');
+    const errEl = document.getElementById(fieldId + '-error');
+    if (errEl) { errEl.textContent = msg; errEl.style.display = 'block'; }
+  }
+
+  function updateCharCount(inputId, countId, max) {
+    const len = document.getElementById(inputId).value.length;
+    const el = document.getElementById(countId);
+    el.textContent = len + ' / ' + max;
+    el.classList.toggle('warn', len > max * 0.9);
+  }
+
+  function previewImages() {
+    const raw = document.getElementById('p-images').value.trim();
+    const urls = raw ? raw.split('\n').map(s => s.trim()).filter(Boolean) : [];
+    const container = document.getElementById('image-previews');
+    if (!urls.length) { container.innerHTML = ''; return; }
+    container.innerHTML = urls.slice(0, 5).map((url, i) => `
+      <div class="image-preview-item">
+        <img src="${esc(url)}" alt="Preview ${i+1}" onerror="this.parentElement.innerHTML='❌'">
+      </div>`).join('');
+  }
+
+  /* ── Create modal ── */
+  function openCreateModal() {
+    document.getElementById('modal-title').textContent = '➕ Add New Product';
+    document.getElementById('edit-product-id').value = '';
+    document.getElementById('p-name').value = '';
+    document.getElementById('p-description').value = '';
+    document.getElementById('p-price').value = '';
+    document.getElementById('p-category-id').value = '';
+    document.getElementById('p-stock').value = '0';
+    document.getElementById('p-images').value = '';
+    document.getElementById('image-previews').innerHTML = '';
+    document.getElementById('name-count').textContent = '0 / 120';
+    document.getElementById('desc-count').textContent = '0 / 1000';
+    clearModalErrors();
+    document.getElementById('product-modal').classList.remove('hidden');
+    setTimeout(() => document.getElementById('p-name').focus(), 50);
+  }
+
+  /* ── Edit modal ── */
+  async function openEditModal(productId) {
+    try {
+      const p = await window.api.get(`/api/products/${productId}`);
+      document.getElementById('modal-title').textContent = '✏️ Edit Product';
+      document.getElementById('edit-product-id').value = p.id;
+      document.getElementById('p-name').value = p.name || '';
+      document.getElementById('p-description').value = p.description || '';
+      document.getElementById('p-price').value = p.price || '';
+      document.getElementById('p-stock').value = p.quantity || 0;
+      document.getElementById('p-images').value = (p.images || []).join('\n');
+
+      // Set category — wait for options to be populated
+      const sel = document.getElementById('p-category-id');
+      if (p.categoryId) {
+        sel.value = p.categoryId;
+        // If option not found, try by name
+        if (!sel.value && p.categoryName) {
+          for (const opt of sel.options) {
+            if (opt.textContent === p.categoryName) { sel.value = opt.value; break; }
+          }
+        }
+      }
+
+      updateCharCount('p-name', 'name-count', 120);
+      updateCharCount('p-description', 'desc-count', 1000);
+      previewImages();
+      clearModalErrors();
+      document.getElementById('product-modal').classList.remove('hidden');
+    } catch (e) {
+      showToast('Failed to load product: ' + e.message, 'error');
+    }
+  }
+
+  function closeModal() {
+    document.getElementById('product-modal').classList.add('hidden');
+  }
+
+  document.getElementById('product-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  /* ── Save product ── */
+  async function saveProduct() {
+    const btn = document.getElementById('save-btn');
+    const errEl = document.getElementById('modal-error');
+    clearModalErrors();
+
+    const name = document.getElementById('p-name').value.trim();
+    const description = document.getElementById('p-description').value.trim();
+    const priceRaw = document.getElementById('p-price').value;
+    const price = parseFloat(priceRaw);
+    const categoryId = parseInt(document.getElementById('p-category-id').value);
+    const stock = parseInt(document.getElementById('p-stock').value) || 0;
+    const imagesRaw = document.getElementById('p-images').value.trim();
+    const imageUrls = imagesRaw ? imagesRaw.split('\n').map(s => s.trim()).filter(Boolean) : [];
+
+    // Validate
+    let hasError = false;
+    if (!name) { showFieldError('p-name', 'Product name is required'); hasError = true; }
+    if (!priceRaw || isNaN(price) || price <= 0) { showFieldError('p-price', 'Enter a valid positive price'); hasError = true; }
+    if (!categoryId) { showFieldError('p-category-id', 'Please select a category'); hasError = true; }
+    if (imageUrls.length > 5) {
+      errEl.textContent = 'Maximum 5 images allowed';
+      errEl.classList.remove('hidden');
+      hasError = true;
+    }
+    if (hasError) return;
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner" style="width:18px;height:18px;border-width:2px;margin:0 auto"></span> Saving…';
+
+    const payload = { name, description, price, categoryId, imageUrls, initialStock: stock };
+    const editId = document.getElementById('edit-product-id').value;
+
+    try {
+      if (editId) {
+        await window.api.put(`/admin/products/${editId}`, payload);
+        showToast('Product updated successfully', 'success');
+      } else {
+        await window.api.post('/admin/products', payload);
+        showToast('Product added to catalog', 'success');
+      }
+      closeModal();
+      loadProducts();
+    } catch (e) {
+      let msg = e.message || 'Failed to save product.';
+      if (e.data?.error) msg = e.data.error;
+      if (e.data?.details) msg = Object.values(e.data.details).join(' · ');
+      if (e.status === 401 || e.status === 403) {
+        msg = 'Session expired. Redirecting to login…';
+        setTimeout(() => { window.location.href = '/login.html'; }, 2000);
+      }
+      errEl.textContent = '⚠ ' + msg;
+      errEl.classList.remove('hidden');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '💾 Save Product';
+    }
+  }
+
+  /* ── Delete modal ── */
+  function openDeleteModal(id, name) {
+    pendingDeleteId = id;
+    document.getElementById('delete-product-name').textContent = name;
+    document.getElementById('delete-modal').classList.remove('hidden');
+  }
+
+  function closeDeleteModal() {
+    pendingDeleteId = null;
+    document.getElementById('delete-modal').classList.add('hidden');
+  }
+
+  document.getElementById('delete-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeDeleteModal();
+  });
+
+  async function confirmDelete() {
+    if (!pendingDeleteId) return;
+    const btn = document.getElementById('confirm-delete-btn');
+    btn.disabled = true;
+    btn.textContent = 'Removing…';
+    try {
+      await window.api.del(`/admin/products/${pendingDeleteId}`);
+      showToast('Product removed from catalog', 'success');
+      closeDeleteModal();
+      loadProducts();
+    } catch (e) {
+      showToast('Failed to remove: ' + e.message, 'error');
+      btn.disabled = false;
+      btn.textContent = '🗑 Remove Product';
+    }
+  }
+
+  /* ── CSV Import / Export ── */
+  async function importCsv(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    const resultEl = document.getElementById('import-result');
+    resultEl.className = 'import-result';
+    resultEl.innerHTML = '<div class="spinner" style="margin:0.5rem auto;width:28px;height:28px;border-width:2px"></div>';
+    resultEl.classList.remove('hidden');
+    try {
+      const result = await window.api.postForm('/admin/products/import', formData);
+      resultEl.className = 'import-result success';
+      resultEl.innerHTML = `✅ Successfully imported <strong>${result.imported}</strong> product${result.imported !== 1 ? 's' : ''} to catalog.`;
+      loadProducts();
+    } catch (e) {
+      const errors = e.data?.errors || [];
+      const errHtml = errors.length
+        ? '<ul style="margin-top:0.5rem;padding-left:1.25rem">' + errors.map(err => `<li>Row ${err.row}: ${esc(err.error)}</li>`).join('') + '</ul>'
+        : '';
+      resultEl.className = 'import-result error';
+      resultEl.innerHTML = `❌ Import failed.${errHtml}`;
+    }
+    input.value = '';
+  }
+
+  function exportCsv() { window.open('/admin/products/export', '_blank'); }
+
+  /* ── Toast ── */
+  function showToast(message, type = 'success') {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.innerHTML = `<span>${message}</span>`;
+    container.appendChild(toast);
+    setTimeout(() => toast.remove(), 4000);
+  }
+
+  /* ── Keyboard shortcuts ── */
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeModal(); closeDeleteModal(); }
+  });
+
+  /* ── Helpers ── */
+  function esc(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  /* ── Boot ── */
+  checkAdmin().then(user => { if (user) { loadCategories(); loadProducts(); } });
+</script>
+</body>
+</html>

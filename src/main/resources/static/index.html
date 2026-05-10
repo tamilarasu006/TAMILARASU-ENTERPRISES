@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TAMILARASU ENTERPRISES — Your Trusted Import &amp; Export Partner</title>
+  <meta name="description" content="TAMILARASU ENTERPRISES — Quality import and export products at competitive prices. Shop electronics, textiles, machinery and more.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 0;
+      margin-top: 3.5rem;
+      flex-wrap: wrap;
+      background: rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 1.5rem 2rem;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.15);
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .hero-stat {
+      text-align: center;
+      flex: 1;
+      min-width: 120px;
+      padding: 0.5rem 1rem;
+      border-right: 1px solid rgba(255,255,255,0.15);
+    }
+    .hero-stat:last-child { border-right: none; }
+    .hero-stat .num {
+      font-family: 'Poppins', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      color: #fde8c0;
+      display: block;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      line-height: 1.1;
+    }
+    .hero-stat .lbl {
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.65);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: 0.2rem;
+      display: block;
+    }
+
+    .category-card {
+      background: white;
+      border-radius: 20px;
+      padding: 1.75rem 1.25rem;
+      text-align: center;
+      box-shadow: 0 2px 12px rgba(45,31,14,0.07);
+      border: 1.5px solid rgba(232,221,208,0.9);
+      transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+      cursor: pointer;
+      text-decoration: none;
+      display: block;
+      position: relative;
+      overflow: hidden;
+    }
+    .category-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(45,138,86,0.05), rgba(232,130,12,0.05));
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .category-card:hover { transform: translateY(-6px); box-shadow: 0 18px 36px rgba(26,92,56,0.16); border-color: var(--primary-light); }
+    .category-card:hover::before { opacity: 1; }
+    .category-card .icon { font-size: 2.75rem; margin-bottom: 0.75rem; display: block; transition: transform 0.3s; }
+    .category-card:hover .icon { transform: scale(1.1); }
+    .category-card h3 { font-size: 0.95rem; color: var(--text); margin: 0; font-weight: 600; }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.75rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .section-header h2 { margin: 0; }
+
+    .trust-bar {
+      background: linear-gradient(135deg, #edf7f0, #faf7f2, #fef3c7);
+      border-top: 1px solid rgba(45,138,86,0.12);
+      border-bottom: 1px solid rgba(45,138,86,0.12);
+      padding: 1.25rem 0;
+    }
+    .trust-items {
+      display: flex;
+      justify-content: center;
+      gap: 2.5rem;
+      flex-wrap: wrap;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+    .trust-item span:first-child { font-size: 1.3rem; }
+
+    .promo-banner {
+      background: linear-gradient(135deg, #c0522a 0%, #e8820c 60%, #d4a017 100%);
+      color: white;
+      border-radius: 24px;
+      padding: 2.5rem 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 3rem;
+      box-shadow: 0 12px 32px rgba(192,82,42,0.28);
+      position: relative;
+      overflow: hidden;
+    }
+    .promo-banner::before {
+      content: '🌿';
+      position: absolute;
+      right: 3rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 6rem;
+      opacity: 0.12;
+      pointer-events: none;
+    }
+    .promo-banner h3 { color: white; margin: 0 0 0.4rem; font-size: 1.5rem; }
+    .promo-banner p { margin: 0; opacity: 0.88; font-size: 0.95rem; }
+    .promo-banner .btn-outline { color: white; border-color: rgba(255,255,255,0.65); }
+    .promo-banner .btn-outline:hover { background: white; color: var(--terracotta); }
+
+    @media (max-width: 600px) {
+      .hero-stats { gap: 0; padding: 1rem; }
+      .hero-stat { min-width: 80px; padding: 0.5rem; }
+      .hero-stat .num { font-size: 1.5rem; }
+      .promo-banner { padding: 1.75rem 1.5rem; }
+      .promo-banner::before { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar" id="navbar">
+  <div class="navbar-inner">
+    <a href="/index.html" class="navbar-brand">
+      🏢 <span>TAMILARASU ENTERPRISES</span>
+    </a>
+
+    <div class="navbar-search">
+      <input type="text" id="search-input" placeholder="Search products..." autocomplete="off" aria-label="Search products">
+      <button class="search-btn" onclick="doSearch()" aria-label="Search">🔍</button>
+      <ul class="search-suggestions hidden" id="search-suggestions" role="listbox"></ul>
+    </div>
+
+    <div class="nav-menu" id="nav-menu">
+      <a href="/catalog.html">Catalog</a>
+      <a href="/cart.html" style="position:relative">
+        🛒 Cart
+        <span class="cart-badge" id="cart-badge" style="display:none">0</span>
+      </a>
+      <span id="auth-links">
+        <a href="/login.html">Login</a>
+        <a href="/register.html" class="btn btn-accent btn-sm">Register</a>
+      </span>
+    </div>
+
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <h1>Quality Products,<br>Trusted Worldwide</h1>
+    <p>TAMILARASU ENTERPRISES — Your premier import &amp; export partner for quality goods at competitive prices.</p>
+    <div class="flex justify-center gap-2 flex-wrap">
+      <a href="/catalog.html" class="btn btn-accent btn-lg">Shop Now →</a>
+      <a href="/catalog.html" class="btn btn-outline btn-lg" style="color:white;border-color:rgba(255,255,255,0.6)">Browse Catalog</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><span class="num">500+</span><span class="lbl">Products</span></div>
+      <div class="hero-stat"><span class="num">10K+</span><span class="lbl">Happy Customers</span></div>
+      <div class="hero-stat"><span class="num">50+</span><span class="lbl">Categories</span></div>
+      <div class="hero-stat"><span class="num">24/7</span><span class="lbl">Support</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- Trust Bar -->
+<div class="trust-bar">
+  <div class="trust-items">
+    <div class="trust-item"><span>🚚</span><span>Free Shipping on orders ₹999+</span></div>
+    <div class="trust-item"><span>🔒</span><span>Secure Payments</span></div>
+    <div class="trust-item"><span>↩️</span><span>Easy Returns</span></div>
+    <div class="trust-item"><span>⭐</span><span>Quality Guaranteed</span></div>
+  </div>
+</div>
+
+<!-- Categories -->
+<section class="container mt-4 mb-4">
+  <div class="section-header">
+    <h2>Shop by Category</h2>
+    <a href="/catalog.html" class="btn btn-outline btn-sm">View All</a>
+  </div>
+  <div class="grid grid-4 gap-2" id="categories-grid">
+    <a href="/catalog.html" class="category-card">
+      <span class="icon">📦</span>
+      <h3>All Products</h3>
+    </a>
+    <a href="/catalog.html?category=electronics" class="category-card">
+      <span class="icon">⚡</span>
+      <h3>Electronics</h3>
+    </a>
+    <a href="/catalog.html?category=textiles" class="category-card">
+      <span class="icon">🧵</span>
+      <h3>Textiles</h3>
+    </a>
+    <a href="/catalog.html?category=machinery" class="category-card">
+      <span class="icon">⚙️</span>
+      <h3>Machinery</h3>
+    </a>
+  </div>
+</section>
+
+<!-- Featured Products -->
+<section class="container mb-4">
+  <div class="section-header">
+    <h2>Featured Products</h2>
+    <a href="/catalog.html" class="btn btn-outline btn-sm">View All →</a>
+  </div>
+  <div class="product-grid" id="featured-products">
+    <div class="spinner"></div>
+  </div>
+</section>
+
+<!-- Promo Banner -->
+<section class="container mb-4">
+  <div class="promo-banner">
+    <div>
+      <h3>Bulk Orders Welcome!</h3>
+      <p>Get special pricing on bulk imports. Contact us for custom quotes.</p>
+    </div>
+    <a href="/catalog.html" class="btn btn-outline btn-lg">Explore Products</a>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-col">
+      <h4>🏢 TAMILARASU ENTERPRISES</h4>
+      <p style="font-size:0.85rem;opacity:0.7;line-height:1.7">Your trusted partner for import &amp; export since decades. Quality products, reliable service, competitive prices.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <a href="/index.html">Home</a>
+      <a href="/catalog.html">Products</a>
+      <a href="/cart.html">Cart</a>
+      <a href="/orders.html">My Orders</a>
+    </div>
+    <div class="footer-col">
+      <h4>Account</h4>
+      <a href="/login.html">Login</a>
+      <a href="/register.html">Register</a>
+      <a href="/profile.html">My Profile</a>
+      <a href="/orders.html">Order History</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contact Us</h4>
+      <p style="font-size:0.85rem;margin-bottom:0.4rem">📧 tamilarasuenterprises.vsrt@gmail.com</p>
+      <p style="font-size:0.85rem;margin-bottom:0.4rem">📞 +91 6383772487</p>
+      <p style="font-size:0.85rem;margin-bottom:0.4rem">📞 +91 7200048041</p>
+      <p style="font-size:0.85rem">📍 Tamil Nadu, India</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2025 TAMILARASU ENTERPRISES. All rights reserved. | Import &amp; Export Excellence</p>
+  </div>
+</footer>
+
+<div id="toast-container" class="toast-container"></div>
+
+<script src="/js/api.js"></script>
+<script src="/js/cart.js"></script>
+<script>
+  // Hamburger menu
+  const hamburger = document.getElementById('hamburger');
+  const navMenu = document.getElementById('nav-menu');
+  hamburger.addEventListener('click', () => {
+    const open = navMenu.classList.toggle('open');
+    hamburger.setAttribute('aria-expanded', open);
+  });
+
+  // Auth state
+  async function checkAuth() {
+    try {
+      const user = await window.api.get('/api/auth/me');
+      document.getElementById('auth-links').innerHTML = `
+        <a href="/profile.html" style="font-weight:600">👤 ${user.name.split(' ')[0]}</a>
+        <a href="/orders.html">Orders</a>
+        <a href="#" onclick="logout(event)">Logout</a>
+        ${user.role === 'ADMIN' ? '<a href="/admin/index.html" class="btn btn-accent btn-sm">Admin</a>' : ''}
+      `;
+    } catch (e) { /* not logged in */ }
+  }
+
+  async function logout(e) {
+    e.preventDefault();
+    await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+    window.location.reload();
+  }
+
+  // Search
+  const searchInput = document.getElementById('search-input');
+  const suggestionsEl = document.getElementById('search-suggestions');
+  let searchTimer;
+
+  searchInput.addEventListener('input', () => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(async () => {
+      const q = searchInput.value.trim();
+      if (q.length < 2) { suggestionsEl.classList.add('hidden'); return; }
+      try {
+        const data = await window.api.get(`/api/products/search?q=${encodeURIComponent(q)}`);
+        const suggestions = data.suggestions || [];
+        if (!suggestions.length) { suggestionsEl.classList.add('hidden'); return; }
+        suggestionsEl.innerHTML = suggestions.map(s =>
+          `<li onclick="selectSuggestion('${s.replace(/'/g,"\\'")}')">🔍 ${s}</li>`
+        ).join('');
+        suggestionsEl.classList.remove('hidden');
+      } catch { suggestionsEl.classList.add('hidden'); }
+    }, 250);
+  });
+
+  function selectSuggestion(text) {
+    searchInput.value = text;
+    suggestionsEl.classList.add('hidden');
+    doSearch();
+  }
+
+  function doSearch() {
+    const q = searchInput.value.trim();
+    if (q) window.location.href = `/catalog.html?q=${encodeURIComponent(q)}`;
+  }
+
+  searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.navbar-search')) suggestionsEl.classList.add('hidden');
+  });
+
+  // Load featured products
+  async function loadFeaturedProducts() {
+    const grid = document.getElementById('featured-products');
+    try {
+      const data = await window.api.get('/api/products?page=0&sort=newest');
+      const products = data.content || [];
+      if (!products.length) {
+        grid.innerHTML = `
+          <div class="empty-state" style="grid-column:1/-1">
+            <div class="empty-icon">📦</div>
+            <h3>No products yet</h3>
+            <p>Check back soon for new arrivals.</p>
+          </div>`;
+        return;
+      }
+      grid.innerHTML = products.slice(0, 8).map(p => renderProductCard(p)).join('');
+    } catch {
+      grid.innerHTML = '<p class="text-muted" style="grid-column:1/-1;text-align:center;padding:2rem">Unable to load products right now.</p>';
+    }
+  }
+
+  function renderProductCard(p) {
+    const img = p.imageUrl
+      ? `<div class="product-card-img-wrap"><img src="${p.imageUrl}" alt="${escHtml(p.name)}" class="product-card-img" loading="lazy"></div>`
+      : `<div class="product-card-img-placeholder">📦</div>`;
+    const addBtn = p.outOfStock
+      ? `<button class="btn btn-secondary btn-sm w-full" disabled>Out of Stock</button>`
+      : `<button class="btn btn-accent btn-sm w-full" onclick="addToCart(${p.id},this)">🛒 Add to Cart</button>`;
+    const badge = p.outOfStock ? `<span class="badge badge-danger mb-1">Out of Stock</span>` : '';
+
+    return `
+      <div class="product-card">
+        <a href="/product.html?id=${p.id}">${img}</a>
+        <div class="product-card-body">
+          <div class="product-card-category">${escHtml(p.categoryName || 'General')}</div>
+          <a href="/product.html?id=${p.id}" class="product-card-name" style="color:var(--text)">${escHtml(p.name)}</a>
+          <div class="product-card-price">₹${Number(p.price).toLocaleString('en-IN', {minimumFractionDigits:2})}</div>
+          ${badge}
+          <div class="product-card-footer mt-2">${addBtn}</div>
+        </div>
+      </div>`;
+  }
+
+  async function addToCart(productId, btn) {
+    const orig = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = '✓ Added!';
+    btn.style.background = 'var(--success)';
+    await window.cartApi.addToCart(productId);
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.textContent = orig;
+      btn.style.background = '';
+    }, 1500);
+  }
+
+  function escHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  checkAuth();
+  loadFeaturedProducts();
+</script>
+</body>
+</html>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orders — Admin — TAMILARASU ENTERPRISES</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="/admin/index.html" class="navbar-brand">TE Admin</a>
+    <div class="nav-menu" id="nav-menu">
+      <a href="/index.html">Store</a>
+      <span id="admin-user" style="color:rgba(255,255,255,0.8);font-size:0.85rem"></span>
+      <a href="#" onclick="logout()">Logout</a>
+    </div>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="admin-layout">
+  <nav class="admin-sidebar">
+    <a href="/admin/index.html">Dashboard</a>
+    <a href="/admin/products.html">Products</a>
+    <a href="/admin/inventory.html">Inventory</a>
+    <a href="/admin/orders.html" class="active">Orders</a>
+    <a href="/admin/reports.html">Reports</a>
+  </nav>
+
+  <div class="admin-content">
+    <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
+      <h2>Orders</h2>
+      <button class="btn btn-secondary" onclick="exportOrders()">Export CSV</button>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-3">
+      <div class="card-body">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem">
+          <div class="form-group" style="margin:0">
+            <label class="form-label">Status</label>
+            <select id="filter-status" class="form-control" onchange="loadOrders()">
+              <option value="">All Statuses</option>
+              <option value="PENDING">Pending</option>
+              <option value="PROCESSING">Processing</option>
+              <option value="SHIPPED">Shipped</option>
+              <option value="DELIVERED">Delivered</option>
+              <option value="CANCELLED">Cancelled</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin:0">
+            <label class="form-label">From Date</label>
+            <input type="date" id="filter-from" class="form-control" onchange="loadOrders()">
+          </div>
+          <div class="form-group" style="margin:0">
+            <label class="form-label">To Date</label>
+            <input type="date" id="filter-to" class="form-control" onchange="loadOrders()">
+          </div>
+          <div class="form-group" style="margin:0">
+            <label class="form-label">Customer</label>
+            <input type="text" id="filter-customer" class="form-control" placeholder="Name or email" oninput="debounceLoad()">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Order #</th>
+              <th>Customer</th>
+              <th>Date</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="orders-tbody">
+            <tr><td colspan="6" class="text-center"><div class="spinner" style="margin:1rem auto"></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Cancel Modal -->
+<div class="modal-overlay hidden" id="cancel-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Cancel Order</h3>
+      <button class="btn btn-secondary btn-sm" onclick="closeCancelModal()">X</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="cancel-order-id">
+      <div class="form-group">
+        <label class="form-label">Cancellation Reason *</label>
+        <textarea id="cancel-reason" class="form-control" placeholder="Enter reason for cancellation" rows="3"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeCancelModal()">Back</button>
+      <button class="btn btn-danger" onclick="confirmCancel()">Cancel Order</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+
+<script src="/js/api.js"></script>
+<script>
+  document.getElementById('hamburger').addEventListener('click', () => {
+    document.getElementById('nav-menu').classList.toggle('open');
+  });
+
+  let debounceTimer;
+  function debounceLoad() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(loadOrders, 400);
+  }
+
+  async function checkAdmin() {
+    try {
+      const user = await window.api.get('/api/auth/me');
+      if (user.role !== 'ADMIN') { window.location.href = '/index.html'; return null; }
+      document.getElementById('admin-user').textContent = user.name;
+      return user;
+    } catch { window.location.href = '/login.html'; return null; }
+  }
+
+  async function logout() {
+    await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+    window.location.href = '/login.html';
+  }
+
+  async function loadOrders() {
+    const status = document.getElementById('filter-status').value;
+    const from = document.getElementById('filter-from').value;
+    const to = document.getElementById('filter-to').value;
+    const customer = document.getElementById('filter-customer').value.trim();
+
+    let url = '/admin/orders?';
+    if (status) url += `status=${status}&`;
+    if (from) url += `from=${from}T00:00:00&`;
+    if (to) url += `to=${to}T23:59:59&`;
+    if (customer) url += `customer=${encodeURIComponent(customer)}&`;
+
+    const tbody = document.getElementById('orders-tbody');
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center"><div class="spinner" style="margin:0.5rem auto"></div></td></tr>';
+
+    try {
+      const orders = await window.api.get(url);
+      if (orders.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No orders found.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = orders.map(o => `
+        <tr>
+          <td><strong>${o.orderNumber}</strong></td>
+          <td>${o.deliveryAddress ? o.deliveryAddress.split(',')[0] : '—'}</td>
+          <td>${new Date(o.createdAt).toLocaleDateString()}</td>
+          <td>Rs.${Number(o.total).toFixed(2)}</td>
+          <td>
+            <select class="form-control" style="min-height:36px;font-size:0.8rem;padding:0.25rem 0.5rem"
+                    onchange="updateStatus(${o.id}, this.value)">
+              <option value="PENDING" ${o.status==='PENDING'?'selected':''}>Pending</option>
+              <option value="PROCESSING" ${o.status==='PROCESSING'?'selected':''}>Processing</option>
+              <option value="SHIPPED" ${o.status==='SHIPPED'?'selected':''}>Shipped</option>
+              <option value="DELIVERED" ${o.status==='DELIVERED'?'selected':''}>Delivered</option>
+              <option value="CANCELLED" ${o.status==='CANCELLED'?'selected':''}>Cancelled</option>
+            </select>
+          </td>
+          <td>
+            ${o.status !== 'CANCELLED' && o.status !== 'DELIVERED'
+              ? `<button class="btn btn-danger btn-sm" onclick="openCancelModal(${o.id})">Cancel</button>`
+              : ''}
+          </td>
+        </tr>
+      `).join('');
+    } catch (e) {
+      tbody.innerHTML = `<tr><td colspan="6" class="text-danger">Failed to load: ${e.message}</td></tr>`;
+    }
+  }
+
+  async function updateStatus(orderId, newStatus) {
+    try {
+      await window.api.put(`/admin/orders/${orderId}/status`, { status: newStatus, reason: 'Updated by admin' });
+      showToast('Status updated to ' + newStatus, 'success');
+      loadOrders();
+    } catch (e) {
+      showToast('Failed to update status: ' + e.message, 'error');
+      loadOrders();
+    }
+  }
+
+  function openCancelModal(orderId) {
+    document.getElementById('cancel-order-id').value = orderId;
+    document.getElementById('cancel-reason').value = '';
+    document.getElementById('cancel-modal').classList.remove('hidden');
+  }
+
+  function closeCancelModal() {
+    document.getElementById('cancel-modal').classList.add('hidden');
+  }
+
+  async function confirmCancel() {
+    const orderId = document.getElementById('cancel-order-id').value;
+    const reason = document.getElementById('cancel-reason').value.trim();
+    if (!reason) { showToast('Please enter a cancellation reason', 'error'); return; }
+    try {
+      await window.api.post(`/admin/orders/${orderId}/cancel`, { reason });
+      showToast('Order cancelled successfully', 'success');
+      closeCancelModal();
+      loadOrders();
+    } catch (e) {
+      showToast('Failed to cancel order: ' + e.message, 'error');
+    }
+  }
+
+  function exportOrders() {
+    window.open('/admin/orders/export', '_blank');
+  }
+
+  function showToast(message, type) {
+    let container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.innerHTML = `<span class="toast-message">${message}</span><button class="toast-close" onclick="this.parentElement.remove()">X</button>`;
+    container.appendChild(toast);
+    setTimeout(() => toast.remove(), 4000);
+  }
+
+  checkAdmin().then(user => { if (user) loadOrders(); });
+</script>
+</body>
+</html>

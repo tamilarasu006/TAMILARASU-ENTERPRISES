@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile — TAMILARASU ENTERPRISES</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .profile-layout {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 1.75rem;
+      align-items: start;
+    }
+
+    /* ── Avatar card ── */
+    .avatar-card {
+      background: white;
+      border-radius: 20px;
+      border: 1.5px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      text-align: center;
+    }
+    .avatar-card-header {
+      background: var(--primary-gradient);
+      padding: 2rem 1.5rem 1.5rem;
+      position: relative;
+    }
+    .avatar-circle {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      border: 3px solid rgba(255,255,255,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      margin: 0 auto 1rem;
+      font-weight: 700;
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      letter-spacing: -1px;
+    }
+    .avatar-card-header h3 {
+      color: white;
+      margin: 0 0 0.25rem;
+      font-size: 1.15rem;
+    }
+    .avatar-card-header p {
+      color: rgba(255,255,255,0.75);
+      font-size: 0.82rem;
+      margin: 0;
+    }
+    .avatar-card-body {
+      padding: 1.25rem 1.5rem;
+    }
+    .profile-nav a {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.65rem 0.875rem;
+      border-radius: 10px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      transition: all 0.2s;
+      margin-bottom: 0.2rem;
+    }
+    .profile-nav a:hover { background: var(--bg); color: var(--primary); }
+    .profile-nav a.active { background: rgba(26,92,56,0.08); color: var(--primary); font-weight: 600; }
+    .profile-nav a .nav-icon { font-size: 1rem; width: 20px; text-align: center; }
+
+    /* ── Info card ── */
+    .info-card {
+      background: white;
+      border-radius: 20px;
+      border: 1.5px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+    .info-card-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .info-card-header h3 { margin: 0; font-size: 1rem; }
+    .info-card-body { padding: 1.5rem; }
+
+    /* ── Detail rows ── */
+    .detail-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .detail-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .detail-row:first-child { padding-top: 0; }
+    .detail-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(26,92,56,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .detail-content { flex: 1; min-width: 0; }
+    .detail-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-muted);
+      margin-bottom: 0.2rem;
+    }
+    .detail-value {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text);
+      word-break: break-word;
+    }
+    .detail-value.muted { color: var(--text-muted); font-weight: 400; font-style: italic; }
+
+    /* ── Stats strip ── */
+    .stats-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+    }
+    .stat-strip-card {
+      background: white;
+      border-radius: 16px;
+      border: 1.5px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      padding: 1.25rem 1rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-strip-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+    .stat-strip-card:nth-child(1)::before { background: var(--primary-gradient); }
+    .stat-strip-card:nth-child(2)::before { background: linear-gradient(135deg, #e8820c, #c96a08); }
+    .stat-strip-card:nth-child(3)::before { background: linear-gradient(135deg, #6b46c1, #9f7aea); }
+    .stat-strip-num {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--primary);
+      line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+    .stat-strip-card:nth-child(2) .stat-strip-num { color: var(--accent); }
+    .stat-strip-card:nth-child(3) .stat-strip-num { color: #6b46c1; }
+    .stat-strip-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* ── Recent orders mini table ── */
+    .recent-orders-card {
+      background: white;
+      border-radius: 20px;
+      border: 1.5px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      margin-top: 1.75rem;
+    }
+
+    /* ── Role badge ── */
+    .role-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.2rem 0.65rem;
+      border-radius: 50px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .role-CUSTOMER { background: rgba(26,92,56,0.1); color: var(--primary); }
+    .role-ADMIN    { background: rgba(232,130,12,0.12); color: var(--accent-dark); }
+
+    /* ── Skeleton loader ── */
+    .skeleton {
+      background: linear-gradient(90deg, #f0ebe4 25%, #faf7f2 50%, #f0ebe4 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 8px;
+    }
+    @keyframes shimmer { to { background-position: -200% 0; } }
+
+    @media (max-width: 900px) {
+      .profile-layout { grid-template-columns: 1fr; }
+      .stats-strip { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 480px) {
+      .stats-strip { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="/index.html" class="navbar-brand">🏢 TAMILARASU ENTERPRISES</a>
+    <div class="nav-menu" id="nav-menu">
+      <a href="/catalog.html">Catalog</a>
+      <a href="/cart.html">🛒 Cart <span class="cart-badge" id="cart-badge" style="display:none">0</span></a>
+      <span id="auth-links"></span>
+    </div>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<!-- Page Banner -->
+<div class="page-banner">
+  <div class="container">
+    <h1>My Profile</h1>
+    <p>Manage your account details and view your activity</p>
+  </div>
+</div>
+
+<div class="container mt-3 mb-4">
+
+  <!-- Stats strip -->
+  <div class="stats-strip" id="stats-strip">
+    <div class="stat-strip-card">
+      <div class="stat-strip-num" id="stat-orders">—</div>
+      <div class="stat-strip-label">Total Orders</div>
+    </div>
+    <div class="stat-strip-card">
+      <div class="stat-strip-num" id="stat-spent">—</div>
+      <div class="stat-strip-label">Total Spent</div>
+    </div>
+    <div class="stat-strip-card">
+      <div class="stat-strip-num" id="stat-member">—</div>
+      <div class="stat-strip-label">Member Since</div>
+    </div>
+  </div>
+
+  <!-- Profile layout -->
+  <div class="profile-layout">
+
+    <!-- Left: Avatar + nav -->
+    <div>
+      <div class="avatar-card">
+        <div class="avatar-card-header">
+          <div class="avatar-circle" id="avatar-initials">…</div>
+          <h3 id="profile-name">Loading…</h3>
+          <p id="profile-email">—</p>
+        </div>
+        <div class="avatar-card-body">
+          <nav class="profile-nav">
+            <a href="#details" class="active" onclick="showSection('details', this)">
+              <span class="nav-icon">👤</span> Account Details
+            </a>
+            <a href="#orders" onclick="showSection('orders', this)">
+              <span class="nav-icon">📦</span> Recent Orders
+            </a>
+            <a href="/orders.html">
+              <span class="nav-icon">📋</span> All Orders
+            </a>
+            <a href="#" onclick="logout(event)" style="color:var(--danger)">
+              <span class="nav-icon">🚪</span> Logout
+            </a>
+          </nav>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Content sections -->
+    <div>
+
+      <!-- Account Details section -->
+      <div id="section-details">
+        <div class="info-card">
+          <div class="info-card-header">
+            <h3>👤 Account Details</h3>
+            <span id="role-badge-container"></span>
+          </div>
+          <div class="info-card-body" id="details-body">
+            <div class="spinner" style="margin: 2rem auto"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Orders section -->
+      <div id="section-orders" class="hidden">
+        <div class="recent-orders-card" style="margin-top:0">
+          <div class="info-card-header">
+            <h3>📦 Recent Orders</h3>
+            <a href="/orders.html" class="btn btn-secondary btn-sm">View All →</a>
+          </div>
+          <div id="recent-orders-body">
+            <div class="spinner" style="margin: 2rem auto"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-col">
+      <h4>🏢 TAMILARASU ENTERPRISES</h4>
+      <p style="font-size:0.85rem;opacity:0.7;line-height:1.7">Your trusted partner for import &amp; export since decades.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <a href="/index.html">Home</a>
+      <a href="/catalog.html">Products</a>
+      <a href="/cart.html">Cart</a>
+      <a href="/orders.html">My Orders</a>
+    </div>
+    <div class="footer-col">
+      <h4>Account</h4>
+      <a href="/profile.html">My Profile</a>
+      <a href="/orders.html">Order History</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contact Us</h4>
+      <p style="font-size:0.85rem;margin-bottom:0.4rem">📧 tamilarasuenterprises.vsrt@gmail.com</p>
+      <p style="font-size:0.85rem;margin-bottom:0.4rem">📞 +91 6383772487</p>
+      <p style="font-size:0.85rem">📍 Tamil Nadu, India</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2025 TAMILARASU ENTERPRISES. All rights reserved.</p>
+  </div>
+</footer>
+
+<div id="toast-container" class="toast-container"></div>
+
+<script src="/js/api.js"></script>
+<script src="/js/cart.js"></script>
+<script>
+  /* ── Hamburger ── */
+  document.getElementById('hamburger').addEventListener('click', () => {
+    document.getElementById('nav-menu').classList.toggle('open');
+  });
+
+  /* ── Section switching ── */
+  function showSection(name, linkEl) {
+    document.querySelectorAll('.profile-nav a').forEach(a => a.classList.remove('active'));
+    if (linkEl) linkEl.classList.add('active');
+
+    document.getElementById('section-details').classList.add('hidden');
+    document.getElementById('section-orders').classList.add('hidden');
+
+    const target = document.getElementById('section-' + name);
+    if (target) target.classList.remove('hidden');
+
+    if (name === 'orders' && !ordersLoaded) loadRecentOrders();
+  }
+
+  /* ── Auth ── */
+  async function checkAuth() {
+    try {
+      const user = await window.api.get('/api/auth/me');
+      renderNavAuth(user);
+      return user;
+    } catch {
+      window.location.href = '/login.html?redirect=' + encodeURIComponent(window.location.href);
+      return null;
+    }
+  }
+
+  function renderNavAuth(user) {
+    document.getElementById('auth-links').innerHTML = `
+      <a href="/profile.html" class="active">👤 ${user.name.split(' ')[0]}</a>
+      <a href="/orders.html">Orders</a>
+      <a href="#" onclick="logout(event)">Logout</a>
+      ${user.role === 'ADMIN' ? '<a href="/admin/index.html" class="btn btn-accent btn-sm">Admin</a>' : ''}
+    `;
+  }
+
+  async function logout(e) {
+    e.preventDefault();
+    await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+    window.location.href = '/index.html';
+  }
+
+  /* ── Render profile details ── */
+  function renderProfile(user) {
+    // Avatar initials (up to 2 chars)
+    const initials = user.name
+      .split(' ')
+      .map(w => w[0])
+      .slice(0, 2)
+      .join('')
+      .toUpperCase();
+    document.getElementById('avatar-initials').textContent = initials;
+    document.getElementById('profile-name').textContent = user.name;
+    document.getElementById('profile-email').textContent = user.email;
+
+    // Role badge
+    const roleLabel = user.role === 'ADMIN' ? '⭐ Admin' : '🛍 Customer';
+    document.getElementById('role-badge-container').innerHTML =
+      `<span class="role-badge role-${user.role}">${roleLabel}</span>`;
+
+    // Member since stat
+    if (user.createdAt) {
+      const d = new Date(user.createdAt);
+      document.getElementById('stat-member').textContent =
+        d.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
+    }
+
+    // Details body
+    const phone = user.phone
+      ? `<span>${esc(user.phone)}</span>`
+      : `<span class="muted">Not provided</span>`;
+
+    const memberSince = user.createdAt
+      ? new Date(user.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })
+      : '—';
+
+    document.getElementById('details-body').innerHTML = `
+      <div class="detail-row">
+        <div class="detail-icon">👤</div>
+        <div class="detail-content">
+          <div class="detail-label">Full Name</div>
+          <div class="detail-value">${esc(user.name)}</div>
+        </div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-icon">📧</div>
+        <div class="detail-content">
+          <div class="detail-label">Email Address</div>
+          <div class="detail-value">${esc(user.email)}</div>
+        </div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-icon">📞</div>
+        <div class="detail-content">
+          <div class="detail-label">Phone Number</div>
+          <div class="detail-value ${user.phone ? '' : 'muted'}">${user.phone ? esc(user.phone) : 'Not provided'}</div>
+        </div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-icon">🏷</div>
+        <div class="detail-content">
+          <div class="detail-label">Account Type</div>
+          <div class="detail-value">${user.role === 'ADMIN' ? 'Administrator' : 'Customer'}</div>
+        </div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-icon">📅</div>
+        <div class="detail-content">
+          <div class="detail-label">Member Since</div>
+          <div class="detail-value">${memberSince}</div>
+        </div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-icon">🔒</div>
+        <div class="detail-content">
+          <div class="detail-label">Account ID</div>
+          <div class="detail-value" style="font-family:monospace;font-size:0.85rem;color:var(--text-muted)">#${user.id}</div>
+        </div>
+      </div>
+    `;
+  }
+
+  /* ── Orders ── */
+  let ordersLoaded = false;
+
+  async function loadOrderStats() {
+    try {
+      const orders = await window.api.get('/api/orders');
+      const count = orders.length;
+      const total = orders.reduce((sum, o) => sum + Number(o.total || 0), 0);
+
+      document.getElementById('stat-orders').textContent = count;
+      document.getElementById('stat-spent').textContent =
+        count > 0 ? '₹' + total.toLocaleString('en-IN', { maximumFractionDigits: 0 }) : '₹0';
+    } catch {
+      document.getElementById('stat-orders').textContent = '—';
+      document.getElementById('stat-spent').textContent = '—';
+    }
+  }
+
+  async function loadRecentOrders() {
+    ordersLoaded = true;
+    const container = document.getElementById('recent-orders-body');
+    try {
+      const orders = await window.api.get('/api/orders');
+      if (!orders || orders.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state" style="padding:2.5rem 1.5rem">
+            <div class="empty-icon">📦</div>
+            <h3>No orders yet</h3>
+            <p>Start shopping to see your orders here.</p>
+            <a href="/catalog.html" class="btn btn-primary btn-sm mt-2">Browse Products</a>
+          </div>`;
+        return;
+      }
+
+      const recent = orders.slice(0, 5);
+      container.innerHTML = `
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Order #</th>
+                <th>Date</th>
+                <th>Total</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${recent.map(o => `
+                <tr>
+                  <td><strong style="font-family:monospace;font-size:0.85rem">${esc(o.orderNumber)}</strong></td>
+                  <td style="color:var(--text-muted);font-size:0.875rem">${new Date(o.createdAt).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'})}</td>
+                  <td style="font-weight:700;color:var(--primary)">₹${Number(o.total).toLocaleString('en-IN', {minimumFractionDigits:2})}</td>
+                  <td><span class="badge status-${esc(o.status)}">${esc(o.status)}</span></td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+        ${orders.length > 5 ? `
+          <div style="padding:1rem 1.5rem;border-top:1px solid var(--border);text-align:center">
+            <a href="/orders.html" class="btn btn-outline btn-sm">View All ${orders.length} Orders →</a>
+          </div>` : ''}
+      `;
+    } catch (e) {
+      container.innerHTML = `<p class="text-danger" style="padding:1.5rem">Failed to load orders: ${esc(e.message)}</p>`;
+    }
+  }
+
+  /* ── Helpers ── */
+  function esc(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  /* ── Boot ── */
+  checkAuth().then(user => {
+    if (!user) return;
+    renderProfile(user);
+    loadOrderStats();
+  });
+</script>
+</body>
+</html>

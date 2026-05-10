@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Catalog — TAMILARASU ENTERPRISES</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .page-banner {
+      background: var(--primary-gradient);
+      color: white;
+      padding: 2rem 1.5rem;
+    }
+    .page-banner h1 { color: white; font-size: 1.75rem; margin: 0 0 0.25rem; }
+    .page-banner p { color: rgba(255,255,255,0.75); margin: 0; font-size: 0.9rem; }
+    .catalog-layout { display: grid; grid-template-columns: 260px 1fr; gap: 1.75rem; align-items: start; }
+    .sidebar {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      padding: 1.5rem;
+      position: sticky;
+      top: 80px;
+      border: 1px solid rgba(226,232,240,0.8);
+    }
+    .sidebar-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .filter-group { margin-bottom: 1.5rem; }
+    .filter-option {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.4rem 0.5rem;
+      cursor: pointer;
+      font-size: 0.875rem;
+      min-height: 36px;
+      border-radius: 8px;
+      transition: background 0.15s;
+    }
+    .filter-option:hover { background: var(--bg); }
+    .filter-option input[type="radio"] { accent-color: var(--primary); width: 15px; height: 15px; }
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      background: white;
+      padding: 0.875rem 1.25rem;
+      border-radius: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      border: 1px solid rgba(226,232,240,0.8);
+    }
+    .toolbar-left { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .result-count { font-size: 0.875rem; color: var(--text-muted); font-weight: 500; }
+    .sort-select { padding: 0.45rem 2rem 0.45rem 0.875rem; border: 1.5px solid var(--border); border-radius: 8px; font-size: 0.875rem; background: white; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.6rem center; }
+    .sort-select:focus { outline: none; border-color: var(--primary-light); }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="/index.html" class="navbar-brand">🏢 <span>TAMILARASU ENTERPRISES</span></a>
+    <div class="navbar-search">
+      <input type="text" id="search-input" placeholder="Search products..." autocomplete="off">
+      <button class="search-btn" onclick="applySearch()">🔍</button>
+      <ul class="search-suggestions hidden" id="search-suggestions"></ul>
+    </div>
+    <div class="nav-menu" id="nav-menu">
+      <a href="/catalog.html" style="color:var(--accent-light,#fed7aa)">Catalog</a>
+      <a href="/cart.html" style="position:relative">🛒 Cart <span class="cart-badge" id="cart-badge" style="display:none">0</span></a>
+      <span id="auth-links">
+        <a href="/login.html">Login</a>
+        <a href="/register.html" class="btn btn-accent btn-sm">Register</a>
+      </span>
+    </div>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="page-banner">
+  <div class="container">
+    <h1>Product Catalog</h1>
+    <p>Browse our complete range of quality import &amp; export products</p>
+  </div>
+</div>
+
+<div class="container mt-3 mb-4">
+  <div class="catalog-layout">
+    <aside class="sidebar">
+      <div class="filter-group">
+        <div class="sidebar-title">Categories</div>
+        <div id="category-filters">
+          <label class="filter-option">
+            <input type="radio" name="category" value="" checked onchange="applyFilters()"> All Categories
+          </label>
+        </div>
+      </div>
+      <div class="filter-group">
+        <div class="sidebar-title">Sort By</div>
+        <select class="form-control" id="sort-select" onchange="applyFilters()">
+          <option value="">Newest First</option>
+          <option value="price_asc">Price: Low to High</option>
+          <option value="price_desc">Price: High to Low</option>
+          <option value="name_asc">Name: A–Z</option>
+          <option value="name_desc">Name: Z–A</option>
+        </select>
+      </div>
+      <button class="btn btn-secondary w-full btn-sm" onclick="clearFilters()" style="border-radius:8px">
+        ✕ Clear Filters
+      </button>
+    </aside>
+
+    <main>
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <span id="page-title" style="font-weight:600;font-size:0.95rem">All Products</span>
+          <span class="result-count" id="result-count"></span>
+        </div>
+      </div>
+
+      <div class="product-grid" id="product-grid">
+        <div class="spinner" style="grid-column:1/-1"></div>
+      </div>
+
+      <div id="empty-state" class="empty-state hidden">
+        <div class="empty-icon">🔍</div>
+        <h3>No products found</h3>
+        <p>Try adjusting your search or filters.</p>
+        <a href="/catalog.html" class="btn btn-primary mt-2">Clear Search</a>
+      </div>
+
+      <div class="pagination" id="pagination"></div>
+    </main>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-col"><h4>🏢 TAMILARASU ENTERPRISES</h4><p style="font-size:0.85rem;opacity:0.7">Your trusted import &amp; export partner.</p></div>
+    <div class="footer-col"><h4>Quick Links</h4><a href="/index.html">Home</a><a href="/catalog.html">Products</a><a href="/cart.html">Cart</a></div>
+    <div class="footer-col"><h4>Account</h4><a href="/login.html">Login</a><a href="/register.html">Register</a></div>
+  </div>
+  <div class="footer-bottom"><p>&copy; 2025 TAMILARASU ENTERPRISES. All rights reserved.</p></div>
+</footer>
+
+<div id="toast-container" class="toast-container"></div>
+<script src="/js/api.js"></script>
+<script src="/js/cart.js"></script>
+<script>
+  let currentPage = 0, totalPages = 0, currentQ = '', currentCategory = '', currentSort = '';
+
+  document.getElementById('hamburger').addEventListener('click', () => {
+    document.getElementById('nav-menu').classList.toggle('open');
+  });
+
+  const params = new URLSearchParams(window.location.search);
+  currentQ = params.get('q') || '';
+  currentCategory = params.get('categoryId') || '';
+  currentSort = params.get('sort') || '';
+  currentPage = parseInt(params.get('page') || '0');
+
+  if (currentQ) {
+    document.getElementById('search-input').value = currentQ;
+    document.getElementById('page-title').textContent = `Results for "${currentQ}"`;
+  }
+  if (currentSort) document.getElementById('sort-select').value = currentSort;
+
+  const searchInput = document.getElementById('search-input');
+  const suggestionsEl = document.getElementById('search-suggestions');
+  let searchTimer;
+
+  searchInput.addEventListener('input', () => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(async () => {
+      const q = searchInput.value.trim();
+      if (q.length < 2) { suggestionsEl.classList.add('hidden'); return; }
+      try {
+        const data = await window.api.get(`/api/products/search?q=${encodeURIComponent(q)}`);
+        const s = data.suggestions || [];
+        if (!s.length) { suggestionsEl.classList.add('hidden'); return; }
+        suggestionsEl.innerHTML = s.map(x => `<li onclick="selectSuggestion('${x.replace(/'/g,"\\'")}')">🔍 ${x}</li>`).join('');
+        suggestionsEl.classList.remove('hidden');
+      } catch { suggestionsEl.classList.add('hidden'); }
+    }, 250);
+  });
+
+  function selectSuggestion(text) { searchInput.value = text; suggestionsEl.classList.add('hidden'); applySearch(); }
+  function applySearch() { currentQ = searchInput.value.trim(); currentPage = 0; loadProducts(); }
+  searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') applySearch(); });
+  document.addEventListener('click', e => { if (!e.target.closest('.navbar-search')) suggestionsEl.classList.add('hidden'); });
+
+  function applyFilters() {
+    const catEl = document.querySelector('input[name="category"]:checked');
+    currentCategory = catEl ? catEl.value : '';
+    currentSort = document.getElementById('sort-select').value;
+    currentPage = 0;
+    loadProducts();
+  }
+
+  function clearFilters() {
+    currentQ = ''; currentCategory = ''; currentSort = ''; currentPage = 0;
+    searchInput.value = '';
+    document.getElementById('sort-select').value = '';
+    const allCat = document.querySelector('input[name="category"][value=""]');
+    if (allCat) allCat.checked = true;
+    document.getElementById('page-title').textContent = 'All Products';
+    loadProducts();
+  }
+
+  async function loadProducts() {
+    const grid = document.getElementById('product-grid');
+    const emptyState = document.getElementById('empty-state');
+    grid.innerHTML = '<div class="spinner" style="grid-column:1/-1"></div>';
+    emptyState.classList.add('hidden');
+
+    let url = `/api/products?page=${currentPage}`;
+    if (currentQ) url += `&q=${encodeURIComponent(currentQ)}`;
+    if (currentCategory) url += `&categoryId=${currentCategory}`;
+    if (currentSort) url += `&sort=${currentSort}`;
+
+    try {
+      const data = await window.api.get(url);
+      const products = data.content || [];
+      totalPages = data.totalPages || 0;
+      const total = data.totalElements || 0;
+      document.getElementById('result-count').textContent = `${total} product${total !== 1 ? 's' : ''}`;
+
+      if (!products.length) {
+        grid.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        document.getElementById('pagination').innerHTML = '';
+        return;
+      }
+      grid.innerHTML = products.map(p => renderProductCard(p)).join('');
+      renderPagination();
+    } catch (e) {
+      grid.innerHTML = `<p class="text-danger" style="grid-column:1/-1;padding:2rem;text-align:center">Failed to load products.</p>`;
+    }
+  }
+
+  function renderProductCard(p) {
+    const img = p.imageUrl
+      ? `<div class="product-card-img-wrap"><img src="${p.imageUrl}" alt="${esc(p.name)}" class="product-card-img" loading="lazy"></div>`
+      : `<div class="product-card-img-placeholder">📦</div>`;
+    const addBtn = p.outOfStock
+      ? `<button class="btn btn-secondary btn-sm w-full" disabled>Out of Stock</button>`
+      : `<button class="btn btn-accent btn-sm w-full" onclick="addToCart(${p.id},this)">🛒 Add to Cart</button>`;
+    const badge = p.outOfStock ? `<span class="badge badge-danger" style="margin-bottom:0.5rem">Out of Stock</span>` : '';
+    return `
+      <div class="product-card">
+        <a href="/product.html?id=${p.id}">${img}</a>
+        <div class="product-card-body">
+          <div class="product-card-category">${esc(p.categoryName || 'General')}</div>
+          <a href="/product.html?id=${p.id}" class="product-card-name" style="color:var(--text)">${esc(p.name)}</a>
+          <div class="product-card-price">₹${Number(p.price).toLocaleString('en-IN',{minimumFractionDigits:2})}</div>
+          ${badge}
+          <div class="product-card-footer mt-2">${addBtn}</div>
+        </div>
+      </div>`;
+  }
+
+  function renderPagination() {
+    const el = document.getElementById('pagination');
+    if (totalPages <= 1) { el.innerHTML = ''; return; }
+    let html = `<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===0?'disabled':''}>‹</button>`;
+    for (let i = 0; i < totalPages; i++) {
+      if (i === 0 || i === totalPages-1 || Math.abs(i-currentPage) <= 2)
+        html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i+1}</button>`;
+      else if (Math.abs(i-currentPage) === 3)
+        html += `<span class="page-btn" style="cursor:default">…</span>`;
+    }
+    html += `<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===totalPages-1?'disabled':''}>›</button>`;
+    el.innerHTML = html;
+  }
+
+  function goPage(p) { if (p < 0 || p >= totalPages) return; currentPage = p; loadProducts(); window.scrollTo(0,0); }
+
+  async function addToCart(productId, btn) {
+    const orig = btn.textContent; btn.disabled = true; btn.textContent = '✓ Added!';
+    btn.style.background = 'var(--success)';
+    await window.cartApi.addToCart(productId);
+    setTimeout(() => { btn.disabled = false; btn.textContent = orig; btn.style.background = ''; }, 1500);
+  }
+
+  function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  async function checkAuth() {
+    try {
+      const user = await window.api.get('/api/auth/me');
+      document.getElementById('auth-links').innerHTML = `
+        <span style="color:rgba(255,255,255,0.8);font-size:0.85rem;font-weight:500">👋 ${user.name.split(' ')[0]}</span>
+        <a href="/orders.html">Orders</a>
+        <a href="#" onclick="logout(event)">Logout</a>
+        ${user.role === 'ADMIN' ? '<a href="/admin/index.html" class="btn btn-accent btn-sm">Admin</a>' : ''}
+      `;
+    } catch {}
+  }
+
+  async function logout(e) { e.preventDefault(); await fetch('/api/auth/logout',{method:'POST',credentials:'include'}); window.location.reload(); }
+
+  checkAuth();
+  loadProducts();
+</script>
+</body>
+</html>
