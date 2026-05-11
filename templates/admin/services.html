@@ -1,0 +1,75 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Services — Admin{% endblock %}
+{% block page_title %}Services{% endblock %}
+
+{% block topbar_actions %}
+  <a href="/admin/services/new" class="btn btn-primary">
+    <i class="fa-solid fa-plus" aria-hidden="true"></i> Add Service
+  </a>
+{% endblock %}
+
+{% block content %}
+
+<div class="card">
+  <div class="card-header">
+    <h2>All Services ({{ services | length }})</h2>
+  </div>
+
+  {% if services %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Title</th>
+          <th>Icon</th>
+          <th>Highlights</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in services %}
+        <tr>
+          <td style="font-family:monospace;font-size:0.8rem;color:#6b7280;">{{ s.id }}</td>
+          <td style="font-weight:500;">{{ s.title }}</td>
+          <td>
+            <i class="{{ s.icon }}" aria-hidden="true" style="color:#16a34a;font-size:1.1rem;"></i>
+            <span style="font-size:0.8rem;color:#6b7280;margin-left:0.4rem;">{{ s.icon }}</span>
+          </td>
+          <td>
+            {% for h in s.highlights[:3] %}
+              <div style="font-size:0.8rem;color:#374151;">• {{ h }}</div>
+            {% endfor %}
+            {% if s.highlights | length > 3 %}
+              <div style="font-size:0.75rem;color:#9ca3af;">+{{ s.highlights | length - 3 }} more</div>
+            {% endif %}
+          </td>
+          <td>
+            <div style="display:flex;gap:0.4rem;flex-wrap:wrap;">
+              <a href="/admin/services/{{ s.id }}/edit" class="btn btn-warning btn-sm">
+                <i class="fa-solid fa-pen" aria-hidden="true"></i> Edit
+              </a>
+              <form method="POST" action="/admin/services/{{ s.id }}/delete"
+                    onsubmit="return confirm('Delete {{ s.title }}? This cannot be undone.');"
+                    style="display:inline;">
+                <button type="submit" class="btn btn-danger btn-sm">
+                  <i class="fa-solid fa-trash" aria-hidden="true"></i> Delete
+                </button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <i class="fa-solid fa-handshake" aria-hidden="true"></i>
+    <p>No services yet. <a href="/admin/services/new" style="color:#16a34a;">Add one</a>.</p>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

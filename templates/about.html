@@ -1,0 +1,461 @@
+{% extends "base.html" %}
+
+{% block title %}About Us — TAMILARASU ENTERPRISES{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* ── About page layout ──────────────────────────────────────────── */
+
+  /* Hero */
+  .about-hero {
+    background: linear-gradient(135deg, #14532d 0%, #166534 60%, #15803d 100%);
+    color: #ffffff;
+    padding: 4rem 1.25rem 3.5rem;
+    text-align: center;
+  }
+
+  .about-hero h1 {
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.75rem;
+  }
+
+  .about-hero p {
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    color: #bbf7d0;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* Section wrapper */
+  .about-section {
+    padding: 4rem 1.25rem;
+  }
+
+  .about-section:nth-child(even) {
+    background-color: #f9fafb;
+  }
+
+  .section-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #16a34a;
+    margin-bottom: 0.5rem;
+  }
+
+  .section-title {
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    font-weight: 700;
+    color: #14532d;
+    margin-bottom: 1.5rem;
+  }
+
+  .section-divider {
+    width: 48px;
+    height: 4px;
+    background-color: #16a34a;
+    border-radius: 2px;
+    margin-bottom: 2rem;
+  }
+
+  /* Our Story */
+  .story-text {
+    font-size: 1.0625rem;
+    line-height: 1.85;
+    color: #374151;
+    max-width: 780px;
+  }
+
+  .story-founded {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #166534;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Mission & Vision */
+  .mv-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 767px) {
+    .mv-grid { grid-template-columns: 1fr; }
+  }
+
+  .mv-card {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.2s;
+  }
+
+  .mv-card:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.09);
+  }
+
+  .mv-card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .mv-card-icon.mission { background-color: #dcfce7; color: #16a34a; }
+  .mv-card-icon.vision  { background-color: #dbeafe; color: #2563eb; }
+
+  .mv-card h3 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0.75rem;
+  }
+
+  .mv-card p {
+    font-size: 0.9375rem;
+    line-height: 1.75;
+    color: #4b5563;
+  }
+
+  /* Core Values */
+  .values-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.875rem;
+  }
+
+  .value-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #f0fdf4;
+    border: 1.5px solid #86efac;
+    border-radius: 50px;
+    padding: 0.625rem 1.25rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #166534;
+    transition: background-color 0.15s, border-color 0.15s, transform 0.15s;
+  }
+
+  .value-pill:hover {
+    background-color: #dcfce7;
+    border-color: #4ade80;
+    transform: translateY(-2px);
+  }
+
+  .value-pill i {
+    font-size: 0.875rem;
+    color: #16a34a;
+  }
+
+  /* Export Destinations */
+  .destinations-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .destination-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background-color: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    transition: border-color 0.15s, color 0.15s, background-color 0.15s;
+  }
+
+  .destination-tag:hover {
+    border-color: #16a34a;
+    color: #166534;
+    background-color: #f0fdf4;
+  }
+
+  .destination-tag i {
+    font-size: 0.75rem;
+    color: #16a34a;
+  }
+
+  /* Certifications */
+  .cert-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .cert-card {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+
+  .cert-card:hover {
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.09);
+    transform: translateY(-2px);
+  }
+
+  .cert-icon-wrap {
+    flex-shrink: 0;
+    width: 52px;
+    height: 52px;
+    border-radius: 10px;
+    background-color: #f0fdf4;
+    border: 1.5px solid #bbf7d0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.375rem;
+    color: #16a34a;
+  }
+
+  .cert-info h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0.3rem;
+  }
+
+  .cert-info p {
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: #6b7280;
+  }
+
+  .cert-badge {
+    display: inline-block;
+    margin-top: 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    background-color: #dcfce7;
+    color: #166534;
+    border-radius: 4px;
+    padding: 0.2rem 0.5rem;
+  }
+
+  /* CTA strip */
+  .about-cta {
+    background: linear-gradient(135deg, #14532d 0%, #166534 100%);
+    color: #ffffff;
+    padding: 3.5rem 1.25rem;
+    text-align: center;
+  }
+
+  .about-cta h2 {
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+
+  .about-cta p {
+    font-size: 1rem;
+    color: #bbf7d0;
+    margin-bottom: 1.75rem;
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .btn-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #ffffff;
+    color: #166534;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 0.875rem 2rem;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background-color 0.15s, transform 0.15s;
+    min-height: 44px;
+  }
+
+  .btn-cta:hover {
+    background-color: #f0fdf4;
+    transform: translateY(-2px);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ═══════════════════════════════════════════════════════════════
+     HERO
+════════════════════════════════════════════════════════════════ -->
+<section class="about-hero" aria-labelledby="about-hero-heading">
+  <h1 id="about-hero-heading">About TAMILARASU ENTERPRISES</h1>
+  <p>Rooted in Tamil Nadu. Trusted across the globe. Connecting Indian farms to world markets since {{ about.foundedYear }}.</p>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     OUR STORY
+════════════════════════════════════════════════════════════════ -->
+<section class="about-section" aria-labelledby="story-heading">
+  <div class="section-inner">
+    <span class="section-label">Our Journey</span>
+    <h2 class="section-title" id="story-heading">Our Story</h2>
+    <div class="section-divider" aria-hidden="true"></div>
+
+    <div class="story-founded" aria-label="Founded in {{ about.foundedYear }}">
+      <i class="fas fa-seedling" aria-hidden="true"></i>
+      Founded {{ about.foundedYear }}
+    </div>
+
+    <p class="story-text">{{ about.history }}</p>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     MISSION & VISION
+════════════════════════════════════════════════════════════════ -->
+<section class="about-section" aria-labelledby="mv-heading">
+  <div class="section-inner">
+    <span class="section-label">Purpose &amp; Direction</span>
+    <h2 class="section-title" id="mv-heading">Mission &amp; Vision</h2>
+    <div class="section-divider" aria-hidden="true"></div>
+
+    <div class="mv-grid">
+
+      <!-- Mission -->
+      <article class="mv-card" aria-labelledby="mission-heading">
+        <div class="mv-card-icon mission" aria-hidden="true">
+          <i class="fas fa-bullseye"></i>
+        </div>
+        <h3 id="mission-heading">Our Mission</h3>
+        <p>{{ about.mission }}</p>
+      </article>
+
+      <!-- Vision -->
+      <article class="mv-card" aria-labelledby="vision-heading">
+        <div class="mv-card-icon vision" aria-hidden="true">
+          <i class="fas fa-eye"></i>
+        </div>
+        <h3 id="vision-heading">Our Vision</h3>
+        <p>{{ about.vision }}</p>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     CORE VALUES
+════════════════════════════════════════════════════════════════ -->
+<section class="about-section" aria-labelledby="values-heading">
+  <div class="section-inner">
+    <span class="section-label">What We Stand For</span>
+    <h2 class="section-title" id="values-heading">Core Values</h2>
+    <div class="section-divider" aria-hidden="true"></div>
+
+    <ul class="values-grid" aria-label="Core values">
+      {% for value in about['values'] %}
+      <li class="value-pill">
+        <i class="fas fa-check-circle" aria-hidden="true"></i>
+        {{ value }}
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     EXPORT DESTINATIONS
+════════════════════════════════════════════════════════════════ -->
+<section class="about-section" aria-labelledby="destinations-heading">
+  <div class="section-inner">
+    <span class="section-label">Global Footprint</span>
+    <h2 class="section-title" id="destinations-heading">Export Destinations</h2>
+    <div class="section-divider" aria-hidden="true"></div>
+
+    <ul class="destinations-grid" aria-label="Countries we export to">
+      {% for country in about.exportDestinations %}
+      <li class="destination-tag">
+        <i class="fas fa-globe" aria-hidden="true"></i>
+        {{ country }}
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     CERTIFICATIONS
+════════════════════════════════════════════════════════════════ -->
+<section class="about-section" aria-labelledby="certs-heading">
+  <div class="section-inner">
+    <span class="section-label">Quality Assurance</span>
+    <h2 class="section-title" id="certs-heading">Certifications</h2>
+    <div class="section-divider" aria-hidden="true"></div>
+
+    <div class="cert-grid">
+      {% for cert in about.certifications %}
+      <article class="cert-card" aria-labelledby="cert-{{ loop.index }}-name">
+        <div class="cert-icon-wrap" aria-hidden="true">
+          <i class="{{ cert.icon }}"></i>
+        </div>
+        <div class="cert-info">
+          <h4 id="cert-{{ loop.index }}-name">{{ cert.name }}</h4>
+          <p>{{ cert.description }}</p>
+          <span class="cert-badge">Certified</span>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     CTA STRIP
+════════════════════════════════════════════════════════════════ -->
+<section class="about-cta" aria-labelledby="cta-heading">
+  <h2 id="cta-heading">Ready to Trade with Us?</h2>
+  <p>Get in touch with our team to discuss your import or export requirements.</p>
+  <a href="/contact" class="btn-cta">
+    <i class="fas fa-envelope" aria-hidden="true"></i>
+    Contact Us
+  </a>
+</section>
+
+{% endblock %}

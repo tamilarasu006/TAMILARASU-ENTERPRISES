@@ -1,0 +1,39 @@
+{
+  "companyName": "TAMILARASU ENTERPRISES",
+  "tagline": "Fresh from Farm to World",
+  "logoUrl": "/static/images/logo.webp",
+  "contactEmail": "info@tamilarasuenterprises.com",
+  "contactPhone": "+91 6383772487",
+  "whatsappNumber": "+916383772487",
+  "address": "No.02A,Muthurama pillai street,Uthiramerur,603406, Tamil Nadu, India",
+  "socialLinks": [
+    {
+      "platform": "linkedin",
+      "url": "https://www.linkedin.com/company/tamilarasu-enterprises"
+    },
+    {
+      "platform": "instagram",
+      "url": "https://www.instagram.com/tamilarasuenterprises"
+    },
+    {
+      "platform": "whatsapp",
+      "url": "https://wa.me/916383772487"
+    },
+    {
+      "platform": "facebook",
+      "url": "https://www.facebook.com/tamilarasuenterprises"
+    }
+  ],
+  "featuredProductIds": [
+    "alphonso-mango",
+    "turmeric-powder",
+    "basmati-rice",
+    "black-pepper",
+    "banana-cavendish"
+  ],
+  "heroImages": [
+    "/static/images/hero/fresh-produce-1.webp",
+    "/static/images/hero/fresh-produce-2.webp",
+    "/static/images/hero/fresh-produce-3.webp"
+  ]
+}

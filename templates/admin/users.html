@@ -1,0 +1,102 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Users — Admin{% endblock %}
+{% block page_title %}Users{% endblock %}
+
+{% block content %}
+
+<div class="card">
+  <div class="card-header">
+    <h2>All Users ({{ users | length }})</h2>
+  </div>
+
+  {% if users %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th>Registered</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td style="font-weight:500;">{{ u.name }}</td>
+          <td style="font-size:0.875rem;">{{ u.email }}</td>
+          <td>
+            {% if u.role == 'admin' %}
+              <span class="badge badge-blue">Admin</span>
+            {% else %}
+              <span class="badge badge-gray">User</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if u.status == 'approved' %}
+              <span class="badge badge-green">Approved</span>
+            {% elif u.status == 'pending' %}
+              <span class="badge badge-amber">Pending</span>
+            {% else %}
+              <span class="badge badge-red">Rejected</span>
+            {% endif %}
+          </td>
+          <td style="font-size:0.8125rem;color:#6b7280;">
+            {{ u.created_at[:10] if u.created_at else '—' }}
+          </td>
+          <td>
+            {% if u.id != session.get('user_id') %}
+            <div style="display:flex;gap:0.4rem;flex-wrap:wrap;">
+              {% if u.status == 'pending' %}
+                <form method="POST" action="/admin/users/{{ u.id }}/approve" style="display:inline;">
+                  <button type="submit" class="btn btn-primary btn-sm">
+                    <i class="fa-solid fa-check" aria-hidden="true"></i> Approve
+                  </button>
+                </form>
+                <form method="POST" action="/admin/users/{{ u.id }}/reject" style="display:inline;">
+                  <button type="submit" class="btn btn-danger btn-sm">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i> Reject
+                  </button>
+                </form>
+              {% elif u.status == 'approved' %}
+                <form method="POST" action="/admin/users/{{ u.id }}/reject" style="display:inline;">
+                  <button type="submit" class="btn btn-warning btn-sm">
+                    <i class="fa-solid fa-ban" aria-hidden="true"></i> Suspend
+                  </button>
+                </form>
+              {% elif u.status == 'rejected' %}
+                <form method="POST" action="/admin/users/{{ u.id }}/approve" style="display:inline;">
+                  <button type="submit" class="btn btn-primary btn-sm">
+                    <i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Restore
+                  </button>
+                </form>
+              {% endif %}
+              <form method="POST" action="/admin/users/{{ u.id }}/delete"
+                    onsubmit="return confirm('Delete user {{ u.name }}? This cannot be undone.');"
+                    style="display:inline;">
+                <button type="submit" class="btn btn-danger btn-sm">
+                  <i class="fa-solid fa-trash" aria-hidden="true"></i>
+                </button>
+              </form>
+            </div>
+            {% else %}
+              <span style="font-size:0.8125rem;color:#9ca3af;">You</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <i class="fa-solid fa-users" aria-hidden="true"></i>
+    <p>No users found.</p>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

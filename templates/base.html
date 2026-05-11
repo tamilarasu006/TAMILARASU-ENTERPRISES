@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="TAMILARASU ENTERPRISES — Fresh from Farm to World. Premium fresh produce import and export." />
+  <title>{% block title %}TAMILARASU ENTERPRISES{% endblock %}</title>
+
+  <!-- Google Fonts: Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Main stylesheet (created in task 8.1) -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
+
+  <!-- Progressive enhancement: load no-js styles when JavaScript is disabled (Req 11.5) -->
+  <noscript>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/no-js.css') }}" />
+  </noscript>
+
+  <style>
+    /* ── CSS Reset & Base ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      color: #1a1a1a;
+      background-color: #ffffff;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    img { max-width: 100%; height: auto; display: block; }
+
+    a { color: inherit; text-decoration: none; }
+
+    ul { list-style: none; }
+
+    /* ── Site Header ──────────────────────────────────────────────── */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background-color: #ffffff;
+      border-bottom: 1px solid #e5e7eb;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.25rem;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Logo + company name */
+    .site-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+
+    .site-logo img {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+      border-radius: 4px;
+    }
+
+    .site-logo .company-name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #166534;   /* deep green — agri brand colour */
+      letter-spacing: 0.02em;
+      line-height: 1.2;
+    }
+
+    /* Desktop navigation */
+    .site-nav {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .site-nav a {
+      padding: 0.5rem 0.875rem;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: #374151;
+      border-radius: 6px;
+      transition: color 0.15s, background-color 0.15s;
+      white-space: nowrap;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .site-nav a:hover {
+      color: #166534;
+      background-color: #f0fdf4;
+    }
+
+    .site-nav a.active {
+      color: #166534;
+      font-weight: 600;
+      border-bottom: 2px solid #16a34a;
+      border-radius: 0;
+    }
+
+    /* Hamburger button — hidden on desktop */
+    .hamburger-btn {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      width: 44px;
+      height: 44px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 6px;
+      transition: background-color 0.15s;
+    }
+
+    .hamburger-btn:hover { background-color: #f3f4f6; }
+
+    .hamburger-btn span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background-color: #374151;
+      border-radius: 2px;
+      transition: transform 0.25s, opacity 0.25s;
+    }
+
+    /* Animated X when menu is open */
+    .hamburger-btn.is-open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger-btn.is-open span:nth-child(2) { opacity: 0; }
+    .hamburger-btn.is-open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* ── Mobile navigation (< 768px) ─────────────────────────────── */
+    @media (max-width: 767px) {
+      .hamburger-btn { display: flex; }
+
+      .site-nav {
+        display: none;
+        position: absolute;
+        top: 64px;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        background-color: #ffffff;
+        border-top: 1px solid #e5e7eb;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        padding: 0.5rem 0;
+      }
+
+      .site-nav.is-open { display: flex; }
+
+      .site-nav a {
+        padding: 0.875rem 1.5rem;
+        border-radius: 0;
+        font-size: 1rem;
+        border-bottom: 1px solid #f3f4f6;
+        min-height: 44px;
+      }
+
+      .site-nav a.active {
+        border-bottom: 1px solid #f3f4f6;
+        border-left: 3px solid #16a34a;
+        background-color: #f0fdf4;
+      }
+
+      .site-nav a:last-child { border-bottom: none; }
+    }
+
+    /* ── Main content area ────────────────────────────────────────── */
+    .site-main { flex: 1; }
+
+    /* ── Site Footer ──────────────────────────────────────────────── */
+    .site-footer {
+      background-color: #14532d;
+      color: #d1fae5;
+      padding: 3rem 1.25rem 1.5rem;
+      margin-top: auto;
+    }
+
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 2rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .footer-col h3 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #86efac;
+      margin-bottom: 1rem;
+    }
+
+    /* Contact column */
+    .footer-contact p {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      margin-bottom: 0.625rem;
+      color: #d1fae5;
+    }
+
+    .footer-contact p i {
+      margin-top: 0.2rem;
+      color: #4ade80;
+      flex-shrink: 0;
+      width: 16px;
+      text-align: center;
+    }
+
+    .footer-contact a {
+      color: #d1fae5;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      transition: color 0.15s;
+    }
+
+    .footer-contact a:hover { color: #ffffff; }
+
+    /* Social icons */
+    .footer-social { margin-top: 1rem; }
+
+    .footer-social h3 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #86efac;
+      margin-bottom: 0.75rem;
+    }
+
+    .social-icons {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .social-icons a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.1);
+      color: #d1fae5;
+      font-size: 1.125rem;
+      transition: background-color 0.15s, color 0.15s, transform 0.15s;
+    }
+
+    .social-icons a:hover {
+      background-color: #16a34a;
+      color: #ffffff;
+      transform: translateY(-2px);
+    }
+
+    /* Quick links column */
+    .footer-links ul { display: flex; flex-direction: column; gap: 0.5rem; }
+
+    .footer-links a {
+      font-size: 0.9rem;
+      color: #d1fae5;
+      transition: color 0.15s, padding-left 0.15s;
+      display: inline-block;
+      min-height: 44px;
+      line-height: 44px;
+    }
+
+    .footer-links a:hover {
+      color: #ffffff;
+      padding-left: 4px;
+    }
+
+    /* Copyright bar */
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      padding-top: 1.25rem;
+      text-align: center;
+      font-size: 0.8125rem;
+      color: #86efac;
+    }
+  </style>
+
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+  <!-- Progressive enhancement notice — only shown when JS is disabled (Req 11.5) -->
+  <noscript>
+    <div class="no-js-notice" role="status">
+      This site works without JavaScript. Some interactive features (live search, mobile menu) require JavaScript to be enabled.
+    </div>
+  </noscript>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       HEADER / NAVIGATION
+  ════════════════════════════════════════════════════════════════ -->
+  <header class="site-header" role="banner">
+    <div class="header-inner">
+
+      <!-- Logo + company name -->
+      <a href="/" class="site-logo" aria-label="TAMILARASU ENTERPRISES — Home">
+        <img src="{{ url_for('static', filename='images/logo.webp') }}"
+             alt="TAMILARASU ENTERPRISES logo"
+             width="40" height="40" />
+        <span class="company-name">TAMILARASU ENTERPRISES</span>
+      </a>
+
+      <!-- Hamburger button (mobile only) -->
+      <button class="hamburger-btn"
+              id="hamburger-btn"
+              aria-controls="site-nav"
+              aria-expanded="false"
+              aria-label="Toggle navigation menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <!-- Navigation links -->
+      <nav class="site-nav" id="site-nav" role="navigation" aria-label="Main navigation">
+        <a href="/"
+           {% if active_page == 'home' %}class="active" aria-current="page"{% endif %}>
+          Home
+        </a>
+        <a href="/products"
+           {% if active_page == 'products' %}class="active" aria-current="page"{% endif %}>
+          Products
+        </a>
+        <a href="/services"
+           {% if active_page == 'services' %}class="active" aria-current="page"{% endif %}>
+          Services
+        </a>
+        <a href="/about"
+           {% if active_page == 'about' %}class="active" aria-current="page"{% endif %}>
+          About
+        </a>
+        <a href="/contact"
+           {% if active_page == 'contact' %}class="active" aria-current="page"{% endif %}>
+          Contact
+        </a>
+        {% if session.get('user_id') %}
+          {% if session.get('user_role') == 'admin' %}
+          <a href="/admin" style="color:#166534;font-weight:600;">
+            <i class="fa-solid fa-gauge-high" aria-hidden="true"></i>
+            Admin
+          </a>
+          {% endif %}
+          <a href="/logout" style="color:#dc2626;">
+            <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
+            Logout
+          </a>
+        {% else %}
+          <a href="/login"
+             {% if active_page == 'login' %}class="active" aria-current="page"{% endif %}>
+            Login
+          </a>
+          <a href="/register"
+             {% if active_page == 'register' %}class="active" aria-current="page"{% endif %}
+             style="background:#16a34a; color:#fff; border-radius:6px; padding:0.5rem 0.875rem;">
+            Register
+          </a>
+        {% endif %}
+      </nav>
+
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       MAIN CONTENT
+  ════════════════════════════════════════════════════════════════ -->
+  <main class="site-main" id="main-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       FOOTER
+  ════════════════════════════════════════════════════════════════ -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="footer-inner">
+      <div class="footer-grid">
+
+        <!-- Column 1: Contact information -->
+        <div class="footer-col footer-contact">
+          <h3>Contact Us</h3>
+          <p>
+            <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+            <span>No.02A, Muthurama pillai street, Uthiramerur, 603406, Tamil Nadu, India</span>
+          </p>
+          <p>
+            <i class="fa-solid fa-phone" aria-hidden="true"></i>
+            <a href="tel:+916383772487" aria-label="Call us at +91 6383772487">+91 6383772487</a>
+          </p>
+          <p>
+            <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+            <a href="mailto:info@tamilarasuenterprises.com"
+               aria-label="Email us at info@tamilarasuenterprises.com">
+              info@tamilarasuenterprises.com
+            </a>
+          </p>
+
+          <!-- Social media icons -->
+          <div class="footer-social">
+            <h3>Follow Us</h3>
+            <div class="social-icons">
+              <a href="https://www.linkedin.com/company/tamilarasu-enterprises"
+                 target="_blank" rel="noopener noreferrer"
+                 aria-label="TAMILARASU ENTERPRISES on LinkedIn">
+                <i class="fa-brands fa-linkedin-in" aria-hidden="true"></i>
+              </a>
+              <a href="https://www.instagram.com/tamilarasuenterprises"
+                 target="_blank" rel="noopener noreferrer"
+                 aria-label="TAMILARASU ENTERPRISES on Instagram">
+                <i class="fa-brands fa-instagram" aria-hidden="true"></i>
+              </a>
+              <a href="https://wa.me/916383772487"
+                 target="_blank" rel="noopener noreferrer"
+                 aria-label="Chat with TAMILARASU ENTERPRISES on WhatsApp">
+                <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
+              </a>
+              <a href="https://www.facebook.com/tamilarasuenterprises"
+                 target="_blank" rel="noopener noreferrer"
+                 aria-label="TAMILARASU ENTERPRISES on Facebook">
+                <i class="fa-brands fa-facebook-f" aria-hidden="true"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Column 2: Quick links -->
+        <div class="footer-col footer-links">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/products">Products</a></li>
+            <li><a href="/services">Services</a></li>
+            <li><a href="/about">About</a></li>
+            <li><a href="/contact">Contact</a></li>
+          </ul>
+        </div>
+
+        <!-- Column 3: About blurb -->
+        <div class="footer-col">
+          <h3>About Us</h3>
+          <p style="font-size:0.9rem; line-height:1.7; color:#d1fae5;">
+            TAMILARASU ENTERPRISES is a trusted fresh produce import and export company
+            based in Tamil Nadu, India. We connect farms to global markets with quality,
+            reliability, and care.
+          </p>
+        </div>
+
+      </div>
+
+      <!-- Copyright bar -->
+      <div class="footer-bottom">
+        <p>&copy; {{ current_year }} TAMILARASU ENTERPRISES. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       VANILLA JS — Hamburger menu toggle
+  ════════════════════════════════════════════════════════════════ -->
+  <script>
+    (function () {
+      'use strict';
+
+      var btn = document.getElementById('hamburger-btn');
+      var nav = document.getElementById('site-nav');
+
+      if (!btn || !nav) return;
+
+      function openMenu() {
+        nav.classList.add('is-open');
+        btn.classList.add('is-open');
+        btn.setAttribute('aria-expanded', 'true');
+      }
+
+      function closeMenu() {
+        nav.classList.remove('is-open');
+        btn.classList.remove('is-open');
+        btn.setAttribute('aria-expanded', 'false');
+      }
+
+      function toggleMenu() {
+        if (nav.classList.contains('is-open')) {
+          closeMenu();
+        } else {
+          openMenu();
+        }
+      }
+
+      // Toggle on hamburger click
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        toggleMenu();
+      });
+
+      // Close when clicking outside the header (Req 1.6)
+      document.addEventListener('click', function (e) {
+        if (nav.classList.contains('is-open') && !nav.contains(e.target) && e.target !== btn) {
+          closeMenu();
+        }
+      });
+
+      // Close when a nav link is tapped (navigating away on mobile)
+      nav.querySelectorAll('a').forEach(function (link) {
+        link.addEventListener('click', function () {
+          closeMenu();
+        });
+      });
+
+      // Close menu if viewport grows past mobile breakpoint
+      var mq = window.matchMedia('(min-width: 768px)');
+      function handleBreakpoint(e) {
+        if (e.matches) closeMenu();
+      }
+      if (mq.addEventListener) {
+        mq.addEventListener('change', handleBreakpoint);
+      } else if (mq.addListener) {
+        // Safari < 14 fallback
+        mq.addListener(handleBreakpoint);
+      }
+    })();
+  </script>
+
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

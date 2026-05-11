@@ -1,0 +1,127 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Dashboard — Admin{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon green"><i class="fa-solid fa-box-open" aria-hidden="true"></i></div>
+    <div class="stat-info">
+      <div class="stat-value">{{ total_products }}</div>
+      <div class="stat-label">Total Products</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon blue"><i class="fa-solid fa-circle-check" aria-hidden="true"></i></div>
+    <div class="stat-info">
+      <div class="stat-value">{{ available_products }}</div>
+      <div class="stat-label">Available</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon amber"><i class="fa-solid fa-handshake" aria-hidden="true"></i></div>
+    <div class="stat-info">
+      <div class="stat-value">{{ total_services }}</div>
+      <div class="stat-label">Services</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon red"><i class="fa-solid fa-users" aria-hidden="true"></i></div>
+    <div class="stat-info">
+      <div class="stat-value">{{ pending_users }}</div>
+      <div class="stat-label">Pending Users</div>
+    </div>
+  </div>
+</div>
+
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; flex-wrap:wrap;">
+
+  <!-- Recent products -->
+  <div class="card">
+    <div class="card-header">
+      <h2><i class="fa-solid fa-box-open" aria-hidden="true"></i> Products</h2>
+      <a href="/admin/products/new" class="btn btn-primary btn-sm">
+        <i class="fa-solid fa-plus" aria-hidden="true"></i> Add Product
+      </a>
+    </div>
+    {% if products %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in products[:6] %}
+          <tr>
+            <td><a href="/admin/products/{{ p.id }}/edit" style="color:#166534;font-weight:500;">{{ p.name }}</a></td>
+            <td><span class="badge badge-blue">{{ p.category }}</span></td>
+            <td>
+              {% if p.isAvailable %}
+                <span class="badge badge-green">Available</span>
+              {% else %}
+                <span class="badge badge-red">Unavailable</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div style="margin-top:1rem;">
+      <a href="/admin/products" class="btn btn-secondary btn-sm">View all products</a>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <i class="fa-solid fa-box-open" aria-hidden="true"></i>
+      <p>No products yet. <a href="/admin/products/new" style="color:#16a34a;">Add one</a>.</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Services -->
+  <div class="card">
+    <div class="card-header">
+      <h2><i class="fa-solid fa-handshake" aria-hidden="true"></i> Services</h2>
+      <a href="/admin/services/new" class="btn btn-primary btn-sm">
+        <i class="fa-solid fa-plus" aria-hidden="true"></i> Add Service
+      </a>
+    </div>
+    {% if services %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Highlights</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in services %}
+          <tr>
+            <td><a href="/admin/services/{{ s.id }}/edit" style="color:#166534;font-weight:500;">{{ s.title }}</a></td>
+            <td><span class="badge badge-gray">{{ s.highlights | length }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div style="margin-top:1rem;">
+      <a href="/admin/services" class="btn btn-secondary btn-sm">View all services</a>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <i class="fa-solid fa-handshake" aria-hidden="true"></i>
+      <p>No services yet. <a href="/admin/services/new" style="color:#16a34a;">Add one</a>.</p>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+
+{% endblock %}

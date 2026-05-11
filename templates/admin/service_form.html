@@ -1,0 +1,119 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}{{ 'Edit' if service else 'Add' }} Service — Admin{% endblock %}
+{% block page_title %}{{ 'Edit' if service else 'Add New' }} Service{% endblock %}
+
+{% block topbar_actions %}
+  <a href="/admin/services" class="btn btn-secondary">
+    <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to Services
+  </a>
+{% endblock %}
+
+{% block content %}
+
+<div class="card">
+  <form method="POST"
+        action="{{ '/admin/services/' + service.id + '/edit' if service else '/admin/services/new' }}"
+        novalidate>
+
+    <div class="form-grid">
+
+      <!-- Title -->
+      <div class="form-group full-width">
+        <label for="title">Service Title <span style="color:#dc2626;">*</span></label>
+        <input type="text" id="title" name="title"
+               value="{{ form_data.get('title', service.title if service else '') }}"
+               placeholder="e.g. Export Services"
+               class="{{ 'is-error' if errors.get('title') }}" />
+        {% if errors.get('title') %}
+          <span class="field-error"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> {{ errors.title }}</span>
+        {% endif %}
+      </div>
+
+      <!-- Icon -->
+      <div class="form-group">
+        <label for="icon">Font Awesome Icon Class <span style="color:#dc2626;">*</span></label>
+        <input type="text" id="icon" name="icon"
+               value="{{ form_data.get('icon', service.icon if service else '') }}"
+               placeholder="e.g. fas fa-ship"
+               class="{{ 'is-error' if errors.get('icon') }}" />
+        <span class="field-hint">
+          Use any <a href="https://fontawesome.com/icons" target="_blank" rel="noopener" style="color:#16a34a;">Font Awesome 6</a> class.
+          Examples: <code>fas fa-ship</code>, <code>fas fa-truck</code>, <code>fas fa-certificate</code>
+        </span>
+        {% if errors.get('icon') %}
+          <span class="field-error"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> {{ errors.icon }}</span>
+        {% endif %}
+      </div>
+
+      <!-- Icon preview -->
+      <div class="form-group" style="justify-content:center;align-items:center;">
+        <label>Icon Preview</label>
+        <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:#f0fdf4;border-radius:8px;border:1.5px solid #bbf7d0;">
+          <i id="icon-preview" class="{{ form_data.get('icon', service.icon if service else 'fas fa-star') }}"
+             style="font-size:2rem;color:#16a34a;" aria-hidden="true"></i>
+          <span id="icon-preview-label" style="font-size:0.875rem;color:#6b7280;">
+            {{ form_data.get('icon', service.icon if service else 'fas fa-star') }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="form-group full-width">
+        <label for="description">Description <span style="color:#dc2626;">*</span></label>
+        <textarea id="description" name="description" rows="3"
+                  placeholder="Describe what this service offers…"
+                  class="{{ 'is-error' if errors.get('description') }}">{{ form_data.get('description', service.description if service else '') }}</textarea>
+        <span class="field-hint">Max 500 characters.</span>
+        {% if errors.get('description') %}
+          <span class="field-error"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> {{ errors.description }}</span>
+        {% endif %}
+      </div>
+
+      <!-- Highlights -->
+      <div class="form-group full-width">
+        <label for="highlights">Highlights</label>
+        <textarea id="highlights" name="highlights" rows="6"
+                  placeholder="One highlight per line, e.g.:&#10;APEDA certified exports&#10;Custom documentation&#10;Cold chain logistics">{{ form_data.get('highlights', (service.highlights | join('\n')) if service else '') }}</textarea>
+        <span class="field-hint">One item per line. Up to 5 highlights shown on the website.</span>
+      </div>
+
+    </div><!-- /form-grid -->
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">
+        <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i>
+        {{ 'Save Changes' if service else 'Create Service' }}
+      </button>
+      <a href="/admin/services" class="btn btn-secondary">Cancel</a>
+      {% if service %}
+      <form method="POST" action="/admin/services/{{ service.id }}/delete"
+            onsubmit="return confirm('Delete {{ service.title }}? This cannot be undone.');"
+            style="margin-left:auto;">
+        <button type="submit" class="btn btn-danger">
+          <i class="fa-solid fa-trash" aria-hidden="true"></i> Delete Service
+        </button>
+      </form>
+      {% endif %}
+    </div>
+
+  </form>
+</div>
+
+{% endblock %}
+
+{% block extra_head %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var iconInput = document.getElementById('icon');
+    var preview = document.getElementById('icon-preview');
+    var previewLabel = document.getElementById('icon-preview-label');
+    if (!iconInput || !preview) return;
+    iconInput.addEventListener('input', function () {
+      var val = iconInput.value.trim();
+      preview.className = val || 'fas fa-star';
+      previewLabel.textContent = val || 'fas fa-star';
+    });
+  });
+</script>
+{% endblock %}

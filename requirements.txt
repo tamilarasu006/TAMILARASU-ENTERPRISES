@@ -1,0 +1,4 @@
+pytest==8.3.5
+hypothesis==6.131.15
+flask==3.1.1
+frozen-flask==1.0.2

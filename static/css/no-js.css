@@ -1,0 +1,95 @@
+/*
+ * no-js.css — Progressive enhancement fallback styles
+ *
+ * Loaded via <noscript> in base.html.  Ensures the site is fully readable
+ * and navigable when JavaScript is disabled.
+ *
+ * Requirements: 11.5
+ */
+
+/* ── Navigation: always visible without JS ──────────────────────────────── */
+
+/* Show the desktop nav unconditionally (hamburger JS won't run) */
+.site-nav {
+  display: flex !important;
+  position: static !important;
+  flex-direction: row !important;
+  box-shadow: none !important;
+  border-top: none !important;
+  padding: 0 !important;
+}
+
+/* Hide the hamburger button — it does nothing without JS */
+.hamburger-btn {
+  display: none !important;
+}
+
+/* On narrow viewports, stack nav links vertically so they remain accessible */
+@media (max-width: 767px) {
+  .site-nav {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    border-top: 1px solid #e5e7eb !important;
+    padding: 0.5rem 0 !important;
+  }
+
+  .site-nav a {
+    padding: 0.875rem 1.5rem !important;
+    border-bottom: 1px solid #f3f4f6 !important;
+    border-radius: 0 !important;
+  }
+
+  .site-nav a:last-child {
+    border-bottom: none !important;
+  }
+}
+
+/* ── No-JS notice banner ─────────────────────────────────────────────────── */
+
+.no-js-notice {
+  background-color: #fef9c3;
+  border-bottom: 2px solid #ca8a04;
+  color: #713f12;
+  font-size: 0.875rem;
+  padding: 0.625rem 1.25rem;
+  text-align: center;
+}
+
+/* ── Forms: ensure submit buttons are always visible ────────────────────── */
+
+/* Remove any JS-only disabled state that might linger in cached HTML */
+button[type="submit"]:disabled,
+input[type="submit"]:disabled {
+  opacity: 1 !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+}
+
+/* ── Filter controls: show as a plain stacked list without JS ───────────── */
+
+/* Category filter buttons fall back to standard links/buttons */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* Search form submits via GET — no JS needed */
+.search-form input[type="search"],
+.search-form input[type="text"] {
+  display: inline-block;
+}
+
+/* ── Product grid: readable without JS enhancements ─────────────────────── */
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+
+/* ── Availability badge: visible without JS ─────────────────────────────── */
+
+.badge {
+  display: inline-block;
+}

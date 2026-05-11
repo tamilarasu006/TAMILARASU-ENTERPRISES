@@ -1,0 +1,202 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}{{ 'Edit' if product else 'Add' }} Product — Admin{% endblock %}
+{% block page_title %}{{ 'Edit' if product else 'Add New' }} Product{% endblock %}
+
+{% block topbar_actions %}
+  <a href="/admin/products" class="btn btn-secondary">
+    <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to Products
+  </a>
+{% endblock %}
+
+{% block content %}
+
+<div class="card">
+  <form method="POST"
+        action="{{ '/admin/products/' + product.id + '/edit' if product else '/admin/products/new' }}"
+        novalidate>
+
+    <div class="form-grid">
+
+      <!-- ID -->
+      <div class="form-group">
+        <label for="id">Product ID <span style="color:#dc2626;">*</span></label>
+        <input type="text" id="id" name="id"
+               value="{{ form_data.get('id', product.id if product else '') }}"
+               placeholder="e.g. alphonso-mango"
+               {% if product %}readonly style="background:#f9fafb;color:#6b7280;"{% endif %}
+               class="{{ 'is-error' if errors.get('id') }}" />
+        <span class="field-hint">Lowercase letters, digits, hyphens only. Cannot be changed after creation.</span>
+        {% if errors.get('id') %}
+          <span class="field-error"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> {{ errors.id }}</span>
+        {% endif %}
+      </div>
+
+      <!-- Name -->
+      <div class="form-group">
+        <label for="name">Product Name <span style="color:#dc2626;">*</span></label>
+        <input type="text" id="name" name="name"
+               value="{{ form_data.get('name', product.name if product else '') }}"
+               placeholder="e.g. Alphonso Mango"
+               class="{{ 'is-error' if errors.get('name') }}" />
+        {% if errors.get('name') %}
+          <span class="field-error"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> {{ errors.name }}</span>
+        {% endif %}
+      </div>
+
+      <!-- Category -->
+      <div class="form-group">
+        <label for="category">Category <span style="color:#dc2626;">*</span></label>
+        <select id="category" name="category" class="{{ 'is-error' if errors.get('category') }}">
+          {% set cur_cat = form_data.get('category', product.category if product else '') %}
+          <option value="">— Select category —</option>
+          {% for cat in ['FRUIT', 'VEGETABLE', 'GRAIN', 'SPICE', 'OTHER'] %}
+            <option value="{{ cat }}" {% if cur_cat == cat %}selected{% endif %}>{{ cat }}</option>
+          {% endfor %}
+        </select>
+        {% if errors.get('category') %}
+          <span class="field-error"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> {{ errors.category }}</span>
+        {% endif %}
+      </div>
+
+      <!-- Origin -->
+      <div class="form-group">
+        <label for="origin">Origin <span style="color:#dc2626;">*</span></label>
+        <input type="text" id="origin" name="origin"
+               value="{{ form_data.get('origin', product.origin if product else '') }}"
+               placeholder="e.g. India"
+               class="{{ 'is-error' if errors.get('origin') }}" />
+        {% if errors.get('origin') %}
+          <span class="field-error"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> {{ errors.origin }}</span>
+        {% endif %}
+      </div>
+
+      <!-- MOQ -->
+      <div class="form-group">
+        <label for="minimumOrderQuantity">Minimum Order Quantity <span style="color:#dc2626;">*</span></label>
+        <input type="text" id="minimumOrderQuantity" name="minimumOrderQuantity"
+               value="{{ form_data.get('minimumOrderQuantity', product.minimumOrderQuantity if product else '') }}"
+               placeholder="e.g. 500 kg"
+               class="{{ 'is-error' if errors.get('minimumOrderQuantity') }}" />
+        {% if errors.get('minimumOrderQuantity') %}
+          <span class="field-error"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> {{ errors.minimumOrderQuantity }}</span>
+        {% endif %}
+      </div>
+
+      <!-- Unit -->
+      <div class="form-group">
+        <label for="unit">Unit</label>
+        <input type="text" id="unit" name="unit"
+               value="{{ form_data.get('unit', product.unit if product else '') }}"
+               placeholder="e.g. kg, MT, box" />
+      </div>
+
+      <!-- Image URL -->
+      <div class="form-group full-width">
+        <label for="imageUrl">Image URL <span style="color:#dc2626;">*</span></label>
+        <input type="text" id="imageUrl" name="imageUrl"
+               value="{{ form_data.get('imageUrl', product.imageUrl if product else '') }}"
+               placeholder="e.g. /static/images/products/alphonso-mango.webp"
+               class="{{ 'is-error' if errors.get('imageUrl') }}" />
+        <span class="field-hint">Use a path starting with /static/images/products/ or a full https:// URL.</span>
+        {% if errors.get('imageUrl') %}
+          <span class="field-error"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> {{ errors.imageUrl }}</span>
+        {% endif %}
+      </div>
+
+      <!-- Description -->
+      <div class="form-group full-width">
+        <label for="description">Description <span style="color:#dc2626;">*</span></label>
+        <textarea id="description" name="description" rows="4"
+                  placeholder="Describe the product in detail…"
+                  class="{{ 'is-error' if errors.get('description') }}">{{ form_data.get('description', product.description if product else '') }}</textarea>
+        <span class="field-hint">Max 1000 characters.</span>
+        {% if errors.get('description') %}
+          <span class="field-error"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> {{ errors.description }}</span>
+        {% endif %}
+      </div>
+
+      <!-- Season -->
+      <div class="form-group">
+        <label for="season">Season</label>
+        <input type="text" id="season" name="season"
+               value="{{ form_data.get('season', product.season if product else '') }}"
+               placeholder="e.g. March - June or Year-round" />
+      </div>
+
+      <!-- Shelf Life -->
+      <div class="form-group">
+        <label for="shelfLife">Shelf Life</label>
+        <input type="text" id="shelfLife" name="shelfLife"
+               value="{{ form_data.get('shelfLife', product.shelfLife if product else '') }}"
+               placeholder="e.g. 14 days at 8°C" />
+      </div>
+
+      <!-- Certifications -->
+      <div class="form-group">
+        <label for="certifications">Certifications</label>
+        <input type="text" id="certifications" name="certifications"
+               value="{{ form_data.get('certifications', (product.certifications | join(', ')) if product else '') }}"
+               placeholder="e.g. FSSAI, APEDA, Organic India" />
+        <span class="field-hint">Comma-separated list.</span>
+      </div>
+
+      <!-- Export Destinations -->
+      <div class="form-group">
+        <label for="exportDestinations">Export Destinations</label>
+        <input type="text" id="exportDestinations" name="exportDestinations"
+               value="{{ form_data.get('exportDestinations', (product.exportDestinations | join(', ')) if product else '') }}"
+               placeholder="e.g. UAE, UK, USA, Singapore" />
+        <span class="field-hint">Comma-separated list.</span>
+      </div>
+
+      <!-- Packaging Options -->
+      <div class="form-group">
+        <label for="packagingOptions">Packaging Options</label>
+        <input type="text" id="packagingOptions" name="packagingOptions"
+               value="{{ form_data.get('packagingOptions', (product.packagingOptions | join(', ')) if product else '') }}"
+               placeholder="e.g. 5 kg box, 10 kg carton" />
+        <span class="field-hint">Comma-separated list.</span>
+      </div>
+
+      <!-- Tags -->
+      <div class="form-group">
+        <label for="tags">Tags</label>
+        <input type="text" id="tags" name="tags"
+               value="{{ form_data.get('tags', (product.tags | join(', ')) if product else '') }}"
+               placeholder="e.g. mango, tropical, premium" />
+        <span class="field-hint">Comma-separated list for search.</span>
+      </div>
+
+      <!-- Availability -->
+      <div class="form-group full-width">
+        <label class="form-check">
+          <input type="checkbox" name="isAvailable" value="1"
+                 {% if form_data.get('isAvailable') == '1' or (product and product.isAvailable and not form_data) %}checked{% endif %} />
+          <span>Currently available for orders</span>
+        </label>
+      </div>
+
+    </div><!-- /form-grid -->
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">
+        <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i>
+        {{ 'Save Changes' if product else 'Create Product' }}
+      </button>
+      <a href="/admin/products" class="btn btn-secondary">Cancel</a>
+      {% if product %}
+      <form method="POST" action="/admin/products/{{ product.id }}/delete"
+            onsubmit="return confirm('Delete {{ product.name }}? This cannot be undone.');"
+            style="margin-left:auto;">
+        <button type="submit" class="btn btn-danger">
+          <i class="fa-solid fa-trash" aria-hidden="true"></i> Delete Product
+        </button>
+      </form>
+      {% endif %}
+    </div>
+
+  </form>
+</div>
+
+{% endblock %}

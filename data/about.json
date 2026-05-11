@@ -1,0 +1,62 @@
+{
+  "foundedYear": 2020,
+  "history": "TAMILARASU ENTERPRISES was founded in 2020 in Uthiramerur, Tamil Nadu, with a clear mission: to bridge the gap between India's abundant fresh produce farms and international markets. Starting with a focus on premium fruits and spices from South India, we have grown into a trusted trade partner for buyers and sellers across the Middle East, Europe, Southeast Asia, and beyond. Our deep roots in Tamil Nadu's agricultural heartland give us direct access to quality produce, while our logistics expertise ensures it reaches global destinations in perfect condition.",
+  "mission": "To connect Indian farmers and producers with global markets by delivering premium fresh produce with integrity, reliability, and care — creating value for every stakeholder in the supply chain.",
+  "vision": "To become the most trusted fresh produce export company from South India, recognised globally for quality, transparency, and sustainable trade practices.",
+  "values": [
+    "Quality First",
+    "Integrity in Trade",
+    "Farmer Partnership",
+    "Timely Delivery",
+    "Sustainable Practices",
+    "Customer Trust",
+    "Continuous Improvement"
+  ],
+  "exportDestinations": [
+    "United Arab Emirates",
+    "Saudi Arabia",
+    "Qatar",
+    "Kuwait",
+    "Bahrain",
+    "Oman",
+    "United Kingdom",
+    "Germany",
+    "France",
+    "United States",
+    "Canada",
+    "Australia",
+    "Singapore",
+    "Malaysia",
+    "Sri Lanka",
+    "Bangladesh",
+    "Nepal",
+    "Japan"
+  ],
+  "certifications": [
+    {
+      "name": "APEDA",
+      "description": "Agricultural and Processed Food Products Export Development Authority — India's apex body for promoting agricultural exports.",
+      "icon": "fas fa-certificate"
+    },
+    {
+      "name": "FSSAI",
+      "description": "Food Safety and Standards Authority of India — ensures all products meet India's food safety regulations.",
+      "icon": "fas fa-shield-halved"
+    },
+    {
+      "name": "ISO 22000",
+      "description": "International standard for food safety management systems, covering the entire food supply chain.",
+      "icon": "fas fa-award"
+    },
+    {
+      "name": "GlobalG.A.P.",
+      "description": "Good Agricultural Practices certification ensuring safe, sustainable, and responsible farming standards.",
+      "icon": "fas fa-leaf"
+    },
+    {
+      "name": "Spices Board India",
+      "description": "Certification from the Spices Board of India for quality spice exports meeting international standards.",
+      "icon": "fas fa-star"
+    }
+  ]
+}

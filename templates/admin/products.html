@@ -1,0 +1,82 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Products — Admin{% endblock %}
+{% block page_title %}Products{% endblock %}
+
+{% block topbar_actions %}
+  <a href="/admin/products/new" class="btn btn-primary">
+    <i class="fa-solid fa-plus" aria-hidden="true"></i> Add Product
+  </a>
+{% endblock %}
+
+{% block content %}
+
+<div class="card">
+  <div class="card-header">
+    <h2>All Products ({{ products | length }})</h2>
+    <form method="GET" action="/admin/products" style="display:flex;gap:0.5rem;align-items:center;">
+      <input type="search" name="q" value="{{ q }}" placeholder="Search products…"
+             style="padding:0.4rem 0.75rem;border:1.5px solid #d1d5db;border-radius:7px;font-size:0.875rem;font-family:inherit;outline:none;width:200px;" />
+      <button type="submit" class="btn btn-secondary btn-sm">
+        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+      </button>
+    </form>
+  </div>
+
+  {% if products %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Category</th>
+          <th>Origin</th>
+          <th>MOQ</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in products %}
+        <tr>
+          <td style="font-family:monospace;font-size:0.8rem;color:#6b7280;">{{ p.id }}</td>
+          <td style="font-weight:500;">{{ p.name }}</td>
+          <td><span class="badge badge-blue">{{ p.category }}</span></td>
+          <td>{{ p.origin }}</td>
+          <td>{{ p.minimumOrderQuantity }}</td>
+          <td>
+            {% if p.isAvailable %}
+              <span class="badge badge-green"><i class="fa-solid fa-circle" style="font-size:0.5rem;margin-right:0.3rem;" aria-hidden="true"></i>Available</span>
+            {% else %}
+              <span class="badge badge-red"><i class="fa-solid fa-circle" style="font-size:0.5rem;margin-right:0.3rem;" aria-hidden="true"></i>Unavailable</span>
+            {% endif %}
+          </td>
+          <td>
+            <div style="display:flex;gap:0.4rem;flex-wrap:wrap;">
+              <a href="/admin/products/{{ p.id }}/edit" class="btn btn-warning btn-sm">
+                <i class="fa-solid fa-pen" aria-hidden="true"></i> Edit
+              </a>
+              <form method="POST" action="/admin/products/{{ p.id }}/delete"
+                    onsubmit="return confirm('Delete {{ p.name }}? This cannot be undone.');"
+                    style="display:inline;">
+                <button type="submit" class="btn btn-danger btn-sm">
+                  <i class="fa-solid fa-trash" aria-hidden="true"></i> Delete
+                </button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <i class="fa-solid fa-box-open" aria-hidden="true"></i>
+    <p>{% if q %}No products match "{{ q }}".{% else %}No products yet.{% endif %}</p>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

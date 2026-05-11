@@ -1,44 +1,37 @@
-# ============================================================
-# TAMILARASU ENTERPRISES — .gitignore
-# ============================================================
-
-# Maven build output
-target/
-*.class
-*.jar
-*.war
-*.ear
-
-# IDE files
-.idea/
-*.iml
-.vscode/settings.json
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-
-# Spring Boot
-*.log
-logs/
-
-# Sensitive config — never commit real credentials
-# application-prod.properties is safe to commit (uses env vars only)
-application-local.properties
-.env.local
-.env
-
 # Python
 __pycache__/
-*.pyc
+*.py[cod]
 *.pyo
-.env
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
 venv/
 .venv/
+env/
+.env/
+
+# Environment / secrets
+.env
+.env.local
+.env.*.local
+
+# User data (contains hashed passwords — do not commit)
+data/users.json
+
+# IDE
+.vscode/
+.idea/
+
+# pytest
+.pytest_cache/
+.hypothesis/
+.jqwik-database
 
 # OS
 .DS_Store
 Thumbs.db
-
-# Node (if any frontend tooling added later)
-node_modules/

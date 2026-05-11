@@ -1,0 +1,272 @@
+{% extends 'base.html' %}
+{% from 'components/service_card.html' import service_card %}
+
+{% block title %}Our Services — TAMILARASU ENTERPRISES{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* ── Page Header ──────────────────────────────────────────────── */
+  .page-header {
+    background: linear-gradient(135deg, #14532d 0%, #166534 60%, #15803d 100%);
+    color: #ffffff;
+    padding: 4rem 1.25rem 3rem;
+    text-align: center;
+  }
+
+  .page-header__inner {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .page-header__heading {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.01em;
+  }
+
+  .page-header__tagline {
+    font-size: clamp(1rem, 2.5vw, 1.2rem);
+    color: #bbf7d0;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  /* ── Services Section ─────────────────────────────────────────── */
+  .services-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3.5rem 1.25rem;
+  }
+
+  /* Services grid */
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.75rem;
+  }
+
+  @media (max-width: 767px) {
+    .services-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ── Service Card ─────────────────────────────────────────────── */
+  .service-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 2rem 1.75rem;
+    transition: box-shadow 0.2s, transform 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+  }
+
+  .service-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    transform: translateY(-3px);
+  }
+
+  .service-card__icon {
+    width: 56px;
+    height: 56px;
+    background: #f0fdf4;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: #16a34a;
+    flex-shrink: 0;
+  }
+
+  .service-card__title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #111827;
+    line-height: 1.3;
+  }
+
+  .service-card__description {
+    font-size: 0.9375rem;
+    color: #4b5563;
+    line-height: 1.65;
+  }
+
+  .service-card__highlights {
+    margin-top: 0.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .service-card__highlight-item {
+    font-size: 0.875rem;
+    color: #374151;
+    padding-left: 1.25rem;
+    position: relative;
+    line-height: 1.5;
+  }
+
+  .service-card__highlight-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 7px;
+    height: 7px;
+    background-color: #16a34a;
+    border-radius: 50%;
+  }
+
+  /* ── Fallback (empty services) ────────────────────────────────── */
+  .services-empty {
+    text-align: center;
+    padding: 4rem 1.25rem;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  .services-empty__icon {
+    font-size: 3rem;
+    color: #d1fae5;
+    margin-bottom: 1.25rem;
+  }
+
+  .services-empty__heading {
+    font-size: 1.375rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 0.75rem;
+  }
+
+  .services-empty__text {
+    font-size: 1rem;
+    color: #6b7280;
+    line-height: 1.7;
+  }
+
+  .services-empty__text a {
+    color: #16a34a;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    font-weight: 500;
+  }
+
+  .services-empty__text a:hover {
+    color: #14532d;
+  }
+
+  /* ── CTA Section ──────────────────────────────────────────────── */
+  .services-cta {
+    background: #f0fdf4;
+    border-top: 1px solid #bbf7d0;
+    padding: 4rem 1.25rem;
+    text-align: center;
+  }
+
+  .services-cta__inner {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .services-cta__heading {
+    font-size: clamp(1.5rem, 3.5vw, 2rem);
+    font-weight: 700;
+    color: #14532d;
+    margin-bottom: 0.75rem;
+    line-height: 1.25;
+  }
+
+  .services-cta__subtext {
+    font-size: 1rem;
+    color: #4b5563;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  .btn-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #16a34a;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.875rem 2rem;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background-color 0.15s, transform 0.15s, box-shadow 0.15s;
+    min-height: 44px;
+  }
+
+  .btn-cta:hover {
+    background-color: #15803d;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.35);
+  }
+
+  .btn-cta:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PAGE HEADER
+════════════════════════════════════════════════════════════════ -->
+<section class="page-header" aria-labelledby="services-heading">
+  <div class="page-header__inner">
+    <h1 class="page-header__heading" id="services-heading">Our Services</h1>
+    <p class="page-header__tagline">Connecting farms to global markets with expertise and care</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SERVICES GRID / FALLBACK
+════════════════════════════════════════════════════════════════ -->
+<section class="services-section" aria-label="Services list">
+  {% if services %}
+    <div class="services-grid">
+      {% for service in services %}
+        {{ service_card(service) }}
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="services-empty" role="status">
+      <div class="services-empty__icon" aria-hidden="true">
+        <i class="fas fa-tools"></i>
+      </div>
+      <h2 class="services-empty__heading">Services Information Coming Soon</h2>
+      <p class="services-empty__text">
+        Our services information is being updated. Please contact us directly at
+        <a href="mailto:{{ contact_email }}">{{ contact_email }}</a>.
+      </p>
+    </div>
+  {% endif %}
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     CTA — CONTACT LINK
+════════════════════════════════════════════════════════════════ -->
+<section class="services-cta" aria-labelledby="cta-heading">
+  <div class="services-cta__inner">
+    <h2 class="services-cta__heading" id="cta-heading">Ready to start trading?</h2>
+    <p class="services-cta__subtext">
+      Get in touch with our team to discuss your import or export requirements.
+      We'll tailor a solution that fits your business.
+    </p>
+    <a href="/contact" class="btn-cta">
+      <i class="fas fa-envelope" aria-hidden="true"></i>
+      Contact Us
+    </a>
+  </div>
+</section>
+
+{% endblock %}

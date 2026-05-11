@@ -1,0 +1,67 @@
+[
+  {
+    "id": "export-services",
+    "title": "Export Services",
+    "description": "We handle end-to-end export of fresh produce to international markets, ensuring compliance with destination country regulations.",
+    "icon": "fas fa-ship",
+    "highlights": [
+      "APEDA certified exports",
+      "Custom documentation",
+      "Cold chain logistics",
+      "Market-specific packaging",
+      "Real-time shipment tracking"
+    ]
+  },
+  {
+    "id": "import-services",
+    "title": "Import Services",
+    "description": "We source premium fresh produce from trusted global suppliers and deliver to Indian markets with full quality assurance.",
+    "icon": "fas fa-plane-arrival",
+    "highlights": [
+      "Global supplier network",
+      "Quality inspection",
+      "Import documentation",
+      "Customs clearance",
+      "Last-mile delivery"
+    ]
+  },
+  {
+    "id": "quality-assurance",
+    "title": "Quality Assurance",
+    "description": "Every product undergoes rigorous quality checks at source, during transit, and at destination to meet international standards.",
+    "icon": "fas fa-certificate",
+    "highlights": [
+      "FSSAI compliance",
+      "Lab testing",
+      "Cold storage monitoring",
+      "Rejection handling",
+      "Traceability records"
+    ]
+  },
+  {
+    "id": "custom-packaging",
+    "title": "Custom Packaging",
+    "description": "We offer tailored packaging solutions that meet buyer specifications and extend product shelf life during transit.",
+    "icon": "fas fa-box-open",
+    "highlights": [
+      "Buyer-spec packaging",
+      "Eco-friendly materials",
+      "Retail-ready packs",
+      "Bulk packaging",
+      "Branded packaging"
+    ]
+  },
+  {
+    "id": "logistics-support",
+    "title": "Logistics Support",
+    "description": "Our logistics team coordinates freight, warehousing, and last-mile delivery to ensure timely and safe product arrival.",
+    "icon": "fas fa-truck",
+    "highlights": [
+      "Reefer container booking",
+      "Port handling",
+      "Warehouse management",
+      "Insurance coordination",
+      "Delivery scheduling"
+    ]
+  }
+]

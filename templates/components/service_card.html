@@ -1,0 +1,16 @@
+{% macro service_card(service) %}
+<article class="service-card">
+  <div class="service-card__icon">
+    <i class="{{ service.icon }}" aria-hidden="true"></i>
+  </div>
+  <h3 class="service-card__title">{{ service.title }}</h3>
+  <p class="service-card__description">{{ service.description[:500] }}</p>
+  {% if service.highlights %}
+  <ul class="service-card__highlights">
+    {% for highlight in service.highlights[:5] %}
+    <li class="service-card__highlight-item">{{ highlight }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</article>
+{% endmacro %}
