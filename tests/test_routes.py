@@ -226,8 +226,10 @@ class TestContactHoneypot:
         data["website"] = "bot-filled-this"
         response = client.post("/contact", data=data)
         assert response.status_code == 200
-        # Should NOT show validation errors
-        assert b"field-invalid" not in response.data
+        # Should show the success banner, not the form with errors
+        assert b"alert-success" in response.data
+        # No inline field error spans should be present
+        assert b'class="field-error"' not in response.data
 
 
 # ---------------------------------------------------------------------------
