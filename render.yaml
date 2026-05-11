@@ -2,11 +2,13 @@ services:
   - type: web
     name: tamilarasu-enterprises
     runtime: python
-    buildCommand: pip install --upgrade pip && pip install -r requirements.txt && python -m gunicorn --version
-    startCommand: python -m gunicorn app:app --workers 2 --bind 0.0.0.0:$PORT
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: flask --app app run --host 0.0.0.0 --port $PORT
     envVars:
       - key: SECRET_KEY
         generateValue: true
+      - key: FLASK_ENV
+        value: production
       - key: PYTHON_VERSION
         value: 3.12.0
     autoDeploy: true
