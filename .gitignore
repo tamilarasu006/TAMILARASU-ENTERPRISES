@@ -1,0 +1,44 @@
+# ============================================================
+# TAMILARASU ENTERPRISES — .gitignore
+# ============================================================
+
+# Maven build output
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# IDE files
+.idea/
+*.iml
+.vscode/settings.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Spring Boot
+*.log
+logs/
+
+# Sensitive config — never commit real credentials
+application-prod.properties
+application-local.properties
+.env.local
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+venv/
+.venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node (if any frontend tooling added later)
+node_modules/
