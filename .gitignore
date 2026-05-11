@@ -23,7 +23,7 @@ target/
 logs/
 
 # Sensitive config — never commit real credentials
-application-prod.properties
+# application-prod.properties is safe to commit (uses env vars only)
 application-local.properties
 .env.local
 .env

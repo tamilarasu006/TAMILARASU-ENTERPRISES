@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: tamilarasu-enterprises
+    runtime: java
+    buildCommand: ./mvnw clean package -DskipTests
+    startCommand: java -Dspring.profiles.active=prod -jar target/ecommerce-0.0.1-SNAPSHOT.jar
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: tamilarasu-db
+          property: connectionString
+      - key: DB_USERNAME
+        fromDatabase:
+          name: tamilarasu-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: tamilarasu-db
+          property: password
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: PORT
+        value: "8081"
+
+databases:
+  - name: tamilarasu-db
+    databaseName: tamilarasu_enterprises
+    user: tamilarasu
+    plan: free
