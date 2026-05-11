@@ -2,7 +2,7 @@ services:
   - type: web
     name: tamilarasu-enterprises
     runtime: python
-    buildCommand: pip install -r requirements.txt
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt && python -m gunicorn --version
     startCommand: python -m gunicorn app:app --workers 2 --bind 0.0.0.0:$PORT
     envVars:
       - key: SECRET_KEY
