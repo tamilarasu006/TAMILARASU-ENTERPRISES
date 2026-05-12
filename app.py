@@ -35,7 +35,9 @@ from auth.users import (
     get_user_by_email, create_user, verify_password,
     ensure_default_admin, STATUS_APPROVED, STATUS_PENDING,
     get_all_users, update_user_status, delete_user, ROLE_ADMIN,
+    get_user_by_id,
 )
+from werkzeug.security import generate_password_hash
 from admin.products_store import (
     get_all as get_all_products_raw,
     get_by_id as get_product_by_id,
@@ -490,6 +492,152 @@ def logout():
     """Clear session and redirect to home."""
     session.clear()
     return redirect(url_for("home"))
+
+
+# ── Password reset token store (in-memory, expires in 1 hour) ─────────────────
+import secrets
+from datetime import timedelta
+
+_reset_tokens: dict[str, dict] = {}  # token -> {user_id, expires_at}
+
+def _generate_reset_token(user_id: str) -> str:
+    token = secrets.token_urlsafe(32)
+    _reset_tokens[token] = {
+        "user_id": user_id,
+        "expires_at": datetime.now(timezone.utc) + timedelta(hours=1),
+    }
+    return token
+
+def _validate_reset_token(token: str) -> str | None:
+    """Return user_id if token is valid and not expired, else None."""
+    entry = _reset_tokens.get(token)
+    if not entry:
+        return None
+    if datetime.now(timezone.utc) > entry["expires_at"]:
+        del _reset_tokens[token]
+        return None
+    return entry["user_id"]
+
+def _consume_reset_token(token: str) -> None:
+    _reset_tokens.pop(token, None)
+
+
+# ── Forgot / Reset password routes ────────────────────────────────────────────
+
+@app.route("/forgot-password", methods=["GET"])
+def forgot_password():
+    if session.get("user_id"):
+        return redirect(url_for("home"))
+    return render_template("forgot_password.html", active_page="login",
+                           errors={}, form_data={}, error=None, success=False)
+
+
+@app.route("/forgot-password", methods=["POST"])
+def forgot_password_submit():
+    if session.get("user_id"):
+        return redirect(url_for("home"))
+
+    email = request.form.get("email", "").strip()
+    errors: dict[str, str] = {}
+
+    if not email:
+        errors["email"] = "Email address is required."
+    elif "@" not in email or "." not in email.split("@")[-1]:
+        errors["email"] = "Enter a valid email address."
+
+    if errors:
+        return render_template("forgot_password.html", active_page="login",
+                               errors=errors, form_data={"email": email},
+                               error=None, success=False), 422
+
+    user = get_user_by_email(email)
+    if user:
+        token = _generate_reset_token(user["id"])
+        reset_url = request.host_url.rstrip("/") + f"/reset-password/{token}"
+
+        # Try to send via Formspree if configured
+        formspree_endpoint = os.environ.get("FORMSPREE_ENDPOINT", "")
+        if formspree_endpoint:
+            try:
+                from inquiry.email_service import send_email
+                send_email({
+                    "subject": "Password Reset — TAMILARASU ENTERPRISES",
+                    "body": (
+                        f"Hi {user['name']},\n\n"
+                        f"Click the link below to reset your password. "
+                        f"This link expires in 1 hour.\n\n"
+                        f"{reset_url}\n\n"
+                        f"If you did not request this, ignore this email.\n\n"
+                        f"— TAMILARASU ENTERPRISES"
+                    ),
+                    "reply_to": email,
+                    "_replyto": email,
+                })
+            except Exception:
+                pass
+        else:
+            # Dev mode: flash the reset URL so it can be used without email
+            flash(f"[DEV] Reset link: {reset_url}", "info")
+
+    # Always show success to prevent email enumeration
+    return render_template("forgot_password.html", active_page="login",
+                           errors={}, form_data={}, error=None, success=True)
+
+
+@app.route("/reset-password/<token>", methods=["GET"])
+def reset_password(token):
+    user_id = _validate_reset_token(token)
+    if not user_id:
+        return render_template("reset_password.html", active_page="login",
+                               token=token, invalid_token=True,
+                               success=False, errors={}, error=None)
+    return render_template("reset_password.html", active_page="login",
+                           token=token, invalid_token=False,
+                           success=False, errors={}, error=None)
+
+
+@app.route("/reset-password/<token>", methods=["POST"])
+def reset_password_submit(token):
+    user_id = _validate_reset_token(token)
+    if not user_id:
+        return render_template("reset_password.html", active_page="login",
+                               token=token, invalid_token=True,
+                               success=False, errors={}, error=None)
+
+    password = request.form.get("password", "")
+    confirm = request.form.get("confirm_password", "")
+    errors: dict[str, str] = {}
+
+    if not password:
+        errors["password"] = "Password is required."
+    elif len(password) < 8:
+        errors["password"] = "Password must be at least 8 characters."
+    elif not any(c.isdigit() for c in password) or not any(c.isalpha() for c in password):
+        errors["password"] = "Password must contain at least one letter and one number."
+
+    if not confirm:
+        errors["confirm_password"] = "Please confirm your password."
+    elif password and confirm != password:
+        errors["confirm_password"] = "Passwords do not match."
+
+    if errors:
+        return render_template("reset_password.html", active_page="login",
+                               token=token, invalid_token=False,
+                               success=False, errors=errors, error=None), 422
+
+    # Update password in users store
+    from auth.users import _load, _save
+    users = _load()
+    for u in users:
+        if u["id"] == user_id:
+            u["password_hash"] = generate_password_hash(password)
+            _save(users)
+            break
+
+    _consume_reset_token(token)
+    return render_template("reset_password.html", active_page="login",
+                           token=token, invalid_token=False,
+                           success=True, errors={}, error=None)
 
 
 # ── Admin helpers ─────────────────────────────────────────────────────────────
