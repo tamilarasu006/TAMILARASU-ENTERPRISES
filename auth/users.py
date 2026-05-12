@@ -109,21 +109,30 @@ def delete_user(user_id: str) -> bool:
 
 
 def ensure_default_admin() -> None:
-    """Create a default admin account if no admin exists.
-    
-    The default password is read from the ADMIN_DEFAULT_PASSWORD environment
-    variable. If not set, a random secure password is generated and printed
-    once to the console. This prevents hardcoded credentials in source code.
+    """
+    Ensure the default admin account exists with the correct password.
+
+    - If no admin exists: creates one.
+    - If ADMIN_DEFAULT_PASSWORD env var is set: always syncs the admin
+      password to that value on startup. This ensures Render/cloud deploys
+      always have the correct password even after a fresh deploy.
     """
     import os
     import secrets
     users = _load()
-    if any(u["role"] == ROLE_ADMIN for u in users):
-        return  # Admin already exists — do nothing
+    admin = next((u for u in users if u["role"] == ROLE_ADMIN), None)
 
     password = os.environ.get("ADMIN_DEFAULT_PASSWORD", "")
+
+    if admin:
+        # Admin exists — update password only if env var is explicitly set
+        if password:
+            admin["password_hash"] = generate_password_hash(password)
+            _save(users)
+        return
+
+    # No admin exists — create one
     if not password:
-        # Generate a random password and print it once
         password = secrets.token_urlsafe(16)
         print("=" * 60)
         print("  NEW ADMIN ACCOUNT CREATED")
