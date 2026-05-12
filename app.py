@@ -264,14 +264,23 @@ def about():
 
 @app.route("/contact", methods=["GET"])
 def contact():
-    """Contact / inquiry form page (GET)."""
+    """Contact / inquiry form page (GET) — requires login."""
+    if not session.get("user_id"):
+        next_url = request.url
+        return redirect(url_for("login") + "?next=" + next_url)
     prefill_product = request.args.get("product", "")
+    # Pre-fill name and email from logged-in user
+    user = get_user_by_id(session["user_id"]) if session.get("user_id") else None
+    prefill_data = {}
+    if user:
+        prefill_data["fullName"] = user.get("name", "")
+        prefill_data["email"] = user.get("email", "")
     return render_template(
         "contact.html",
         active_page="contact",
         prefill_product=prefill_product,
         form_errors={},
-        form_data={},
+        form_data=prefill_data,
         contact_email=SITE_CONFIG.contactEmail,
         whatsapp_number=SITE_CONFIG.whatsappNumber,
     )
@@ -279,7 +288,9 @@ def contact():
 
 @app.route("/contact", methods=["POST"])
 def contact_submit():
-    """Contact / inquiry form page (POST) — handles form submission."""
+    """Contact / inquiry form page (POST) — requires login."""
+    if not session.get("user_id"):
+        return redirect(url_for("login") + "?next=/contact")
     # Honeypot check (Req 9.1): silently discard if honeypot field is filled
     if request.form.get("website", ""):
         # Return a success-like response without processing

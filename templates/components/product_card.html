@@ -85,14 +85,25 @@
   </div>
 
   <div class="product-card__footer">
-    <a
-      href="/contact?product={{ product.name | urlencode }}"
-      class="btn btn-primary"
-      aria-label="Request a quote for {{ product.name }}"
-    >
-      <i class="fa-solid fa-envelope" aria-hidden="true"></i>
-      Request Quote
-    </a>
+    {% if session.get('user_id') %}
+      <a
+        href="/contact?product={{ product.name | urlencode }}"
+        class="btn btn-primary"
+        aria-label="Request a quote for {{ product.name }}"
+      >
+        <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+        Request Quote
+      </a>
+    {% else %}
+      <a
+        href="/login?next=/contact%3Fproduct%3D{{ product.name | urlencode }}"
+        class="btn btn-primary"
+        aria-label="Login to request a quote for {{ product.name }}"
+      >
+        <i class="fa-solid fa-right-to-bracket" aria-hidden="true"></i>
+        Login to Request
+      </a>
+    {% endif %}
   </div>
 </article>
 {% endmacro %}
