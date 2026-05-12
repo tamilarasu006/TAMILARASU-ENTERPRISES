@@ -64,6 +64,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      position: relative; /* needed for absolute mobile nav */
     }
 
     /* Logo + company name */
@@ -170,8 +171,9 @@
         gap: 0;
         background-color: #ffffff;
         border-top: 1px solid #e5e7eb;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
         padding: 0.5rem 0;
+        z-index: 200;
       }
 
       .site-nav.is-open { display: flex; }
@@ -181,7 +183,9 @@
         border-radius: 0;
         font-size: 1rem;
         border-bottom: 1px solid #f3f4f6;
-        min-height: 44px;
+        min-height: 48px;
+        display: flex;
+        align-items: center;
       }
 
       .site-nav a.active {
@@ -191,6 +195,11 @@
       }
 
       .site-nav a:last-child { border-bottom: none; }
+
+      /* Make company name shorter on small screens */
+      .site-logo .company-name {
+        font-size: 0.875rem;
+      }
     }
 
     /* ── Main content area ────────────────────────────────────────── */
