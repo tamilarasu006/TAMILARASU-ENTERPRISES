@@ -1,13 +1,17 @@
 """
 User management for TAMILARASU ENTERPRISES admin portal.
 
-Uses a simple JSON file (data/users.json) as the user store.
-Passwords are hashed with werkzeug's pbkdf2 implementation.
+Storage strategy:
+- When MONGO_URI is set (Render / production): uses MongoDB 'users' collection.
+- Otherwise (local dev without MongoDB): falls back to data/users.json.
+
+Passwords are hashed with werkzeug's scrypt implementation.
 """
 
 from __future__ import annotations
 
 import json
+import os
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -27,8 +31,23 @@ STATUS_APPROVED = "approved"
 STATUS_REJECTED = "rejected"
 
 
+# ── Storage backend detection ──────────────────────────────────────────────────
+
+def _use_mongo() -> bool:
+    """Return True if MongoDB should be used as the user store."""
+    return bool(os.environ.get("MONGO_URI", "").strip())
+
+
+def _get_collection():
+    """Return the MongoDB users collection."""
+    from db import get_db
+    return get_db()["users"]
+
+
+# ── Internal load/save (JSON fallback) ────────────────────────────────────────
+
 def _load() -> list[dict]:
-    """Load users from JSON file."""
+    """Load users from JSON file (local dev fallback)."""
     if not USERS_FILE.exists():
         return []
     try:
@@ -39,28 +58,44 @@ def _load() -> list[dict]:
 
 
 def _save(users: list[dict]) -> None:
-    """Save users to JSON file."""
+    """Save users to JSON file (local dev fallback)."""
     USERS_FILE.parent.mkdir(parents=True, exist_ok=True)
     with open(USERS_FILE, "w", encoding="utf-8") as f:
         json.dump(users, f, indent=2, ensure_ascii=False)
 
 
+def _doc_to_user(doc: dict) -> dict:
+    """Convert a MongoDB document to a plain user dict."""
+    d = dict(doc)
+    d.pop("_id", None)
+    return d
+
+
+# ── Public API ─────────────────────────────────────────────────────────────────
+
 def get_all_users() -> list[dict]:
+    if _use_mongo():
+        return [_doc_to_user(d) for d in _get_collection().find()]
     return _load()
 
 
 def get_user_by_id(user_id: str) -> Optional[dict]:
+    if _use_mongo():
+        doc = _get_collection().find_one({"id": user_id})
+        return _doc_to_user(doc) if doc else None
     return next((u for u in _load() if u["id"] == user_id), None)
 
 
 def get_user_by_email(email: str) -> Optional[dict]:
     email = email.strip().lower()
+    if _use_mongo():
+        doc = _get_collection().find_one({"email": email})
+        return _doc_to_user(doc) if doc else None
     return next((u for u in _load() if u["email"].lower() == email), None)
 
 
 def create_user(name: str, email: str, password: str, role: str = ROLE_USER) -> dict:
     """Create a new user. Status is 'pending' unless role is 'admin'."""
-    users = _load()
     user = {
         "id": str(uuid.uuid4()),
         "name": name.strip(),
@@ -70,8 +105,14 @@ def create_user(name: str, email: str, password: str, role: str = ROLE_USER) -> 
         "status": STATUS_APPROVED if role == ROLE_ADMIN else STATUS_PENDING,
         "created_at": datetime.now(timezone.utc).isoformat(),
     }
-    users.append(user)
-    _save(users)
+    if _use_mongo():
+        doc = dict(user)
+        doc["_id"] = user["id"]
+        _get_collection().insert_one(doc)
+    else:
+        users = _load()
+        users.append(user)
+        _save(users)
     return user
 
 
@@ -80,6 +121,11 @@ def verify_password(user: dict, password: str) -> bool:
 
 
 def update_user_status(user_id: str, status: str) -> bool:
+    if _use_mongo():
+        result = _get_collection().update_one(
+            {"id": user_id}, {"$set": {"status": status}}
+        )
+        return result.modified_count > 0
     users = _load()
     for u in users:
         if u["id"] == user_id:
@@ -90,6 +136,11 @@ def update_user_status(user_id: str, status: str) -> bool:
 
 
 def update_user_role(user_id: str, role: str) -> bool:
+    if _use_mongo():
+        result = _get_collection().update_one(
+            {"id": user_id}, {"$set": {"role": role}}
+        )
+        return result.modified_count > 0
     users = _load()
     for u in users:
         if u["id"] == user_id:
@@ -100,6 +151,9 @@ def update_user_role(user_id: str, role: str) -> bool:
 
 
 def delete_user(user_id: str) -> bool:
+    if _use_mongo():
+        result = _get_collection().delete_one({"id": user_id})
+        return result.deleted_count > 0
     users = _load()
     new_users = [u for u in users if u["id"] != user_id]
     if len(new_users) == len(users):
@@ -112,38 +166,67 @@ def ensure_default_admin() -> None:
     """
     Ensure the default admin account exists with the correct password.
 
-    - If no admin exists: creates one.
     - If ADMIN_DEFAULT_PASSWORD env var is set: always syncs the admin
-      password to that value on startup. This ensures Render/cloud deploys
-      always have the correct password even after a fresh deploy.
+      password to that value on startup. This guarantees Render deploys
+      always use the configured password.
+    - If no admin exists at all: creates one.
     """
-    import os
     import secrets
-    users = _load()
-    admin = next((u for u in users if u["role"] == ROLE_ADMIN), None)
 
     password = os.environ.get("ADMIN_DEFAULT_PASSWORD", "")
 
-    if admin:
-        # Admin exists — update password only if env var is explicitly set
-        if password:
-            admin["password_hash"] = generate_password_hash(password)
-            _save(users)
-        return
+    if _use_mongo():
+        col = _get_collection()
+        admin = col.find_one({"role": ROLE_ADMIN})
 
-    # No admin exists — create one
-    if not password:
-        password = secrets.token_urlsafe(16)
-        print("=" * 60)
-        print("  NEW ADMIN ACCOUNT CREATED")
-        print(f"  Email:    admin@tamilarasuenterprises.com")
-        print(f"  Password: {password}")
-        print("  Change this password immediately after first login.")
-        print("=" * 60)
+        if admin:
+            # Admin exists in MongoDB — sync password if env var is set
+            if password:
+                col.update_one(
+                    {"role": ROLE_ADMIN},
+                    {"$set": {"password_hash": generate_password_hash(password)}}
+                )
+            return
 
-    create_user(
-        name="Admin",
-        email="admin@tamilarasuenterprises.com",
-        password=password,
-        role=ROLE_ADMIN,
-    )
+        # No admin in MongoDB — create one
+        if not password:
+            password = secrets.token_urlsafe(16)
+            print("=" * 60)
+            print("  NEW ADMIN ACCOUNT CREATED (MongoDB)")
+            print(f"  Email:    admin@tamilarasuenterprises.com")
+            print(f"  Password: {password}")
+            print("  Set ADMIN_DEFAULT_PASSWORD env var to fix this.")
+            print("=" * 60)
+
+        create_user(
+            name="Admin",
+            email="admin@tamilarasuenterprises.com",
+            password=password,
+            role=ROLE_ADMIN,
+        )
+
+    else:
+        # JSON fallback (local dev)
+        users = _load()
+        admin = next((u for u in users if u["role"] == ROLE_ADMIN), None)
+
+        if admin:
+            if password:
+                admin["password_hash"] = generate_password_hash(password)
+                _save(users)
+            return
+
+        if not password:
+            password = secrets.token_urlsafe(16)
+            print("=" * 60)
+            print("  NEW ADMIN ACCOUNT CREATED (JSON)")
+            print(f"  Email:    admin@tamilarasuenterprises.com")
+            print(f"  Password: {password}")
+            print("=" * 60)
+
+        create_user(
+            name="Admin",
+            email="admin@tamilarasuenterprises.com",
+            password=password,
+            role=ROLE_ADMIN,
+        )
