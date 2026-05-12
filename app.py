@@ -165,7 +165,7 @@ def add_security_headers(response):
         "font-src 'self' "
         "https://fonts.gstatic.com "
         "https://cdnjs.cloudflare.com; "
-        "img-src 'self' data:; "
+        "img-src 'self' data: https://images.unsplash.com; "
         # connect-src: allow reCAPTCHA token verification calls
         "connect-src 'self' https://www.google.com/recaptcha/; "
         # frame-src: reCAPTCHA v3 may render a challenge iframe

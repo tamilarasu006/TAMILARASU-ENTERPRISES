@@ -5,34 +5,16 @@
     "category": "FRUIT",
     "origin": "India",
     "minimumOrderQuantity": "500 kg",
-    "imageUrl": "/static/images/products/alphonso-mango.webp",
+    "imageUrl": "https://images.unsplash.com/photo-1553279768-865429fa0078?w=600&q=80",
     "description": "Premium Alphonso mangoes from the Konkan coast of Maharashtra, India. Known for their rich, creamy texture and intense sweetness. Ideal for fresh consumption, pulp processing, and export to premium markets.",
     "isAvailable": true,
     "season": "March - June",
     "unit": "kg",
-    "certifications": [
-      "APEDA",
-      "FSSAI"
-    ],
-    "exportDestinations": [
-      "UAE",
-      "UK",
-      "USA",
-      "Singapore",
-      "Qatar"
-    ],
-    "packagingOptions": [
-      "5 kg box",
-      "10 kg carton"
-    ],
+    "certifications": ["APEDA", "FSSAI"],
+    "exportDestinations": ["UAE", "UK", "USA", "Singapore", "Qatar"],
+    "packagingOptions": ["5 kg box", "10 kg carton"],
     "shelfLife": "14 days at 8°C",
-    "tags": [
-      "mango",
-      "tropical fruit",
-      "premium",
-      "alphonso",
-      "fresh fruit"
-    ]
+    "tags": ["mango", "tropical fruit", "premium", "alphonso", "fresh fruit"]
   },
   {
     "id": "banana-cavendish",
@@ -40,34 +22,16 @@
     "category": "FRUIT",
     "origin": "India",
     "minimumOrderQuantity": "1000 kg",
-    "imageUrl": "/static/images/products/banana-cavendish.webp",
+    "imageUrl": "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=600&q=80",
     "description": "Fresh Cavendish bananas sourced from Tamil Nadu and Kerala. Consistent size, bright yellow peel, and sweet flavour make these ideal for retail and food service markets worldwide.",
     "isAvailable": false,
     "season": "Year-round",
     "unit": "kg",
-    "certifications": [
-      "FSSAI",
-      "GlobalG.A.P."
-    ],
-    "exportDestinations": [
-      "UAE",
-      "Saudi Arabia",
-      "Oman",
-      "Kuwait",
-      "Bahrain"
-    ],
-    "packagingOptions": [
-      "13 kg carton",
-      "18 kg carton"
-    ],
+    "certifications": ["FSSAI", "GlobalG.A.P."],
+    "exportDestinations": ["UAE", "Saudi Arabia", "Oman", "Kuwait", "Bahrain"],
+    "packagingOptions": ["13 kg carton", "18 kg carton"],
     "shelfLife": "21 days at 13°C",
-    "tags": [
-      "banana",
-      "tropical fruit",
-      "cavendish",
-      "fresh fruit",
-      "year-round"
-    ]
+    "tags": ["banana", "tropical fruit", "cavendish", "fresh fruit", "year-round"]
   },
   {
     "id": "green-chilli",
@@ -75,34 +39,16 @@
     "category": "VEGETABLE",
     "origin": "India",
     "minimumOrderQuantity": "200 kg",
-    "imageUrl": "/static/images/products/green-chilli.webp",
+    "imageUrl": "https://images.unsplash.com/photo-1588252303782-cb80119abd6d?w=600&q=80",
     "description": "Fresh green chillies from Andhra Pradesh and Karnataka. High capsaicin content, vibrant green colour, and firm texture. Widely used in Asian cuisines and food processing industries.",
     "isAvailable": true,
     "season": "Year-round",
     "unit": "kg",
-    "certifications": [
-      "FSSAI",
-      "APEDA"
-    ],
-    "exportDestinations": [
-      "UAE",
-      "UK",
-      "Malaysia",
-      "Singapore",
-      "Canada"
-    ],
-    "packagingOptions": [
-      "5 kg box",
-      "10 kg carton"
-    ],
+    "certifications": ["FSSAI", "APEDA"],
+    "exportDestinations": ["UAE", "UK", "Malaysia", "Singapore", "Canada"],
+    "packagingOptions": ["5 kg box", "10 kg carton"],
     "shelfLife": "10 days at 7°C",
-    "tags": [
-      "chilli",
-      "green chilli",
-      "spicy",
-      "vegetable",
-      "fresh"
-    ]
+    "tags": ["chilli", "green chilli", "spicy", "vegetable", "fresh"]
   },
   {
     "id": "turmeric-powder",
@@ -110,37 +56,16 @@
     "category": "SPICE",
     "origin": "India",
     "minimumOrderQuantity": "100 kg",
-    "imageUrl": "/static/images/products/turmeric-powder.webp",
+    "imageUrl": "https://images.unsplash.com/photo-1615485500704-8e990f9900f7?w=600&q=80",
     "description": "High-curcumin turmeric powder sourced from Erode, Tamil Nadu — the turmeric capital of the world. Bright golden colour, strong aroma, and 3–5% curcumin content. Suitable for food, pharmaceutical, and cosmetic industries.",
     "isAvailable": true,
     "season": "Year-round",
     "unit": "kg",
-    "certifications": [
-      "FSSAI",
-      "Organic India",
-      "APEDA"
-    ],
-    "exportDestinations": [
-      "USA",
-      "UK",
-      "Germany",
-      "Australia",
-      "Japan"
-    ],
-    "packagingOptions": [
-      "1 kg pouch",
-      "5 kg bag",
-      "25 kg sack"
-    ],
+    "certifications": ["FSSAI", "Organic India", "APEDA"],
+    "exportDestinations": ["USA", "UK", "Germany", "Australia", "Japan"],
+    "packagingOptions": ["1 kg pouch", "5 kg bag", "25 kg sack"],
     "shelfLife": "24 months in sealed packaging",
-    "tags": [
-      "turmeric",
-      "spice",
-      "curcumin",
-      "powder",
-      "organic",
-      "erode"
-    ]
+    "tags": ["turmeric", "spice", "curcumin", "powder", "organic", "erode"]
   },
   {
     "id": "basmati-rice",
@@ -148,38 +73,16 @@
     "category": "GRAIN",
     "origin": "India",
     "minimumOrderQuantity": "1 MT",
-    "imageUrl": "/static/images/products/basmati-rice.webp",
+    "imageUrl": "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=600&q=80",
     "description": "Premium long-grain Basmati rice from the foothills of the Himalayas. Aged for a minimum of 12 months for enhanced aroma and elongation on cooking. Ideal for biryanis, pilafs, and gourmet rice dishes.",
     "isAvailable": true,
     "season": "Year-round",
     "unit": "MT",
-    "certifications": [
-      "FSSAI",
-      "APEDA",
-      "ISO 22000"
-    ],
-    "exportDestinations": [
-      "UAE",
-      "Saudi Arabia",
-      "UK",
-      "USA",
-      "Australia"
-    ],
-    "packagingOptions": [
-      "1 kg bag",
-      "5 kg bag",
-      "25 kg sack",
-      "50 kg sack"
-    ],
+    "certifications": ["FSSAI", "APEDA", "ISO 22000"],
+    "exportDestinations": ["UAE", "Saudi Arabia", "UK", "USA", "Australia"],
+    "packagingOptions": ["1 kg bag", "5 kg bag", "25 kg sack", "50 kg sack"],
     "shelfLife": "24 months in cool dry storage",
-    "tags": [
-      "rice",
-      "basmati",
-      "grain",
-      "long grain",
-      "aromatic",
-      "premium"
-    ]
+    "tags": ["rice", "basmati", "grain", "long grain", "aromatic", "premium"]
   },
   {
     "id": "red-onion",
@@ -187,35 +90,16 @@
     "category": "VEGETABLE",
     "origin": "India",
     "minimumOrderQuantity": "500 kg",
-    "imageUrl": "/static/images/products/red-onion.webp",
+    "imageUrl": "https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?w=600&q=80",
     "description": "Fresh red onions from Nashik, Maharashtra — India's largest onion-producing region. Firm bulbs, deep red-purple skin, and pungent flavour. Suitable for fresh consumption, dehydration, and food processing.",
     "isAvailable": false,
     "season": "October - March",
     "unit": "kg",
-    "certifications": [
-      "FSSAI",
-      "APEDA"
-    ],
-    "exportDestinations": [
-      "UAE",
-      "Malaysia",
-      "Sri Lanka",
-      "Bangladesh",
-      "Nepal"
-    ],
-    "packagingOptions": [
-      "10 kg mesh bag",
-      "20 kg mesh bag",
-      "25 kg jute bag"
-    ],
+    "certifications": ["FSSAI", "APEDA"],
+    "exportDestinations": ["UAE", "Malaysia", "Sri Lanka", "Bangladesh", "Nepal"],
+    "packagingOptions": ["10 kg mesh bag", "20 kg mesh bag", "25 kg jute bag"],
     "shelfLife": "30 days at ambient temperature",
-    "tags": [
-      "onion",
-      "red onion",
-      "vegetable",
-      "nashik",
-      "fresh"
-    ]
+    "tags": ["onion", "red onion", "vegetable", "nashik", "fresh"]
   },
   {
     "id": "black-pepper",
@@ -223,36 +107,15 @@
     "category": "SPICE",
     "origin": "India",
     "minimumOrderQuantity": "50 kg",
-    "imageUrl": "/static/images/products/black-pepper.webp",
+    "imageUrl": "https://images.unsplash.com/photo-1599909533731-0e5e8c4e4e4e?w=600&q=80",
     "description": "Premium whole black pepper from Kerala, the spice capital of India. Bold, pungent aroma with high piperine content. Available as whole peppercorns or coarsely ground. Widely used in culinary and pharmaceutical applications.",
     "isAvailable": true,
     "season": "Year-round",
     "unit": "kg",
-    "certifications": [
-      "FSSAI",
-      "Spices Board India",
-      "APEDA"
-    ],
-    "exportDestinations": [
-      "USA",
-      "Germany",
-      "UK",
-      "France",
-      "Japan"
-    ],
-    "packagingOptions": [
-      "500 g pouch",
-      "1 kg pouch",
-      "25 kg sack"
-    ],
+    "certifications": ["FSSAI", "Spices Board India", "APEDA"],
+    "exportDestinations": ["USA", "Germany", "UK", "France", "Japan"],
+    "packagingOptions": ["500 g pouch", "1 kg pouch", "25 kg sack"],
     "shelfLife": "36 months in sealed packaging",
-    "tags": [
-      "pepper",
-      "black pepper",
-      "spice",
-      "kerala",
-      "peppercorn",
-      "whole"
-    ]
+    "tags": ["pepper", "black pepper", "spice", "kerala", "peppercorn", "whole"]
   }
 ]
