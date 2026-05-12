@@ -25,6 +25,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from flask import Flask, render_template, request, redirect, url_for, jsonify, session, flash
+from dotenv import load_dotenv
+
+# Load .env variables before anything else
+load_dotenv()
 
 from models.product import Product, FilterState
 from models.site import SiteConfiguration
@@ -1025,6 +1029,12 @@ def admin_user_delete(user_id):
 
 # Ensure at least one admin account exists
 ensure_default_admin()
+
+# ── MongoDB connection teardown ────────────────────────────────────────────────
+
+import atexit
+from db import close_db
+atexit.register(close_db)
 
 
 # ── Development server ─────────────────────────────────────────────────────────

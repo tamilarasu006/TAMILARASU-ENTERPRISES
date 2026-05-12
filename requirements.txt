@@ -4,3 +4,5 @@ gunicorn==21.2.0
 pytest==8.3.5
 hypothesis==6.131.15
 frozen-flask==1.0.2
+pymongo==4.10.1
+python-dotenv==1.0.1
