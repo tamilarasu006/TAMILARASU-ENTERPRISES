@@ -2,43 +2,27 @@
 {#
   Product Card component — renders a single product in the catalog grid.
 
-  Responsive image strategy (Req 11.2, 11.3):
-  - Uses <picture> with srcset for 3 size variants (mobile 400w, tablet 800w, desktop 1200w)
-  - When real WebP size variants exist, name them:
-      {base}-sm.webp  (400px wide)
-      {base}-md.webp  (800px wide)
-      {base}.webp     (1200px wide / original)
-  - Falls back to the original imageUrl if variants are not present
-  - onerror fallback to placeholder.svg (Req 4.4)
+  Image strategy:
+  - If imageUrl is a data: URI (base64 upload), render a plain <img> directly.
+  - If imageUrl is a file path (.webp/.jpg/.png), use <picture> with srcset
+    for responsive size variants.
+  - onerror fallback to placeholder.svg
 #}
 {% set img_base = product.imageUrl %}
-{% set img_sm = img_base | replace('.webp', '-sm.webp') | replace('.jpg', '-sm.jpg') | replace('.png', '-sm.png') %}
-{% set img_md = img_base | replace('.webp', '-md.webp') | replace('.jpg', '-md.jpg') | replace('.png', '-md.png') %}
+{% set is_data_uri = img_base and img_base.startswith('data:') %}
+
+{% if not is_data_uri %}
+  {% set img_sm = img_base | replace('.webp', '-sm.webp') | replace('.jpg', '-sm.jpg') | replace('.png', '-sm.png') %}
+  {% set img_md = img_base | replace('.webp', '-md.webp') | replace('.jpg', '-md.jpg') | replace('.png', '-md.png') %}
+{% endif %}
 
 <article class="product-card">
   <div class="product-card__image-wrapper">
-    <picture>
-      {# Mobile: serve smallest variant #}
-      <source
-        media="(max-width: 767px)"
-        srcset="{{ img_sm }} 400w, {{ img_base }} 800w"
-        sizes="(max-width: 767px) calc(100vw - 2.5rem)"
-        type="image/webp"
-      >
-      {# Tablet: serve medium variant #}
-      <source
-        media="(max-width: 1023px)"
-        srcset="{{ img_md }} 800w, {{ img_base }} 1200w"
-        sizes="(max-width: 1023px) calc(50vw - 2rem)"
-        type="image/webp"
-      >
-      {# Desktop: full size #}
+
+    {% if is_data_uri %}
+      {# Base64 uploaded image — render directly, no srcset needed #}
       <img
         src="{{ img_base }}"
-        srcset="{{ img_sm }} 400w, {{ img_md }} 800w, {{ img_base }} 1200w"
-        sizes="(max-width: 767px) calc(100vw - 2.5rem),
-               (max-width: 1023px) calc(50vw - 2rem),
-               calc(33vw - 2rem)"
         alt="{{ product.name }}"
         loading="lazy"
         width="400"
@@ -46,7 +30,44 @@
         onerror="this.onerror=null;this.src='/static/images/placeholder.svg'"
         class="product-card__image"
       >
-    </picture>
+    {% elif img_base %}
+      {# File path — use responsive <picture> with srcset variants #}
+      <picture>
+        <source
+          media="(max-width: 767px)"
+          srcset="{{ img_sm }} 400w, {{ img_base }} 800w"
+          sizes="(max-width: 767px) calc(100vw - 2.5rem)"
+        >
+        <source
+          media="(max-width: 1023px)"
+          srcset="{{ img_md }} 800w, {{ img_base }} 1200w"
+          sizes="(max-width: 1023px) calc(50vw - 2rem)"
+        >
+        <img
+          src="{{ img_base }}"
+          srcset="{{ img_sm }} 400w, {{ img_md }} 800w, {{ img_base }} 1200w"
+          sizes="(max-width: 767px) calc(100vw - 2.5rem),
+                 (max-width: 1023px) calc(50vw - 2rem),
+                 calc(33vw - 2rem)"
+          alt="{{ product.name }}"
+          loading="lazy"
+          width="400"
+          height="300"
+          onerror="this.onerror=null;this.src='/static/images/placeholder.svg'"
+          class="product-card__image"
+        >
+      </picture>
+    {% else %}
+      {# No image at all — show placeholder #}
+      <img
+        src="/static/images/placeholder.svg"
+        alt="{{ product.name }}"
+        loading="lazy"
+        width="400"
+        height="300"
+        class="product-card__image"
+      >
+    {% endif %}
 
     {% if product.isAvailable %}
       <span class="badge badge-available" aria-label="Product is available">Available</span>
