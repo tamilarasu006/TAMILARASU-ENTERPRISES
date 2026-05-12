@@ -109,12 +109,32 @@ def delete_user(user_id: str) -> bool:
 
 
 def ensure_default_admin() -> None:
-    """Create a default admin account if no admin exists."""
+    """Create a default admin account if no admin exists.
+    
+    The default password is read from the ADMIN_DEFAULT_PASSWORD environment
+    variable. If not set, a random secure password is generated and printed
+    once to the console. This prevents hardcoded credentials in source code.
+    """
+    import os
+    import secrets
     users = _load()
-    if not any(u["role"] == ROLE_ADMIN for u in users):
-        create_user(
-            name="Admin",
-            email="admin@tamilarasuenterprises.com",
-            password="Admin@1234",
-            role=ROLE_ADMIN,
-        )
+    if any(u["role"] == ROLE_ADMIN for u in users):
+        return  # Admin already exists — do nothing
+
+    password = os.environ.get("ADMIN_DEFAULT_PASSWORD", "")
+    if not password:
+        # Generate a random password and print it once
+        password = secrets.token_urlsafe(16)
+        print("=" * 60)
+        print("  NEW ADMIN ACCOUNT CREATED")
+        print(f"  Email:    admin@tamilarasuenterprises.com")
+        print(f"  Password: {password}")
+        print("  Change this password immediately after first login.")
+        print("=" * 60)
+
+    create_user(
+        name="Admin",
+        email="admin@tamilarasuenterprises.com",
+        password=password,
+        role=ROLE_ADMIN,
+    )
