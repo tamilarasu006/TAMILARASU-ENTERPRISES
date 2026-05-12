@@ -678,36 +678,33 @@ def _handle_image_upload(form, file_storage) -> str:
     Resolve the final imageUrl from either an uploaded file or a typed URL.
 
     Priority: uploaded file > typed URL field.
-    Saves the file to static/images/products/ and returns the /static/… path.
-    Returns empty string if neither is provided.
+
+    Storage strategy:
+    - Converts the uploaded image to a base64 data URI so it works on both
+      local dev and Render (no persistent filesystem required).
+    - Falls back to the typed imageUrl field if no file is uploaded.
     """
-    import uuid
-    from werkzeug.utils import secure_filename
+    import base64
 
     ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "webp", "gif"}
+    MIME_MAP = {
+        "jpg": "image/jpeg", "jpeg": "image/jpeg",
+        "png": "image/png", "webp": "image/webp", "gif": "image/gif",
+    }
     MAX_SIZE = 5 * 1024 * 1024  # 5 MB
 
     if file_storage and file_storage.filename:
         ext = file_storage.filename.rsplit(".", 1)[-1].lower()
         if ext not in ALLOWED_EXTENSIONS:
-            return form.get("imageUrl", "").strip()  # fall back to URL
+            return form.get("imageUrl", "").strip()
 
-        # Read content to check size
         content = file_storage.read()
         if len(content) > MAX_SIZE:
             return form.get("imageUrl", "").strip()
 
-        # Build a safe filename: original-name-uuid.ext
-        base = secure_filename(file_storage.filename.rsplit(".", 1)[0])
-        filename = f"{base}-{uuid.uuid4().hex[:8]}.{ext}"
-
-        upload_dir = BASE_DIR / "static" / "images" / "products"
-        upload_dir.mkdir(parents=True, exist_ok=True)
-
-        dest = upload_dir / filename
-        dest.write_bytes(content)
-
-        return f"/static/images/products/{filename}"
+        mime = MIME_MAP.get(ext, "image/jpeg")
+        b64 = base64.b64encode(content).decode("utf-8")
+        return f"data:{mime};base64,{b64}"
 
     # No file — use the typed URL
     return form.get("imageUrl", "").strip()
