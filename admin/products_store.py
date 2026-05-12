@@ -1,10 +1,15 @@
 """
-Admin product store — CRUD operations on data/products.json.
+Admin product store — CRUD operations.
+
+Storage strategy:
+- When MONGO_URI is set (Render / production): uses MongoDB 'products' collection.
+- Otherwise (local dev): falls back to data/products.json.
 """
 
 from __future__ import annotations
 
 import json
+import os
 import re
 from pathlib import Path
 from typing import Optional
@@ -14,6 +19,25 @@ PRODUCTS_FILE = Path(__file__).parent.parent / "data" / "products.json"
 VALID_CATEGORIES = {"FRUIT", "VEGETABLE", "GRAIN", "SPICE", "OTHER"}
 ID_PATTERN = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 
+
+# ── Storage backend ────────────────────────────────────────────────────────────
+
+def _use_mongo() -> bool:
+    return bool(os.environ.get("MONGO_URI", "").strip())
+
+
+def _col():
+    from db import get_db
+    return get_db()["products"]
+
+
+def _doc_to_product(doc: dict) -> dict:
+    d = dict(doc)
+    d.pop("_id", None)
+    return d
+
+
+# ── JSON fallback ──────────────────────────────────────────────────────────────
 
 def _load() -> list[dict]:
     if not PRODUCTS_FILE.exists():
@@ -31,11 +55,18 @@ def _save(products: list[dict]) -> None:
         json.dump(products, f, indent=2, ensure_ascii=False)
 
 
+# ── Public API ─────────────────────────────────────────────────────────────────
+
 def get_all() -> list[dict]:
+    if _use_mongo():
+        return [_doc_to_product(d) for d in _col().find()]
     return _load()
 
 
 def get_by_id(product_id: str) -> Optional[dict]:
+    if _use_mongo():
+        doc = _col().find_one({"id": product_id})
+        return _doc_to_product(doc) if doc else None
     return next((p for p in _load() if p["id"] == product_id), None)
 
 
@@ -78,15 +109,10 @@ def validate(data: dict) -> dict[str, str]:
     return errors
 
 
-def create(data: dict) -> tuple[Optional[dict], dict[str, str]]:
-    errors = validate(data)
-    if errors:
-        return None, errors
-    products = _load()
-    if any(p["id"] == data["id"] for p in products):
-        return None, {"id": "A product with this ID already exists."}
-    product = {
-        "id": data["id"].strip(),
+def _build_product(data: dict, product_id: str = None) -> dict:
+    pid = product_id or data["id"].strip()
+    return {
+        "id": pid,
         "name": data["name"].strip(),
         "category": data["category"].strip().upper(),
         "origin": data["origin"].strip(),
@@ -102,44 +128,62 @@ def create(data: dict) -> tuple[Optional[dict], dict[str, str]]:
         "shelfLife": data.get("shelfLife", "").strip(),
         "tags": [t.strip() for t in data.get("tags", []) if t.strip()],
     }
-    products.append(product)
-    _save(products)
-    return product, {}
+
+
+def create(data: dict) -> tuple[Optional[dict], dict[str, str]]:
+    errors = validate(data)
+    if errors:
+        return None, errors
+
+    if _use_mongo():
+        col = _col()
+        if col.find_one({"id": data["id"]}):
+            return None, {"id": "A product with this ID already exists."}
+        product = _build_product(data)
+        doc = dict(product)
+        doc["_id"] = product["id"]
+        col.insert_one(doc)
+        return product, {}
+    else:
+        products = _load()
+        if any(p["id"] == data["id"] for p in products):
+            return None, {"id": "A product with this ID already exists."}
+        product = _build_product(data)
+        products.append(product)
+        _save(products)
+        return product, {}
 
 
 def update(product_id: str, data: dict) -> tuple[Optional[dict], dict[str, str]]:
     errors = validate(data)
     if errors:
         return None, errors
-    products = _load()
-    for i, p in enumerate(products):
-        if p["id"] == product_id:
-            products[i] = {
-                "id": product_id,
-                "name": data["name"].strip(),
-                "category": data["category"].strip().upper(),
-                "origin": data["origin"].strip(),
-                "minimumOrderQuantity": data["minimumOrderQuantity"].strip(),
-                "imageUrl": data["imageUrl"].strip(),
-                "description": data["description"].strip(),
-                "isAvailable": bool(data["isAvailable"]),
-                "season": data.get("season", "").strip(),
-                "unit": data.get("unit", "").strip(),
-                "certifications": [c.strip() for c in data.get("certifications", []) if c.strip()],
-                "exportDestinations": [d.strip() for d in data.get("exportDestinations", []) if d.strip()],
-                "packagingOptions": [o.strip() for o in data.get("packagingOptions", []) if o.strip()],
-                "shelfLife": data.get("shelfLife", "").strip(),
-                "tags": [t.strip() for t in data.get("tags", []) if t.strip()],
-            }
-            _save(products)
-            return products[i], {}
-    return None, {"id": "Product not found."}
+
+    if _use_mongo():
+        col = _col()
+        if not col.find_one({"id": product_id}):
+            return None, {"id": "Product not found."}
+        product = _build_product(data, product_id)
+        col.replace_one({"id": product_id}, {**product, "_id": product_id})
+        return product, {}
+    else:
+        products = _load()
+        for i, p in enumerate(products):
+            if p["id"] == product_id:
+                products[i] = _build_product(data, product_id)
+                _save(products)
+                return products[i], {}
+        return None, {"id": "Product not found."}
 
 
 def delete(product_id: str) -> bool:
-    products = _load()
-    new_products = [p for p in products if p["id"] != product_id]
-    if len(new_products) == len(products):
-        return False
-    _save(new_products)
-    return True
+    if _use_mongo():
+        result = _col().delete_one({"id": product_id})
+        return result.deleted_count > 0
+    else:
+        products = _load()
+        new_products = [p for p in products if p["id"] != product_id]
+        if len(new_products) == len(products):
+            return False
+        _save(new_products)
+        return True

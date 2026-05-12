@@ -189,7 +189,10 @@ def add_security_headers(response):
 def home():
     """Home page — hero banner + featured products + service overview."""
     featured_ids = SITE_CONFIG.featuredProductIds
-    product_map = {p.id: p for p in PRODUCTS}
+    # Read live from store so admin changes show immediately
+    raw = get_all_products_raw()
+    live_products = [p for p in [_try_product(r) for r in raw] if p]
+    product_map = {p.id: p for p in live_products}
     featured = [product_map[pid] for pid in featured_ids if pid in product_map]
 
     # Clamp to 3–6 featured products; if fewer than 3 available show all
@@ -200,7 +203,7 @@ def home():
         "home.html",
         active_page="home",
         featured_products=featured,
-        products=PRODUCTS,
+        products=live_products,
         services=SERVICES,
     )
 
@@ -219,8 +222,13 @@ def products():
         showAvailableOnly=available_only,
     )
 
+    # Always read live from store (MongoDB on Render, JSON locally)
+    # so admin changes are immediately visible without restart
+    raw = get_all_products_raw()
+    live_products = [p for p in [_try_product(r) for r in raw] if p]
+
     from catalog.filter import filter_products
-    filtered = filter_products(PRODUCTS, filters)
+    filtered = filter_products(live_products, filters)
 
     # Pagination (Req 3.8): ≤ 20 per page
     page_size = 20
@@ -234,7 +242,7 @@ def products():
         "catalog.html",
         active_page="products",
         products=paginated,
-        all_products=PRODUCTS,
+        all_products=live_products,
         filters=filters,
         current_page=page,
         total_pages=total_pages,
