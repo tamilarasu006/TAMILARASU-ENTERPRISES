@@ -64,7 +64,6 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      position: relative; /* needed for absolute mobile nav */
     }
 
     /* Logo + company name */
@@ -160,10 +159,13 @@
     @media (max-width: 767px) {
       .hamburger-btn { display: flex; }
 
+      /* Anchor the dropdown to the sticky header, not header-inner */
+      .site-header { position: relative; }
+
       .site-nav {
         display: none;
         position: absolute;
-        top: 64px;
+        top: 100%;   /* flush below the header bar */
         left: 0;
         right: 0;
         flex-direction: column;
