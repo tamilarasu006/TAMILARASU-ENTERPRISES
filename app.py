@@ -669,6 +669,46 @@ def _parse_csv(value: str) -> list[str]:
     return [v.strip() for v in value.split(",") if v.strip()]
 
 
+def _handle_image_upload(form, file_storage) -> str:
+    """
+    Resolve the final imageUrl from either an uploaded file or a typed URL.
+
+    Priority: uploaded file > typed URL field.
+    Saves the file to static/images/products/ and returns the /static/… path.
+    Returns empty string if neither is provided.
+    """
+    import uuid
+    from werkzeug.utils import secure_filename
+
+    ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "webp", "gif"}
+    MAX_SIZE = 5 * 1024 * 1024  # 5 MB
+
+    if file_storage and file_storage.filename:
+        ext = file_storage.filename.rsplit(".", 1)[-1].lower()
+        if ext not in ALLOWED_EXTENSIONS:
+            return form.get("imageUrl", "").strip()  # fall back to URL
+
+        # Read content to check size
+        content = file_storage.read()
+        if len(content) > MAX_SIZE:
+            return form.get("imageUrl", "").strip()
+
+        # Build a safe filename: original-name-uuid.ext
+        base = secure_filename(file_storage.filename.rsplit(".", 1)[0])
+        filename = f"{base}-{uuid.uuid4().hex[:8]}.{ext}"
+
+        upload_dir = BASE_DIR / "static" / "images" / "products"
+        upload_dir.mkdir(parents=True, exist_ok=True)
+
+        dest = upload_dir / filename
+        dest.write_bytes(content)
+
+        return f"/static/images/products/{filename}"
+
+    # No file — use the typed URL
+    return form.get("imageUrl", "").strip()
+
+
 # ── Admin routes ───────────────────────────────────────────────────────────────
 
 @app.route("/admin")
@@ -723,13 +763,14 @@ def admin_product_create():
     if guard:
         return guard
     form = request.form
+    image_url = _handle_image_upload(form, request.files.get("imageFile"))
     data = {
         "id": form.get("id", "").strip(),
         "name": form.get("name", "").strip(),
         "category": form.get("category", "").strip().upper(),
         "origin": form.get("origin", "").strip(),
         "minimumOrderQuantity": form.get("minimumOrderQuantity", "").strip(),
-        "imageUrl": form.get("imageUrl", "").strip(),
+        "imageUrl": image_url,
         "description": form.get("description", "").strip(),
         "isAvailable": form.get("isAvailable") == "1",
         "season": form.get("season", "").strip(),
@@ -777,13 +818,18 @@ def admin_product_update(product_id):
     if guard:
         return guard
     form = request.form
+    image_url = _handle_image_upload(form, request.files.get("imageFile"))
+    # If no new image provided, keep the existing one
+    if not image_url:
+        existing = get_product_by_id(product_id)
+        image_url = existing.get("imageUrl", "") if existing else ""
     data = {
         "id": product_id,
         "name": form.get("name", "").strip(),
         "category": form.get("category", "").strip().upper(),
         "origin": form.get("origin", "").strip(),
         "minimumOrderQuantity": form.get("minimumOrderQuantity", "").strip(),
-        "imageUrl": form.get("imageUrl", "").strip(),
+        "imageUrl": image_url,
         "description": form.get("description", "").strip(),
         "isAvailable": form.get("isAvailable") == "1",
         "season": form.get("season", "").strip(),
