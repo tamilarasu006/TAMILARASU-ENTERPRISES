@@ -1,14 +1,15 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "",
+  "description": "TAMILARASU ENTERPRISES backend server",
   "main": "src/app.js",
   "type": "commonjs",
   "engines": {
     "node": "20.x"
   },
   "scripts": {
-    "start": "node src/app.js"
+    "start": "node src/app.js",
+    "build": "npm install --include=dev && npm rebuild"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
