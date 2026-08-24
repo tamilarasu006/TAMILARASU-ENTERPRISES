@@ -49,11 +49,11 @@ app.use('/admin', express.static(path.join(__dirname, '../../admin/dist')));
 app.use(express.static(path.join(__dirname, '../../client/dist')));
 
 // Catch-all routes for React Router
-app.get('/admin/*', (req, res) => {
+app.use('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, '../../admin/dist/index.html'));
 });
 
-app.get('*', (req, res) => {
+app.use((req, res) => {
   res.sendFile(path.join(__dirname, '../../client/dist/index.html'));
 });
 
