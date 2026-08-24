@@ -35,3 +35,6 @@ data/users.json
 # OS
 .DS_Store
 Thumbs.db
+
+# Node
+node_modules/
