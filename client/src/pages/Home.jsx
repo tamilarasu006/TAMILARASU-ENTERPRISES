@@ -36,14 +36,16 @@ export default function Home() {
         <section className="relative h-screen flex items-center justify-center overflow-hidden bg-gray-900">
           <motion.div
             style={{ scale: heroScale, opacity: heroOpacity }}
-            className="absolute inset-0 z-0"
+            className="absolute inset-0 z-0 bg-gray-900 overflow-hidden"
           >
-            <div className="absolute inset-0 bg-black/60 z-10" />
-            <img
-              src="https://images.unsplash.com/photo-1586528116311-ad8ed7f66a00?auto=format&fit=crop&q=80"
-              alt="Global Shipping"
-              className="w-full h-full object-cover"
-            />
+            {/* CSS Animated Mesh Gradient instead of an external image */}
+            <div className="absolute top-0 -left-1/4 w-[150%] h-[150%] bg-gradient-to-br from-blue-900 via-gray-900 to-green-900 opacity-80 blur-3xl animate-pulse" style={{ animationDuration: '8s' }} />
+            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-600 rounded-full mix-blend-screen filter blur-[100px] opacity-40 animate-bounce" style={{ animationDuration: '12s' }} />
+            <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-green-600 rounded-full mix-blend-screen filter blur-[120px] opacity-30 animate-pulse" style={{ animationDuration: '10s' }} />
+            <div className="absolute inset-0 bg-black/40 z-10" />
+            
+            {/* Minimal Grid Pattern Overlay */}
+            <div className="absolute inset-0 z-10 opacity-20" style={{ backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
           </motion.div>
 
           <div className="container mx-auto relative z-20 text-center px-4 mt-20">
@@ -213,16 +215,18 @@ export default function Home() {
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
           >
             {[
-              { name: 'Fruits', image: 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?auto=format&fit=crop&q=80&w=400' },
-              { name: 'Vegetables', image: 'https://images.unsplash.com/photo-1566385101042-1a0aa0c1268c?auto=format&fit=crop&q=80&w=400' },
-              { name: 'Spices', image: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&q=80&w=400' },
-              { name: 'Grains & Pulses', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=400' }
+              { name: 'Fruits', emoji: '🍎', gradient: 'from-orange-400 to-red-500' },
+              { name: 'Vegetables', emoji: '🥦', gradient: 'from-emerald-400 to-green-600' },
+              { name: 'Spices', emoji: '🌶️', gradient: 'from-amber-500 to-orange-700' },
+              { name: 'Grains & Pulses', emoji: '🌾', gradient: 'from-yellow-400 to-amber-600' }
             ].map((cat, index) => (
               <motion.div key={cat.name} variants={fadeUp}>
                 <Link to={`/products?category=${encodeURIComponent(cat.name)}`} className="group block h-full bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 relative">
-                  <div className="h-64 overflow-hidden">
-                    <img src={cat.image} alt={cat.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity"></div>
+                  <div className={`h-64 flex flex-col items-center justify-center bg-gradient-to-br ${cat.gradient} relative overflow-hidden`}>
+                    <div className="text-7xl group-hover:scale-125 transition-transform duration-700 ease-in-out z-10 drop-shadow-2xl">
+                      {cat.emoji}
+                    </div>
+                    <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors duration-500 z-0"></div>
                   </div>
                   <div className="absolute bottom-0 left-0 right-0 p-6 text-white transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
                     <h4 className="font-bold text-2xl mb-2">{cat.name}</h4>
