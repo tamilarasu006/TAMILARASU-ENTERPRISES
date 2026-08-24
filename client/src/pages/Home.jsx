@@ -215,22 +215,24 @@ export default function Home() {
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
           >
             {[
-              { name: 'Fruits', emoji: '🍎', gradient: 'from-orange-400 to-red-500' },
-              { name: 'Vegetables', emoji: '🥦', gradient: 'from-emerald-400 to-green-600' },
-              { name: 'Spices', emoji: '🌶️', gradient: 'from-amber-500 to-orange-700' },
-              { name: 'Grains & Pulses', emoji: '🌾', gradient: 'from-yellow-400 to-amber-600' }
+              { name: 'Fruits', image: 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?auto=format&fit=crop&w=800&q=80' },
+              { name: 'Vegetables', image: 'https://images.unsplash.com/photo-1566385101042-1a0aa0c1268c?auto=format&fit=crop&w=800&q=80' },
+              { name: 'Spices', image: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=800&q=80' },
+              { name: 'Grains & Pulses', image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=800&q=80' }
             ].map((cat, index) => (
               <motion.div key={cat.name} variants={fadeUp}>
                 <Link to={`/products?category=${encodeURIComponent(cat.name)}`} className="group block h-full bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 relative">
-                  <div className={`h-64 flex flex-col items-center justify-center bg-gradient-to-br ${cat.gradient} relative overflow-hidden`}>
-                    <div className="text-7xl group-hover:scale-125 transition-transform duration-700 ease-in-out z-10 drop-shadow-2xl">
-                      {cat.emoji}
-                    </div>
-                    <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors duration-500 z-0"></div>
+                  <div className="h-64 relative overflow-hidden bg-gray-900">
+                    <img 
+                      src={cat.image} 
+                      alt={cat.name} 
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out z-0 opacity-90 group-hover:opacity-100"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-10 group-hover:from-black/70 transition-colors duration-500"></div>
                   </div>
-                  <div className="absolute bottom-0 left-0 right-0 p-6 text-white transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                    <h4 className="font-bold text-2xl mb-2">{cat.name}</h4>
-                    <div className="flex items-center text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
+                  <div className="absolute bottom-0 left-0 right-0 p-6 text-white transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 z-20">
+                    <h4 className="font-bold text-2xl mb-2 drop-shadow-lg">{cat.name}</h4>
+                    <div className="flex items-center text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100 drop-shadow-md">
                       View Catalog <ArrowRight className="ml-2 w-4 h-4" />
                     </div>
                   </div>

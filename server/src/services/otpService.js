@@ -35,6 +35,7 @@ const sendOTP = async (userId, userEmail, userPhone, channel) => {
 
   const otp = generateOTP();
   console.log(`[OTP] ${channel} OTP generated`);
+
   
   const otpHash = await bcrypt.hash(otp, 10);
   const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
