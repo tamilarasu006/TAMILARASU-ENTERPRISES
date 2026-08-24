@@ -29,6 +29,9 @@ export default function Login() {
         <input type="email" placeholder="Email" className="w-full border-none p-2 mb-4 rounded text-black" value={email} onChange={e => setEmail(e.target.value)} required />
         <input type="password" placeholder="Password" className="w-full border-none p-2 mb-6 rounded text-black" value={password} onChange={e => setPassword(e.target.value)} required />
         <button type="submit" className="w-full bg-blue-600 p-2 rounded font-bold hover:bg-blue-700">Login</button>
+        <div className="mt-4 text-center">
+          <a href="/login" className="text-gray-400 hover:text-white text-sm underline">Switch to Customer Login</a>
+        </div>
       </form>
     </div>
   );

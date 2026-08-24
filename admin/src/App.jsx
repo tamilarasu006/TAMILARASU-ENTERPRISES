@@ -29,7 +29,7 @@ function AdminLayout({ children }) {
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/admin">
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<AdminLayout><Dashboard /></AdminLayout>} />

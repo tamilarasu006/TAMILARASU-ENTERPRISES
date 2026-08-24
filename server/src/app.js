@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
@@ -43,7 +44,18 @@ app.use('/api/admin/orders', adminOrderRoutes);
 
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
-app.get('/', (req, res) => res.send('TAMILARASU ENTERPRISES API is running...'));
+// Serve static frontend files (Client and Admin)
+app.use('/admin', express.static(path.join(__dirname, '../../admin/dist')));
+app.use(express.static(path.join(__dirname, '../../client/dist')));
+
+// Catch-all routes for React Router
+app.get('/admin/*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../admin/dist/index.html'));
+});
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../client/dist/index.html'));
+});
 
 // Global error handler
 app.use((err, req, res, next) => {
