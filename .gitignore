@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env/
+
+# Environment / secrets
+.env
+.env.local
+.env.*.local
+
+# User data (contains hashed passwords — do not commit)
+data/users.json
+
+# IDE
+.vscode/
+.idea/
+
+# pytest
+.pytest_cache/
+.hypothesis/
+.jqwik-database
+
+# OS
+.DS_Store
+Thumbs.db

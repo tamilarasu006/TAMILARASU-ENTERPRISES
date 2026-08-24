@@ -1,0 +1,119 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id               String   @id @default(uuid())
+  name             String
+  email            String   @unique
+  phone            String?  @unique
+  password         String
+  role             String   @default("CUSTOMER") // "CUSTOMER" or "ADMIN"
+  emailVerified    Boolean  @default(false)
+  mobileVerified   Boolean  @default(false)
+  emailVerifiedAt  DateTime?
+  mobileVerifiedAt DateTime?
+  orders           Order[]
+  otpVerifications OTPVerification[]
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Product {
+  id                   String      @id
+  name                 String
+  description          String
+  category             String
+  hsnCode              String?
+  price                Float
+  unit                 String
+  minimumOrderQuantity Int
+  stock                Int
+  imageUrl             String?
+  origin               String?
+  packagingOptions     String?     // Comma separated string for SQLite
+  certifications       String?     // Comma separated string for SQLite
+  shelfLife            String?
+  tags                 String?     // Comma separated string for SQLite
+  isAvailable          Boolean     @default(true)
+  orderItems           OrderItem[]
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+}
+
+model Order {
+  id                    String      @id @default(uuid())
+  orderNumber           String      @unique
+  userId                String
+  user                  User        @relation(fields: [userId], references: [id])
+  status                String      @default("PENDING") // PENDING, QUOTED, PROCESSING, SHIPPED, COMPLETED, CANCELLED
+  totalAmount           Float
+  shippingAddress       String
+  billingAddress        String
+  company               String?
+  country               String?
+  message               String?
+  preferredDeliveryDate String?
+  internalNotes         String?
+  quotedAmount          Float?
+  orderItems            OrderItem[]
+  payment               Payment?
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+}
+
+model OrderItem {
+  id        String  @id @default(uuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id])
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Float
+  subtotal  Float
+}
+
+model Payment {
+  id            String   @id @default(uuid())
+  orderId       String   @unique
+  order         Order    @relation(fields: [orderId], references: [id])
+  paymentMethod String
+  paymentStatus String   @default("PENDING")
+  transactionId String?
+  amount        Float
+  createdAt     DateTime @default(now())
+}
+
+model Service {
+  id          String   @id
+  title       String
+  description String
+  icon        String
+  highlights  String?  // Comma separated string
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SiteConfig {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+model OTPVerification {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  channel     String   // "EMAIL" or "MOBILE"
+  otpHash     String
+  expiresAt   DateTime
+  attempts    Int      @default(0)
+  lastSentAt  DateTime @default(now())
+  verifiedAt  DateTime?
+  createdAt   DateTime @default(now())
+}
