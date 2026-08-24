@@ -40,7 +40,7 @@ export default function Home() {
           >
             <div className="absolute inset-0 bg-black/60 z-10" />
             <img
-              src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80"
+              src="https://images.unsplash.com/photo-1586528116311-ad8ed7f66a00?auto=format&fit=crop&q=80"
               alt="Global Shipping"
               className="w-full h-full object-cover"
             />
