@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Smartphone, CheckCircle, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
 import PageTransition from '../components/PageTransition';
 
+const API_URL = import.meta.env.VITE_API_URL || '';
+
 export default function VerifyAccount() {
   const [searchParams] = useSearchParams();
   const emailParam = searchParams.get('email');
@@ -39,7 +41,7 @@ export default function VerifyAccount() {
     try {
       setLoading(true);
       setError('');
-      await axios.post('http://localhost:5000/api/auth/send-email-otp', { email: emailParam });
+      await axios.post(`${API_URL}/api/auth/send-email-otp`, { email: emailParam });
       setCountdown(60);
     } catch (err) {
       if (err.response?.data?.message === 'Email already verified') {
@@ -57,7 +59,7 @@ export default function VerifyAccount() {
     try {
       setLoading(true);
       setError('');
-      await axios.post('http://localhost:5000/api/auth/verify-email-otp', { email: emailParam, otp });
+      await axios.post(`${API_URL}/api/auth/verify-email-otp`, { email: emailParam, otp });
       setOtp('');
       setStep(2);
     } catch (err) {

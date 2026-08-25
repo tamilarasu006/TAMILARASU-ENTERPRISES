@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
+const API_URL = import.meta.env.VITE_API_URL || '';
+
 export default function Orders() {
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     if(token) {
-      axios.get('http://localhost:5000/api/orders/my-orders', {
+      axios.get(`${API_URL}/api/orders/my-orders`, {
         headers: { Authorization: `Bearer ${token}` }
       }).then(res => setOrders(res.data.data)).catch(console.error);
     }
@@ -16,12 +18,12 @@ export default function Orders() {
   const confirmOrder = async (orderId) => {
     const token = localStorage.getItem('token');
     try {
-      await axios.put(`http://localhost:5000/api/orders/${orderId}/confirm`, {}, {
+      await axios.put(`${API_URL}/api/orders/${orderId}/confirm`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       alert('Order Confirmed!');
       // Refresh orders
-      axios.get('http://localhost:5000/api/orders/my-orders', {
+      axios.get(`${API_URL}/api/orders/my-orders`, {
         headers: { Authorization: `Bearer ${token}` }
       }).then(res => setOrders(res.data.data)).catch(console.error);
     } catch (err) {

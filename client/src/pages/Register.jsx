@@ -5,6 +5,8 @@ import { motion } from 'framer-motion';
 import { AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
 import PageTransition from '../components/PageTransition';
 
+const API_URL = import.meta.env.VITE_API_URL || '';
+
 export default function Register() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -49,9 +51,9 @@ export default function Register() {
 
     try {
       setLoading(true);
-      await axios.post('http://localhost:5000/api/auth/register', { name, email, phone, password });
+      await axios.post(`${API_URL}/api/auth/register`, { name, email, phone, password });
       
-      // Navigate to verification page
+      // On success, redirect to verify account
       navigate(`/verify-account?email=${encodeURIComponent(email)}`);
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed. Please try again.');

@@ -10,6 +10,7 @@ import Orders from './pages/Orders';
 import About from './pages/About';
 import Services from './pages/Services';
 import VerifyAccount from './pages/VerifyAccount';
+import ForgotPassword from './pages/ForgotPassword';
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -24,6 +25,7 @@ function AnimatedRoutes() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/verify-account" element={<VerifyAccount />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/orders" element={<Orders />} />
       </Routes>

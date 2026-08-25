@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, Loader2, ArrowLeft, Send, ShieldCheck } from 'lucide-react';
 import PageTransition from '../components/PageTransition';
 
+const API_URL = import.meta.env.VITE_API_URL || '';
+
 export default function Checkout() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -23,7 +25,7 @@ export default function Checkout() {
 
   useEffect(() => {
     if (productId) {
-      axios.get(`http://localhost:5000/api/products/${productId}`)
+      axios.get(`${API_URL}/api/products/${productId}`)
         .then(res => {
            setProduct(res.data.data);
            setQuantity(res.data.data.minimumOrderQuantity);
@@ -41,7 +43,7 @@ export default function Checkout() {
     
     try {
       const payload = {
-        items: [{ productId, quantity: parseInt(quantity) }],
+        items: [{ productId: product.id, quantity, price: product.price }],
         shippingAddress: 'TBD', // Required by previous schema
         billingAddress: 'TBD',
         company,
@@ -50,8 +52,8 @@ export default function Checkout() {
         preferredDeliveryDate
       };
       
-      const res = await axios.post('http://localhost:5000/api/orders', payload, {
-        headers: { Authorization: `Bearer ${token}` }
+      const res = await axios.post(`${API_URL}/api/orders`, payload, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       
       setOrderRef(res.data.data.orderNumber);
@@ -108,7 +110,7 @@ export default function Checkout() {
                 <h3 className="text-2xl font-bold mb-6 text-blue-200 border-b border-gray-700 pb-4">Inquiry Details</h3>
                 
                 <div className="mb-8 h-64 rounded-xl overflow-hidden border-2 border-gray-700 shadow-lg">
-                   {product.imageUrl && <img src={product.imageUrl.startsWith('/uploads') ? `http://localhost:5000${product.imageUrl}` : product.imageUrl} alt={product.name} className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"/>}
+                   {product.imageUrl && <img src={product.imageUrl.startsWith('/uploads') ? `${API_URL}${product.imageUrl}` : product.imageUrl} alt={product.name} className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"/>}
                 </div>
                 
                 <h4 className="font-bold text-3xl mb-4">{product.name}</h4>

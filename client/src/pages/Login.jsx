@@ -4,6 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import PageTransition from '../components/PageTransition';
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 export default function Login() {
   const [identifier, setIdentifier] = useState(''); // Email or Mobile
@@ -21,7 +22,7 @@ export default function Login() {
 
     try {
       setLoading(true);
-      const res = await axios.post('http://localhost:5000/api/auth/login', { email: identifier, password });
+      const res = await axios.post(`${API_URL}/api/auth/login`, { email: identifier, password });
       
       // If successful, store token and redirect
       localStorage.setItem('token', res.data.data.token);
@@ -87,7 +88,7 @@ export default function Login() {
             <div>
               <div className="flex justify-between items-center mb-1">
                 <label className="block text-sm font-semibold text-gray-700">Password</label>
-                <button type="button" className="text-xs text-blue-600 font-semibold hover:underline">Forgot password?</button>
+                <Link to="/forgot-password" className="text-xs text-blue-600 font-semibold hover:underline">Forgot password?</Link>
               </div>
               <input type="password" placeholder="••••••••" className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all" value={password} onChange={e => setPassword(e.target.value)} required />
             </div>
