@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Package } from 'lucide-react';
 import PageTransition from '../components/PageTransition';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 const staggerContainer = {
   hidden: { opacity: 0 },

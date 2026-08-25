@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Globe2, ShieldCheck, Package, Ship, Star } from 'lucide-react';
 import PageTransition from '../components/PageTransition';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
