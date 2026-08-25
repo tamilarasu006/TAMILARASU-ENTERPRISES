@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { User, LogOut, Package } from 'lucide-react';
+import { User, LogOut, Package, Menu, X } from 'lucide-react';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { scrollY } = useScroll();
   const location = useLocation();
   const navigate = useNavigate();
@@ -168,7 +169,75 @@ export default function Navbar() {
             )}
           </motion.div>
         </nav>
+
+        {/* Mobile menu button */}
+        <div className="md:hidden flex items-center">
+          <button 
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="text-white p-2 focus:outline-none"
+          >
+            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
       </div>
+
+      {/* Mobile Menu Dropdown */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div 
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden bg-blue-900 border-t border-blue-800 overflow-hidden"
+          >
+            <div className="px-4 py-4 flex flex-col space-y-4">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  to={link.path}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`text-white font-semibold text-lg ${location.pathname === link.path ? 'text-blue-300' : ''}`}
+                >
+                  {link.name}
+                </Link>
+              ))}
+              
+              <div className="h-px bg-blue-800 my-2"></div>
+              
+              {!isLoggedIn ? (
+                <Link 
+                  to="/login"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="bg-white text-blue-900 px-5 py-3 rounded text-center font-bold"
+                >
+                  Login
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    to="/orders"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="text-white font-semibold flex items-center text-lg"
+                  >
+                    <Package className="w-5 h-5 mr-3" />
+                    My Orders
+                  </Link>
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      handleLogout();
+                    }}
+                    className="text-red-400 font-semibold flex items-center text-lg text-left"
+                  >
+                    <LogOut className="w-5 h-5 mr-3" />
+                    Logout
+                  </button>
+                </>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.header>
   );
 }
