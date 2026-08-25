@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle, Loader2, ArrowLeft, Send } from 'lucide-react';
+import { CheckCircle, Loader2, ArrowLeft, Send, ShieldCheck } from 'lucide-react';
 import PageTransition from '../components/PageTransition';
 
 export default function Checkout() {
@@ -108,7 +108,7 @@ export default function Checkout() {
                 <h3 className="text-2xl font-bold mb-6 text-blue-200 border-b border-gray-700 pb-4">Inquiry Details</h3>
                 
                 <div className="mb-8 h-64 rounded-xl overflow-hidden border-2 border-gray-700 shadow-lg">
-                   {product.imageUrl && <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"/>}
+                   {product.imageUrl && <img src={product.imageUrl.startsWith('/uploads') ? `http://localhost:5000${product.imageUrl}` : product.imageUrl} alt={product.name} className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"/>}
                 </div>
                 
                 <h4 className="font-bold text-3xl mb-4">{product.name}</h4>

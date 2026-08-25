@@ -6,8 +6,6 @@ const {
   logout, 
   sendEmailOtp, 
   verifyEmailOtp, 
-  sendMobileOtp, 
-  verifyMobileOtp,
   forgotPassword,
   verifyResetOtp,
   resetPassword,
@@ -23,8 +21,6 @@ router.post('/logout', logout);
 router.post('/send-email-otp', sendEmailOtp);
 router.post('/verify-email-otp', verifyEmailOtp);
 
-router.post('/send-mobile-otp', sendMobileOtp);
-router.post('/verify-mobile-otp', verifyMobileOtp);
 
 router.post('/forgot-password', forgotPassword);
 router.post('/verify-reset-otp', verifyResetOtp);

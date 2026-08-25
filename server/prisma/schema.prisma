@@ -15,9 +15,7 @@ model User {
   password         String
   role             String   @default("CUSTOMER") // "CUSTOMER" or "ADMIN"
   emailVerified    Boolean  @default(false)
-  mobileVerified   Boolean  @default(false)
   emailVerifiedAt  DateTime?
-  mobileVerifiedAt DateTime?
   orders           Order[]
   otpVerifications OTPVerification[]
   createdAt        DateTime @default(now())
@@ -25,12 +23,13 @@ model User {
 }
 
 model Product {
-  id                   String      @id
+  id                   String      @id @default(uuid())
   name                 String
   description          String
   category             String
   hsnCode              String?
   price                Float
+  priceOnRequest       Boolean     @default(false)
   unit                 String
   minimumOrderQuantity Int
   stock                Int
@@ -41,6 +40,9 @@ model Product {
   shelfLife            String?
   tags                 String?     // Comma separated string for SQLite
   isAvailable          Boolean     @default(true)
+  exportAvailability   Boolean     @default(false)
+  featuredProduct      Boolean     @default(false)
+  isActive             Boolean     @default(true)
   orderItems           OrderItem[]
   createdAt            DateTime    @default(now())
   updatedAt            DateTime    @updatedAt
@@ -90,13 +92,17 @@ model Payment {
 }
 
 model Service {
-  id          String   @id
-  title       String
-  description String
-  icon        String
-  highlights  String?  // Comma separated string
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                       String   @id @default(uuid())
+  title                    String
+  description              String
+  category                 String   @default("General")
+  icon                     String
+  imageUrl                 String?
+  highlights               String?  // Comma separated string
+  pricingQuotationRequired Boolean  @default(false)
+  isActive                 Boolean  @default(true)
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
 }
 
 model SiteConfig {

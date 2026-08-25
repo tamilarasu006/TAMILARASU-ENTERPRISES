@@ -34,7 +34,7 @@ const sendOTP = async (userId, userEmail, userPhone, channel) => {
   });
 
   const otp = generateOTP();
-  console.log(`[OTP] ${channel} OTP generated`);
+  console.log(`[OTP] ${channel} OTP generated: ${otp}`);
 
   
   const otpHash = await bcrypt.hash(otp, 10);
@@ -50,13 +50,11 @@ const sendOTP = async (userId, userEmail, userPhone, channel) => {
   });
   console.log(`[OTP] ${channel} OTP stored successfully`);
 
-  if (channel === 'EMAIL') {
-    const subject = "Verify your TAMILARASU ENTERPRISES account";
-    const text = `Hello,\n\nYour verification OTP is: ${otp}\n\nThis OTP expires in 5 minutes.\n\nIf you did not request this verification, ignore this email.\n\nRegards,\nTAMILARASU ENTERPRISES`;
+  if (channel === 'EMAIL' || channel === 'RESET') {
+    const action = channel === 'RESET' ? 'password reset' : 'verification';
+    const subject = channel === 'RESET' ? 'Reset your TAMILARASU ENTERPRISES password' : 'Verify your TAMILARASU ENTERPRISES account';
+    const text = `Hello,\n\nYour ${action} OTP is: ${otp}\n\nThis OTP expires in 5 minutes.\n\nIf you did not request this ${action}, ignore this email.\n\nRegards,\nTAMILARASU ENTERPRISES`;
     await sendEmail(userEmail, subject, text);
-  } else if (channel === 'MOBILE') {
-    const message = `TAMILARASU ENTERPRISES verification OTP: ${otp}. Valid for 5 minutes.`;
-    await sendSMS(userPhone, message);
   }
 
   return true;

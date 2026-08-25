@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { motion } from 'framer-motion';
-import { Globe2, ShieldCheck, Package, Ship } from 'lucide-react';
+import { Globe2, ShieldCheck, Package, Ship, Star } from 'lucide-react';
 import PageTransition from '../components/PageTransition';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -14,36 +17,32 @@ const staggerContainer = {
 };
 
 export default function Services() {
-  const services = [
-    {
-      title: "Global Export",
-      desc: "We export high-quality fresh produce to major markets including the Middle East, Europe, and Southeast Asia, adhering to strict international standards.",
-      icon: Globe2,
-      color: "text-blue-500",
-      bg: "bg-blue-50"
-    },
-    {
-      title: "Quality Assurance",
-      desc: "Every batch of produce undergoes rigorous quality checks, sorting, and grading to ensure only the best reaches our clients.",
-      icon: ShieldCheck,
-      color: "text-green-500",
-      bg: "bg-green-50"
-    },
-    {
-      title: "Custom Packaging",
-      desc: "We offer customized packaging solutions to preserve freshness and shelf-life, tailored to the specific requirements of our buyers.",
-      icon: Package,
-      color: "text-purple-500",
-      bg: "bg-purple-50"
-    },
-    {
-      title: "Logistics & Shipping",
-      desc: "End-to-end logistics support including cold chain management, documentation, and timely delivery across the globe.",
-      icon: Ship,
-      color: "text-cyan-500",
-      bg: "bg-cyan-50"
-    }
-  ];
+  const [services, setServices] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setIsLoading(true);
+    axios.get(`${API_URL}/api/services`)
+      .then(res => {
+        setServices(res.data.data);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setIsLoading(false);
+      });
+  }, []);
+
+  // Map string icon names to actual Lucide components, fallback to Star
+  const getIconComponent = (iconName) => {
+    if (!iconName) return Star;
+    const lowerName = iconName.toLowerCase();
+    if (lowerName.includes('globe')) return Globe2;
+    if (lowerName.includes('shield')) return ShieldCheck;
+    if (lowerName.includes('package')) return Package;
+    if (lowerName.includes('ship')) return Ship;
+    return Star;
+  };
 
   return (
     <PageTransition>
@@ -81,31 +80,73 @@ export default function Services() {
             <div className="w-24 h-1 bg-gradient-to-r from-blue-400 to-green-400 mx-auto"></div>
           </motion.div>
           
-          <motion.div 
-            variants={staggerContainer}
-            initial="hidden" whileInView="show" viewport={{ once: true, margin: "-100px" }}
-            className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto"
-          >
-            {services.map((service, index) => (
-              <motion.div 
-                key={index} 
-                variants={fadeUp}
-                className="bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 p-10 border border-gray-100 flex flex-col sm:flex-row items-start sm:space-x-6 group hover:-translate-y-2 relative overflow-hidden"
-              >
-                {/* Decorative background glow on hover */}
-                <div className={`absolute -right-20 -top-20 w-40 h-40 rounded-full blur-3xl opacity-0 group-hover:opacity-20 transition-opacity duration-500 ${service.bg.replace('50', '500')}`}></div>
-                
-                <div className={`p-5 rounded-2xl mb-6 sm:mb-0 shrink-0 ${service.bg} ${service.color} group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 shadow-inner`}>
-                  <service.icon className="w-10 h-10" />
+          {isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+              {[1, 2, 3, 4].map(i => (
+                <div key={i} className="bg-white rounded-3xl p-10 animate-pulse h-48">
+                  <div className="flex space-x-4">
+                    <div className="w-16 h-16 bg-gray-200 rounded-2xl shrink-0"></div>
+                    <div className="flex-1 space-y-3 py-1">
+                      <div className="h-6 bg-gray-200 rounded w-3/4"></div>
+                      <div className="h-4 bg-gray-200 rounded"></div>
+                      <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+                    </div>
+                  </div>
                 </div>
-                
-                <div className="relative z-10">
-                  <h3 className="text-2xl font-bold text-gray-800 mb-3 group-hover:text-blue-900 transition-colors">{service.title}</h3>
-                  <p className="text-gray-600 leading-relaxed">{service.desc}</p>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
+              ))}
+            </div>
+          ) : services.length === 0 ? (
+            <div className="text-center text-gray-500 py-10">
+              No services currently available. Check back soon!
+            </div>
+          ) : (
+            <motion.div 
+              variants={staggerContainer}
+              initial="hidden" whileInView="show" viewport={{ once: true, margin: "-100px" }}
+              className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto"
+            >
+              {services.map((service, index) => {
+                const Icon = getIconComponent(service.icon);
+                return (
+                  <motion.div 
+                    key={service.id} 
+                    variants={fadeUp}
+                    className="bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 border border-gray-100 flex flex-col sm:flex-row items-start sm:space-x-6 group hover:-translate-y-2 relative overflow-hidden"
+                  >
+                    <div className="absolute -right-20 -top-20 w-40 h-40 rounded-full blur-3xl opacity-0 group-hover:opacity-10 transition-opacity duration-500 bg-blue-500"></div>
+                    
+                    {service.imageUrl ? (
+                      <div className="w-20 h-20 shrink-0 mb-6 sm:mb-0 rounded-2xl overflow-hidden shadow-inner group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                         <img src={service.imageUrl.startsWith('/uploads') ? `${API_URL}${service.imageUrl}` : service.imageUrl} alt={service.title} className="w-full h-full object-cover" />
+                      </div>
+                    ) : (
+                      <div className="p-5 rounded-2xl mb-6 sm:mb-0 shrink-0 bg-blue-50 text-blue-500 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 shadow-inner">
+                        <Icon className="w-10 h-10" />
+                      </div>
+                    )}
+                    
+                    <div className="relative z-10">
+                      <h3 className="text-2xl font-bold text-gray-800 mb-2 group-hover:text-blue-900 transition-colors">{service.title}</h3>
+                      <p className="text-blue-500 text-sm font-semibold mb-3">{service.category}</p>
+                      <p className="text-gray-600 leading-relaxed mb-4">{service.description}</p>
+                      
+                      {service.highlights && (
+                        <div className="flex flex-wrap gap-2">
+                          {service.highlights.split(',').map((h, i) => (
+                            <span key={i} className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">{h.trim()}</span>
+                          ))}
+                        </div>
+                      )}
+                      
+                      {service.pricingQuotationRequired && (
+                        <div className="mt-4 text-sm font-bold text-orange-500">Quotation Required</div>
+                      )}
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          )}
         </main>
 
         <footer className="bg-blue-900 text-white py-8 mt-auto">

@@ -26,7 +26,6 @@ const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100 // limit each IP to 100 requests per windowMs
 });
-app.use(limiter);
 
 // Store socket io instance to be accessible from controllers
 app.set('io', io);
@@ -36,15 +35,20 @@ const authRoutes = require('./routes/auth.routes');
 const productRoutes = require('./routes/product.routes');
 const orderRoutes = require('./routes/order.routes');
 const adminOrderRoutes = require('./routes/adminOrder.routes');
+const serviceRoutes = require('./routes/service.routes');
+
+app.use('/api/', limiter); // Apply limiter only to API routes
 
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/admin/orders', adminOrderRoutes);
+app.use('/api/services', serviceRoutes);
 
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
 // Serve static frontend files (Client and Admin)
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use('/admin', express.static(path.join(__dirname, '../../admin/dist')));
 app.use(express.static(path.join(__dirname, '../../client/dist')));
 

@@ -5,6 +5,8 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Package } from 'lucide-react';
 import PageTransition from '../components/PageTransition';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 const staggerContainer = {
   hidden: { opacity: 0 },
   show: {
@@ -33,7 +35,7 @@ export default function Products() {
 
   useEffect(() => {
     setIsLoading(true);
-    axios.get('http://localhost:5000/api/products')
+    axios.get(`${API_URL}/api/products`)
       .then(res => {
         setProducts(res.data.data);
         setIsLoading(false);
@@ -165,7 +167,7 @@ export default function Products() {
                 >
                   <div className="h-56 bg-gray-100 relative overflow-hidden">
                     {p.imageUrl ? (
-                      <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                      <img src={p.imageUrl.startsWith('/uploads') ? `${API_URL}${p.imageUrl}` : p.imageUrl} alt={p.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gray-200">
                         <Package className="w-10 h-10 opacity-50" />

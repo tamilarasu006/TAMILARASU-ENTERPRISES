@@ -10,7 +10,7 @@ export default function VerifyAccount() {
   const emailParam = searchParams.get('email');
   const navigate = useNavigate();
 
-  const [step, setStep] = useState(1); // 1: Email, 2: Mobile, 3: Success
+  const [step, setStep] = useState(1); // 1: Email, 2: Success
   const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -42,7 +42,11 @@ export default function VerifyAccount() {
       await axios.post('http://localhost:5000/api/auth/send-email-otp', { email: emailParam });
       setCountdown(60);
     } catch (err) {
-      setError('Unable to send verification code. Please try again.');
+      if (err.response?.data?.message === 'Email already verified') {
+        setStep(2);
+      } else {
+        setError(err.response?.data?.message || 'Unable to send verification code. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -56,7 +60,6 @@ export default function VerifyAccount() {
       await axios.post('http://localhost:5000/api/auth/verify-email-otp', { email: emailParam, otp });
       setOtp('');
       setStep(2);
-      sendMobileOtp();
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid Email OTP');
     } finally {
@@ -64,37 +67,7 @@ export default function VerifyAccount() {
     }
   };
 
-  const sendMobileOtp = async () => {
-    try {
-      setLoading(true);
-      setError('');
-      await axios.post('http://localhost:5000/api/auth/send-mobile-otp', { email: emailParam });
-      setCountdown(60);
-    } catch (err) {
-      // If we just came from step 1 success, show a slightly different message
-      if (step === 2 && !otp) {
-        setError('Email verification code sent, but we could not send the mobile verification code. Please try again.');
-      } else {
-        setError('Unable to send verification code. Please try again.');
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  const verifyMobileOtp = async (e) => {
-    e.preventDefault();
-    try {
-      setLoading(true);
-      setError('');
-      await axios.post('http://localhost:5000/api/auth/verify-mobile-otp', { email: emailParam, otp });
-      setStep(3);
-    } catch (err) {
-      setError(err.response?.data?.message || 'Invalid Mobile OTP');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const formatTime = (seconds) => {
     const m = Math.floor(seconds / 60);
@@ -121,18 +94,18 @@ export default function VerifyAccount() {
 
           {/* Progress Indicator */}
           <div className="flex justify-center items-center mb-10">
-            <div className={`flex flex-col items-center ${step >= 1 ? 'text-blue-600' : 'text-gray-300'}`}>
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 ${step > 1 ? 'bg-green-100 text-green-600' : step === 1 ? 'bg-blue-100' : 'bg-gray-100'}`}>
+            <div className={`flex flex-col items-center text-blue-600`}>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 ${step > 1 ? 'bg-green-100 text-green-600' : 'bg-blue-100'}`}>
                 {step > 1 ? <CheckCircle className="w-5 h-5" /> : <Mail className="w-5 h-5" />}
               </div>
               <span className="text-xs font-semibold">Email</span>
             </div>
-            <div className={`w-16 h-1 mx-2 rounded ${step >= 2 ? 'bg-blue-600' : 'bg-gray-200'}`}></div>
-            <div className={`flex flex-col items-center ${step >= 2 ? 'text-blue-600' : 'text-gray-300'}`}>
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 ${step > 2 ? 'bg-green-100 text-green-600' : step === 2 ? 'bg-blue-100' : 'bg-gray-100'}`}>
-                {step > 2 ? <CheckCircle className="w-5 h-5" /> : <Smartphone className="w-5 h-5" />}
+            <div className={`w-16 h-1 mx-2 rounded ${step >= 2 ? 'bg-green-600' : 'bg-gray-200'}`}></div>
+            <div className={`flex flex-col items-center ${step >= 2 ? 'text-green-600' : 'text-gray-300'}`}>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 ${step >= 2 ? 'bg-green-100' : 'bg-gray-100'}`}>
+                <CheckCircle className="w-5 h-5" />
               </div>
-              <span className="text-xs font-semibold">Mobile</span>
+              <span className="text-xs font-semibold">Done</span>
             </div>
           </div>
 
@@ -181,44 +154,8 @@ export default function VerifyAccount() {
               </motion.form>
             )}
 
+
             {step === 2 && (
-              <motion.form key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} onSubmit={verifyMobileOtp}>
-                <div className="text-center mb-6">
-                  <p className="text-gray-600">Enter the 6-digit OTP sent to your</p>
-                  <p className="font-bold text-gray-800">Registered Mobile Number</p>
-                </div>
-
-                <div className="mb-6">
-                  <input 
-                    type="text" 
-                    maxLength="6"
-                    placeholder="Enter Mobile OTP" 
-                    className="w-full text-center text-2xl tracking-[0.5em] bg-gray-50 border border-gray-200 text-gray-900 rounded-xl px-4 py-4 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all" 
-                    value={otp} 
-                    onChange={e => setOtp(e.target.value.replace(/\D/g, ''))} 
-                    required 
-                  />
-                </div>
-
-                <button 
-                  type="submit" 
-                  disabled={loading || otp.length !== 6}
-                  className="w-full bg-blue-900 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-blue-800 transition-all flex items-center justify-center disabled:opacity-70"
-                >
-                  {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Verify Mobile'}
-                </button>
-
-                <div className="mt-6 text-center text-sm">
-                  {countdown > 0 ? (
-                    <span className="text-gray-500">Resend available in {formatTime(countdown)}</span>
-                  ) : (
-                    <button type="button" onClick={sendMobileOtp} className="text-blue-600 font-semibold hover:underline">Resend OTP</button>
-                  )}
-                </div>
-              </motion.form>
-            )}
-
-            {step === 3 && (
               <motion.div key="step3" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center">
                 <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-green-500">
                   <CheckCircle className="w-10 h-10" />

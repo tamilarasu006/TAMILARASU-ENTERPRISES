@@ -31,7 +31,7 @@ const register = async (req, res) => {
     
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({
-      data: { name, email, password: hashedPassword, phone, emailVerified: false, mobileVerified: false }
+      data: { name, email, password: hashedPassword, phone, emailVerified: false }
     });
     
     res.status(201).json({ success: true, message: 'Registration successful. Please verify your account.' });
@@ -66,12 +66,12 @@ const login = async (req, res) => {
     if (!isMatch) return res.status(400).json({ success: false, message: 'Invalid email/mobile number or password.' });
     
     // Check verification status for customers
-    if (!user.emailVerified || !user.mobileVerified) {
+    if (!user.emailVerified) {
        return res.status(403).json({ 
          success: false, 
-         message: 'Please verify your email and mobile number before logging in.', 
+         message: 'Please verify your email before logging in.', 
          code: 'UNVERIFIED_ACCOUNT',
-         data: { email: user.email, phone: user.phone, emailVerified: user.emailVerified, mobileVerified: user.mobileVerified }
+         data: { email: user.email, phone: user.phone, emailVerified: user.emailVerified }
        });
     }
 
@@ -118,43 +118,6 @@ const verifyEmailOtp = async (req, res) => {
     });
 
     res.json({ success: true, message: 'Email verified successfully' });
-  } catch (error) {
-    res.status(400).json({ success: false, message: error.message, code: error.code });
-  }
-};
-
-// Send Mobile OTP
-const sendMobileOtp = async (req, res) => {
-  try {
-    const { email } = req.body;
-    const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
-    if (!user) return res.status(400).json({ success: false, message: 'User not found' });
-
-    if (user.mobileVerified) return res.status(400).json({ success: false, message: 'Mobile already verified' });
-    if (!user.phone) return res.status(400).json({ success: false, message: 'No mobile number on record' });
-
-    await sendOTP(user.id, user.email, user.phone, 'MOBILE');
-    res.json({ success: true, message: 'OTP sent to mobile successfully' });
-  } catch (error) {
-    res.status(400).json({ success: false, message: error.message, code: error.code });
-  }
-};
-
-// Verify Mobile OTP
-const verifyMobileOtp = async (req, res) => {
-  try {
-    const { email, otp } = req.body;
-    const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
-    if (!user) return res.status(400).json({ success: false, message: 'User not found' });
-
-    await verifyOTP(user.id, 'MOBILE', otp);
-    
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { mobileVerified: true, mobileVerifiedAt: new Date() }
-    });
-
-    res.json({ success: true, message: 'Mobile verified successfully' });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message, code: error.code });
   }
@@ -237,7 +200,7 @@ const me = async (req, res) => {
     const user = await prisma.user.findUnique({ where: { id: decoded.id } });
     if (!user) return res.status(401).json({ success: false, message: 'Unauthorized' });
     
-    res.json({ success: true, data: { id: user.id, name: user.name, email: user.email, role: user.role, emailVerified: user.emailVerified, mobileVerified: user.mobileVerified } });
+    res.json({ success: true, data: { id: user.id, name: user.name, email: user.email, role: user.role, emailVerified: user.emailVerified } });
   } catch (error) {
     res.status(401).json({ success: false, message: 'Unauthorized' });
   }
@@ -276,8 +239,6 @@ module.exports = {
   logout, 
   sendEmailOtp, 
   verifyEmailOtp, 
-  sendMobileOtp, 
-  verifyMobileOtp,
   forgotPassword,
   verifyResetOtp,
   resetPassword,

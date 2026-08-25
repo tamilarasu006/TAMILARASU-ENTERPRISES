@@ -1,11 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { User, LogOut, Package } from 'lucide-react';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const { scrollY } = useScroll();
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const isLoggedIn = !!localStorage.getItem('token');
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
 
   // Make navbar transparent only on the home page when at the top
   const isHome = location.pathname === '/';
@@ -107,12 +117,55 @@ export default function Navbar() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3, delay: navLinks.length * 0.1 }}
           >
-             <Link 
-               to="/login" 
-               className="bg-white text-blue-900 px-5 py-2 rounded shadow-md hover:bg-gray-100 transition transform hover:-translate-y-0.5 active:translate-y-0 font-bold ml-4"
-             >
-               Login
-             </Link>
+            {!isLoggedIn ? (
+              <Link 
+                to="/login" 
+                className="bg-white text-blue-900 px-5 py-2 rounded shadow-md hover:bg-gray-100 transition transform hover:-translate-y-0.5 active:translate-y-0 font-bold ml-4"
+              >
+                Login
+              </Link>
+            ) : (
+              <div className="relative ml-4">
+                <button
+                  onClick={() => setShowProfileMenu(!showProfileMenu)}
+                  className="bg-white/20 hover:bg-white/30 p-2 rounded-full text-white transition focus:outline-none flex items-center justify-center"
+                >
+                  <User className="w-5 h-5" />
+                </button>
+                
+                <AnimatePresence>
+                  {showProfileMenu && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute right-0 mt-3 w-48 bg-white rounded-xl shadow-xl overflow-hidden border border-gray-100 py-2"
+                    >
+                      <Link
+                        to="/orders"
+                        onClick={() => setShowProfileMenu(false)}
+                        className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors"
+                      >
+                        <Package className="w-4 h-4 mr-3" />
+                        <span className="font-medium text-sm">My Orders</span>
+                      </Link>
+                      <div className="h-px bg-gray-100 my-1"></div>
+                      <button
+                        onClick={() => {
+                          setShowProfileMenu(false);
+                          handleLogout();
+                        }}
+                        className="flex items-center w-full px-4 py-3 text-red-600 hover:bg-red-50 transition-colors"
+                      >
+                        <LogOut className="w-4 h-4 mr-3" />
+                        <span className="font-medium text-sm">Logout</span>
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
           </motion.div>
         </nav>
       </div>

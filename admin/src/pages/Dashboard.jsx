@@ -15,14 +15,14 @@ export default function Dashboard() {
       return navigate('/login');
     }
     axios.get('http://localhost:5000/api/admin/orders', { headers: { Authorization: `Bearer ${token}` } })
-      .then(res => setOrders(res.data.data))
+      .then(res => setOrders(res.data.data || []))
       .catch(err => {
         console.error(err);
         if (err.response?.status === 401 || err.response?.status === 403) navigate('/login');
       });
       
-    axios.get('http://localhost:5000/api/admin/products', { headers: { Authorization: `Bearer ${token}` } })
-      .then(res => setProducts(res.data.data))
+    axios.get('http://localhost:5000/api/products', { headers: { Authorization: `Bearer ${token}` } })
+      .then(res => setProducts(res.data.data || []))
       .catch(console.error);
   }, [navigate]);
 
