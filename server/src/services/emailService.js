@@ -39,7 +39,7 @@ const sendEmail = async (to, subject, text) => {
       error.code = 'EMAIL_AUTHENTICATION_FAILED';
       throw error;
     }
-    const error = new Error('EMAIL_CONNECTION_FAILED');
+    const error = new Error(`EMAIL_CONNECTION_FAILED: ${err.message}`);
     error.code = 'EMAIL_CONNECTION_FAILED';
     throw error;
   }
