@@ -90,8 +90,8 @@ const logout = async (req, res) => {
 // Send Email OTP
 const sendEmailOtp = async (req, res) => {
   try {
-    const { email } = req.body;
-    const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
+    const email = req.body.email?.toLowerCase().trim();
+    const user = await prisma.user.findUnique({ where: { email } });
     if (!user) return res.status(400).json({ success: false, message: 'User not found' });
 
     if (user.emailVerified) return res.status(400).json({ success: false, message: 'Email already verified' });
@@ -106,8 +106,9 @@ const sendEmailOtp = async (req, res) => {
 // Verify Email OTP
 const verifyEmailOtp = async (req, res) => {
   try {
-    const { email, otp } = req.body;
-    const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
+    const email = req.body.email?.toLowerCase().trim();
+    const { otp } = req.body;
+    const user = await prisma.user.findUnique({ where: { email } });
     if (!user) return res.status(400).json({ success: false, message: 'User not found' });
 
     await verifyOTP(user.id, 'EMAIL', otp);
