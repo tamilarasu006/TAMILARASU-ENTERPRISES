@@ -4,6 +4,7 @@
   "description": "Monorepo root for Tamilarasu Enterprises",
   "scripts": {
     "build": "npm --prefix client install && npm --prefix client run build && npm --prefix admin install && npm --prefix admin run build && npm --prefix server install",
+    "build:netlify": "npm --prefix client install && npm --prefix client run build && npm --prefix admin install && npm --prefix admin run build && rm -rf client/dist/admin && mv admin/dist client/dist/admin",
     "start": "node server/src/app.js"
   }
 }
