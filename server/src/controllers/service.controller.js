@@ -48,7 +48,7 @@ const createService = async (req, res) => {
     if (data.isActive !== undefined) data.isActive = parseBool(data.isActive);
     
     if (req.file) {
-      data.imageUrl = `/uploads/${req.file.filename}`;
+      data.imageUrl = req.file.path; // Cloudinary URL
     }
 
     const service = await prisma.service.create({ data });
@@ -65,14 +65,7 @@ const updateService = async (req, res) => {
     if (data.isActive !== undefined) data.isActive = parseBool(data.isActive);
     
     if (req.file) {
-      data.imageUrl = `/uploads/${req.file.filename}`;
-      const oldService = await prisma.service.findUnique({ where: { id: req.params.id } });
-      if (oldService && oldService.imageUrl && oldService.imageUrl.startsWith('/uploads/')) {
-        const oldImagePath = path.join(__dirname, '../../', oldService.imageUrl);
-        if (fs.existsSync(oldImagePath)) {
-          fs.unlinkSync(oldImagePath);
-        }
-      }
+      data.imageUrl = req.file.path; // Cloudinary URL
     }
 
     const service = await prisma.service.update({
@@ -102,13 +95,6 @@ const deleteService = async (req, res) => {
   try {
     const service = await prisma.service.findUnique({ where: { id: req.params.id } });
     if (!service) return res.status(404).json({ success: false, message: 'Service not found' });
-
-    if (service.imageUrl && service.imageUrl.startsWith('/uploads/')) {
-      const oldImagePath = path.join(__dirname, '../../', service.imageUrl);
-      if (fs.existsSync(oldImagePath)) {
-        fs.unlinkSync(oldImagePath);
-      }
-    }
 
     await prisma.service.delete({ where: { id: req.params.id } });
     res.json({ success: true, message: 'Service deleted successfully' });

@@ -61,7 +61,7 @@ const createProduct = async (req, res) => {
 
     // Handle image upload
     if (req.file) {
-      data.imageUrl = `/uploads/${req.file.filename}`;
+      data.imageUrl = req.file.path; // Cloudinary URL
     }
 
     const product = await prisma.product.create({ data });
@@ -88,16 +88,7 @@ const updateProduct = async (req, res) => {
 
     // Handle image upload
     if (req.file) {
-      data.imageUrl = `/uploads/${req.file.filename}`;
-      
-      // Optionally delete old image
-      const oldProduct = await prisma.product.findUnique({ where: { id: req.params.id } });
-      if (oldProduct && oldProduct.imageUrl && oldProduct.imageUrl.startsWith('/uploads/')) {
-        const oldImagePath = path.join(__dirname, '../../', oldProduct.imageUrl);
-        if (fs.existsSync(oldImagePath)) {
-          fs.unlinkSync(oldImagePath);
-        }
-      }
+      data.imageUrl = req.file.path; // Cloudinary URL
     }
 
     const product = await prisma.product.update({
@@ -134,14 +125,6 @@ const deleteProduct = async (req, res) => {
       // Soft delete instead
       await prisma.product.update({ where: { id: req.params.id }, data: { isActive: false, isAvailable: false } });
       return res.json({ success: true, message: 'Product has active orders. Soft-deleted successfully (set to inactive).' });
-    }
-
-    // Delete image if exists
-    if (product.imageUrl && product.imageUrl.startsWith('/uploads/')) {
-      const oldImagePath = path.join(__dirname, '../../', product.imageUrl);
-      if (fs.existsSync(oldImagePath)) {
-        fs.unlinkSync(oldImagePath);
-      }
     }
 
     await prisma.product.delete({ where: { id: req.params.id } });
