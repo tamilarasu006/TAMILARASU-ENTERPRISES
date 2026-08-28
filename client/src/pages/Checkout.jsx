@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, Loader2, ArrowLeft, Send, ShieldCheck } from 'lucide-react';
 import PageTransition from '../components/PageTransition';
+import { useAuth } from '../context/AuthContext';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
@@ -22,6 +23,7 @@ export default function Checkout() {
   // Submit states: 'idle', 'submitting', 'success', 'error'
   const [submitState, setSubmitState] = useState('idle');
   const [orderRef, setOrderRef] = useState('');
+  const { token } = useAuth();
 
   useEffect(() => {
     if (productId) {
@@ -36,7 +38,6 @@ export default function Checkout() {
 
   const submitInquiry = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem('token');
     if (!token) return navigate('/login');
     
     setSubmitState('submitting');
@@ -53,7 +54,7 @@ export default function Checkout() {
       };
       
       const res = await axios.post(`${API_URL}/api/orders`, payload, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${token}` }
       });
       
       setOrderRef(res.data.data.orderNumber);

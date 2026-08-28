@@ -1,22 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
 export default function Orders() {
   const [orders, setOrders] = useState([]);
+  const { token } = useAuth();
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
     if(token) {
       axios.get(`${API_URL}/api/orders/my-orders`, {
         headers: { Authorization: `Bearer ${token}` }
       }).then(res => setOrders(res.data.data)).catch(console.error);
     }
-  }, []);
+  }, [token]);
 
   const confirmOrder = async (orderId) => {
-    const token = localStorage.getItem('token');
     try {
       await axios.put(`${API_URL}/api/orders/${orderId}/confirm`, {}, {
         headers: { Authorization: `Bearer ${token}` }

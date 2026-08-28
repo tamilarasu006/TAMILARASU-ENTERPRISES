@@ -11,6 +11,7 @@ import About from './pages/About';
 import Services from './pages/Services';
 import VerifyAccount from './pages/VerifyAccount';
 import ForgotPassword from './pages/ForgotPassword';
+import { AuthProvider } from './context/AuthContext';
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -35,12 +36,14 @@ function AnimatedRoutes() {
 
 function App() {
   return (
-    <BrowserRouter>
-      <div className="min-h-screen bg-gray-50 flex flex-col font-sans text-gray-800">
-        <Navbar />
-        <AnimatedRoutes />
-      </div>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <div className="min-h-screen bg-gray-50 flex flex-col font-sans text-gray-800">
+          <Navbar />
+          <AnimatedRoutes />
+        </div>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

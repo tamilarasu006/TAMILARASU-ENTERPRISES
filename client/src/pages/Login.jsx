@@ -4,6 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import PageTransition from '../components/PageTransition';
+import { useAuth } from '../context/AuthContext';
 const API_URL = import.meta.env.VITE_API_URL || '';
 
 export default function Login() {
@@ -12,6 +13,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [unverifiedData, setUnverifiedData] = useState(null);
+  const { login } = useAuth();
 
   const navigate = useNavigate();
 
@@ -25,7 +27,7 @@ export default function Login() {
       const res = await axios.post(`${API_URL}/api/auth/login`, { email: identifier, password });
       
       // If successful, store token and redirect
-      localStorage.setItem('token', res.data.data.token);
+      login(res.data.data.user, res.data.data.token);
       navigate('/products');
     } catch (err) {
       if (err.response?.data?.code === 'UNVERIFIED_ACCOUNT') {
