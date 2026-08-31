@@ -1,3 +1,4 @@
+const errorResponse = require('./utils/errorResponse');
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
@@ -6,21 +7,34 @@ const morgan = require('morgan');
 const { createServer } = require('http');
 const { Server } = require('socket.io');
 const rateLimit = require('express-rate-limit');
+const jwt = require('jsonwebtoken');
+const prisma = require('./prisma');
 
 const app = express();
 const httpServer = createServer(app);
-const io = new Server(httpServer, {
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST', 'PATCH']
+const devOrigins = process.env.NODE_ENV !== 'production' ? ['http://localhost:5173', 'http://localhost:5174'] : [];
+const allowedOrigins = [process.env.CLIENT_URL, process.env.ADMIN_URL, ...devOrigins].filter(Boolean);
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // allow no-origin requests (curl, server-to-server, mobile apps)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
   }
+};
+
+const io = new Server(httpServer, {
+  cors: { origin: allowedOrigins, methods: ['GET', 'POST', 'PATCH'] }
 });
 
 // Middleware
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(morgan('dev'));
 
@@ -66,7 +80,7 @@ app.use((req, res) => {
 // Global error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ success: false, message: 'Internal Server Error', error: err.message });
+  return errorResponse(res, 500, 'Internal Server Error', err);
 });
 
 const PORT = process.env.PORT || 5000;
@@ -75,9 +89,23 @@ httpServer.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
+io.use(async (socket, next) => {
+  try {
+    const token = socket.handshake.auth?.token;
+    if (!token) return next(new Error('Authentication required'));
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await prisma.user.findUnique({ where: { id: decoded.id } });
+    if (!user || user.role !== 'ADMIN') return next(new Error('Admin access required'));
+    socket.user = user;
+    next();
+  } catch (err) {
+    next(new Error('Invalid or expired token'));
+  }
+});
+
 io.on('connection', (socket) => {
-  console.log('Admin connected:', socket.id);
-  // Add auth logic for sockets if necessary
+  socket.join('admins');
+  console.log('Admin connected:', socket.id, socket.user?.email);
 });
 
 module.exports = { app, httpServer };

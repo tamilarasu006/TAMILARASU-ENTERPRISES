@@ -1,3 +1,4 @@
+const errorResponse = require('../utils/errorResponse');
 const prisma = require('../prisma');
 
 const getAllOrders = async (req, res) => {
@@ -20,8 +21,20 @@ const getAllOrders = async (req, res) => {
     });
     res.json({ success: true, data: orders });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Failed to fetch orders', error: error.message });
+    return errorResponse(res, 500, 'Failed to fetch orders', error);
   }
+};
+
+const VALID_STATUSES = ['PENDING', 'QUOTED', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'COMPLETED', 'CANCELLED'];
+
+const ALLOWED_TRANSITIONS = {
+  PENDING: ['QUOTED', 'CANCELLED'],
+  QUOTED: ['CONFIRMED', 'PROCESSING', 'CANCELLED'],
+  CONFIRMED: ['PROCESSING', 'CANCELLED'],
+  PROCESSING: ['SHIPPED', 'CANCELLED'],
+  SHIPPED: ['COMPLETED'],
+  COMPLETED: [],
+  CANCELLED: []
 };
 
 const updateOrderStatus = async (req, res) => {
@@ -29,7 +42,19 @@ const updateOrderStatus = async (req, res) => {
     const { status, internalNotes, quotedAmount } = req.body;
     
     const updateData = {};
-    if (status) updateData.status = status;
+    if (status) {
+      if (!VALID_STATUSES.includes(status)) {
+        return res.status(400).json({ success: false, message: `Invalid status: ${status}` });
+      }
+      const current = await prisma.order.findUnique({ where: { id: req.params.id } });
+      if (!current) return res.status(404).json({ success: false, message: 'Order not found' });
+
+      if (status !== current.status && !ALLOWED_TRANSITIONS[current.status]?.includes(status)) {
+        return res.status(400).json({ success: false, message: `Cannot move order from ${current.status} to ${status}` });
+      }
+      updateData.status = status;
+    }
+    
     if (internalNotes !== undefined) updateData.internalNotes = internalNotes;
     
     if (quotedAmount !== undefined) {
@@ -46,7 +71,7 @@ const updateOrderStatus = async (req, res) => {
     });
     res.json({ success: true, message: 'Order updated', data: order });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Failed to update order', error: error.message });
+    return errorResponse(res, 500, 'Failed to update order', error);
   }
 };
 

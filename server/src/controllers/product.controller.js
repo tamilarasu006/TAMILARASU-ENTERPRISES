@@ -1,3 +1,4 @@
+const errorResponse = require('../utils/errorResponse');
 const prisma = require('../prisma');
 const fs = require('fs');
 const path = require('path');
@@ -11,7 +12,7 @@ const getProducts = async (req, res) => {
     });
     res.json({ success: true, data: products });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Failed to fetch products', error: error.message });
+    return errorResponse(res, 500, 'Failed to fetch products', error);
   }
 };
 
@@ -23,7 +24,7 @@ const getAdminProducts = async (req, res) => {
     });
     res.json({ success: true, data: products });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Failed to fetch admin products', error: error.message });
+    return errorResponse(res, 500, 'Failed to fetch admin products', error);
   }
 };
 
@@ -33,7 +34,7 @@ const getProductById = async (req, res) => {
     if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
     res.json({ success: true, data: product });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Failed to fetch product', error: error.message });
+    return errorResponse(res, 500, 'Failed to fetch product', error);
   }
 };
 
@@ -67,7 +68,7 @@ const createProduct = async (req, res) => {
     const product = await prisma.product.create({ data });
     res.status(201).json({ success: true, message: 'Product created successfully', data: product });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Failed to create product', error: error.message });
+    return errorResponse(res, 500, 'Failed to create product', error);
   }
 };
 
@@ -97,7 +98,7 @@ const updateProduct = async (req, res) => {
     });
     res.json({ success: true, message: 'Product updated successfully', data: product });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Failed to update product', error: error.message });
+    return errorResponse(res, 500, 'Failed to update product', error);
   }
 };
 
@@ -106,11 +107,11 @@ const updateProductStatus = async (req, res) => {
     const { isActive } = req.body;
     const product = await prisma.product.update({
       where: { id: req.params.id },
-      data: { isActive: Boolean(isActive) }
+      data: { isActive: parseBool(isActive) }
     });
     res.json({ success: true, message: 'Product status updated successfully', data: product });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Failed to update product status', error: error.message });
+    return errorResponse(res, 500, 'Failed to update product status', error);
   }
 };
 
@@ -130,7 +131,7 @@ const deleteProduct = async (req, res) => {
     await prisma.product.delete({ where: { id: req.params.id } });
     res.json({ success: true, message: 'Product deleted successfully' });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Failed to delete product', error: error.message });
+    return errorResponse(res, 500, 'Failed to delete product', error);
   }
 };
 

@@ -4,10 +4,23 @@ import Orders from './pages/Orders';
 import Login from './pages/Login';
 import Products from './pages/Products';
 import Services from './pages/Services';
+import { useEffect } from 'react';
+import { io } from 'socket.io-client';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 function AdminLayout({ children }) {
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    const token = localStorage.getItem('adminToken');
+    if (token) {
+      const socket = io(API_URL, { auth: { token } });
+      socket.on('new_order', (data) => console.log('New Order:', data));
+      return () => socket.disconnect();
+    }
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('adminToken');

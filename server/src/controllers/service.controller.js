@@ -1,3 +1,4 @@
+const errorResponse = require('../utils/errorResponse');
 const prisma = require('../prisma');
 const fs = require('fs');
 const path = require('path');
@@ -10,7 +11,7 @@ const getAllServices = async (req, res) => {
     });
     res.json({ success: true, data: services });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Failed to fetch services', error: error.message });
+    return errorResponse(res, 500, 'Failed to fetch services', error);
   }
 };
 
@@ -21,7 +22,7 @@ const getAdminServices = async (req, res) => {
     });
     res.json({ success: true, data: services });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Failed to fetch admin services', error: error.message });
+    return errorResponse(res, 500, 'Failed to fetch admin services', error);
   }
 };
 
@@ -31,7 +32,7 @@ const getServiceById = async (req, res) => {
     if (!service) return res.status(404).json({ success: false, message: 'Service not found' });
     res.json({ success: true, data: service });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Failed to fetch service', error: error.message });
+    return errorResponse(res, 500, 'Failed to fetch service', error);
   }
 };
 
@@ -54,7 +55,7 @@ const createService = async (req, res) => {
     const service = await prisma.service.create({ data });
     res.status(201).json({ success: true, message: 'Service created successfully', data: service });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Failed to create service', error: error.message });
+    return errorResponse(res, 500, 'Failed to create service', error);
   }
 };
 
@@ -74,7 +75,7 @@ const updateService = async (req, res) => {
     });
     res.json({ success: true, message: 'Service updated successfully', data: service });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Failed to update service', error: error.message });
+    return errorResponse(res, 500, 'Failed to update service', error);
   }
 };
 
@@ -83,11 +84,11 @@ const updateServiceStatus = async (req, res) => {
     const { isActive } = req.body;
     const service = await prisma.service.update({
       where: { id: req.params.id },
-      data: { isActive: Boolean(isActive) }
+      data: { isActive: parseBool(isActive) }
     });
     res.json({ success: true, message: 'Service status updated successfully', data: service });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Failed to update service status', error: error.message });
+    return errorResponse(res, 500, 'Failed to update service status', error);
   }
 };
 
@@ -99,7 +100,7 @@ const deleteService = async (req, res) => {
     await prisma.service.delete({ where: { id: req.params.id } });
     res.json({ success: true, message: 'Service deleted successfully' });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Failed to delete service', error: error.message });
+    return errorResponse(res, 500, 'Failed to delete service', error);
   }
 };
 

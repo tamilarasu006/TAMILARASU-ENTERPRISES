@@ -1,3 +1,4 @@
+const errorResponse = require('../utils/errorResponse');
 const prisma = require('../prisma');
 
 const generateOrderNumber = () => {
@@ -8,6 +9,10 @@ const createOrder = async (req, res) => {
   const { items, shippingAddress, billingAddress, company, country, message, preferredDeliveryDate } = req.body;
   const userId = req.user.id;
   
+  if (!Array.isArray(items) || items.length === 0) {
+    return res.status(400).json({ success: false, message: 'At least one order item is required.' });
+  }
+
   try {
     console.log('[ORDER] B2B Inquiry received from user:', userId);
     
@@ -19,6 +24,9 @@ const createOrder = async (req, res) => {
       const product = await prisma.product.findUnique({ where: { id: item.productId } });
       if (!product) {
         return res.status(400).json({ success: false, message: `Product ${item.productId} not found` });
+      }
+      if (!product.isActive || !product.isAvailable) {
+        return res.status(400).json({ success: false, message: `${product.name} is no longer available for order.` });
       }
       if (product.minimumOrderQuantity > item.quantity) {
          return res.status(400).json({ success: false, message: `Minimum order quantity for ${product.name} is ${product.minimumOrderQuantity}` });
@@ -64,14 +72,14 @@ const createOrder = async (req, res) => {
     // Notify admin via Socket.IO
     const io = req.app.get('io');
     if (io) {
-      io.emit('new_order', { orderNumber: order.orderNumber, customerName: order.user.name, company: order.company, totalAmount: order.totalAmount });
+      io.to('admins').emit('new_order', { orderNumber: order.orderNumber, customerName: order.user.name, company: order.company, totalAmount: order.totalAmount });
       console.log('[ORDER] Emitted socket notification to admins.');
     }
     
     res.status(201).json({ success: true, message: 'Order created successfully', data: order });
   } catch (error) {
     console.error('[ORDER] Error:', error.message);
-    res.status(500).json({ success: false, message: 'Unable to create order', error: error.message });
+    return errorResponse(res, 500, 'Unable to create order', error);
   }
 };
 
@@ -84,7 +92,7 @@ const getMyOrders = async (req, res) => {
     });
     res.json({ success: true, data: orders });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Failed to fetch orders', error: error.message });
+    return errorResponse(res, 500, 'Failed to fetch orders', error);
   }
 };
 
@@ -113,12 +121,12 @@ const confirmOrder = async (req, res) => {
     // Notify admin via Socket.IO
     const io = req.app.get('io');
     if (io) {
-      io.emit('order_confirmed', { orderNumber: order.orderNumber, status: 'CONFIRMED' });
+      io.to('admins').emit('order_confirmed', { orderNumber: order.orderNumber, status: 'CONFIRMED' });
     }
 
     res.json({ success: true, message: 'Order confirmed successfully', data: updatedOrder });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Failed to confirm order', error: error.message });
+    return errorResponse(res, 500, 'Failed to confirm order', error);
   }
 };
 

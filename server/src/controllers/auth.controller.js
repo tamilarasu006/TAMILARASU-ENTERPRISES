@@ -1,3 +1,4 @@
+const errorResponse = require('../utils/errorResponse');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const prisma = require('../prisma');
@@ -36,7 +37,7 @@ const register = async (req, res) => {
     
     res.status(201).json({ success: true, message: 'Registration successful. Please verify your account.' });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Registration failed', error: error.message });
+    return errorResponse(res, 500, 'Registration failed', error);
   }
 };
 
@@ -78,7 +79,7 @@ const login = async (req, res) => {
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1d' });
     res.json({ success: true, message: 'Login successful', data: { user: { id: user.id, name: user.name, email: user.email, role: user.role }, token } });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Login failed', error: error.message });
+    return errorResponse(res, 500, 'Login failed', error);
   }
 };
 
@@ -138,7 +139,7 @@ const forgotPassword = async (req, res) => {
     }
     res.json({ success: true, message: 'If an account exists for the provided information, verification instructions have been sent.' });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Failed to process request', error: error.message });
+    return errorResponse(res, 500, 'Failed to process request', error);
   }
 };
 
@@ -168,14 +169,27 @@ const resetPassword = async (req, res) => {
     });
 
     if (!user) return res.status(400).json({ success: false, message: 'Invalid request' });
-    
+
     const record = await prisma.oTPVerification.findFirst({
       where: { userId: user.id, channel: 'RESET' },
       orderBy: { createdAt: 'desc' }
     });
-    
+
     if (!record || !record.verifiedAt) {
       return res.status(403).json({ success: false, message: 'Unauthorized. Please verify OTP first.' });
+    }
+
+    // Re-check the OTP itself, not just "was verified at some point"
+    const isValid = await bcrypt.compare(otp || '', record.otpHash);
+    if (!isValid) {
+      return res.status(403).json({ success: false, message: 'Invalid OTP.' });
+    }
+
+    // Verified state must be fresh (used within 10 minutes of verification)
+    const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+    if (record.verifiedAt < tenMinutesAgo) {
+      await prisma.oTPVerification.delete({ where: { id: record.id } });
+      return res.status(403).json({ success: false, message: 'Verification expired. Please request a new OTP.' });
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);

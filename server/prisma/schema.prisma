@@ -55,8 +55,8 @@ model Order {
   user                  User        @relation(fields: [userId], references: [id])
   status                String      @default("PENDING") // PENDING, QUOTED, PROCESSING, SHIPPED, COMPLETED, CANCELLED
   totalAmount           Float
-  shippingAddress       String
-  billingAddress        String
+  shippingAddress       String?
+  billingAddress        String?
   company               String?
   country               String?
   message               String?

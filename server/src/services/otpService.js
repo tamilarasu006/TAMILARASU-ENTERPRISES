@@ -34,7 +34,9 @@ const sendOTP = async (userId, userEmail, userPhone, channel) => {
   });
 
   const otp = generateOTP();
-  console.log(`[OTP] ${channel} OTP generated: ${otp}`);
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(`[OTP] ${channel} OTP generated (dev only): ${otp}`);
+  }
 
   
   const otpHash = await bcrypt.hash(otp, 10);

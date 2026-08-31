@@ -1,4 +1,7 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
+import axios from 'axios';
+
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 const AuthContext = createContext();
 
@@ -8,13 +11,25 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (token) {
-      localStorage.setItem('token', token);
-    } else {
+    if (!token) {
       localStorage.removeItem('token');
       setUser(null);
+      setLoading(false);
+      return;
     }
-    setLoading(false);
+
+    localStorage.setItem('token', token);
+
+    axios.get(`${API_URL}/api/auth/me`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(res => setUser(res.data.data))
+      .catch(() => {
+        // token invalid/expired
+        setToken(null);
+        setUser(null);
+      })
+      .finally(() => setLoading(false));
   }, [token]);
 
   const login = (userData, jwtToken) => {

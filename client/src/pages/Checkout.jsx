@@ -40,11 +40,18 @@ export default function Checkout() {
     e.preventDefault();
     if (!token) return navigate('/login');
     
+    const qty = Number(quantity);
+    if (!qty || qty < product.minimumOrderQuantity) {
+      setSubmitState('error');
+      setTimeout(() => setSubmitState('idle'), 3000);
+      return;
+    }
+
     setSubmitState('submitting');
     
     try {
       const payload = {
-        items: [{ productId: product.id, quantity, price: product.price }],
+        items: [{ productId: product.id, quantity: qty, price: product.price }],
         shippingAddress: 'TBD', // Required by previous schema
         billingAddress: 'TBD',
         company,
@@ -170,7 +177,7 @@ export default function Checkout() {
                     <input 
                       type="number" min={product.minimumOrderQuantity} required 
                       className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all" 
-                      value={quantity} onChange={e=>setQuantity(e.target.value)}
+                      value={quantity} onChange={e => setQuantity(e.target.value === '' ? '' : Number(e.target.value))}
                     />
                   </div>
                   <div className="space-y-2">
