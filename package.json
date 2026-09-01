@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Monorepo root for Tamilarasu Enterprises",
   "scripts": {
-    "build": "npm --prefix client install && npm --prefix client run build && npm --prefix admin install && npm --prefix admin run build && npm --prefix server install && npx prisma generate --schema=server/prisma/schema.prisma",
+    "build": "npm --prefix client install && npm --prefix client run build && npm --prefix admin install && npm --prefix admin run build && npm --prefix server install && cd server && npx prisma generate",
     "start": "node server/src/app.js"
   }
 }
