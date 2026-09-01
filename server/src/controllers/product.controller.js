@@ -50,9 +50,9 @@ const createProduct = async (req, res) => {
     const data = { ...req.body };
     
     // Parse numeric and boolean fields coming from FormData
-    if (data.price) data.price = parseFloat(data.price);
-    if (data.minimumOrderQuantity) data.minimumOrderQuantity = parseInt(data.minimumOrderQuantity, 10);
-    if (data.stock) data.stock = parseInt(data.stock, 10);
+    if (data.price !== undefined) data.price = data.price ? parseFloat(data.price) : 0;
+    if (data.minimumOrderQuantity !== undefined) data.minimumOrderQuantity = data.minimumOrderQuantity ? parseInt(data.minimumOrderQuantity, 10) : 1;
+    if (data.stock !== undefined) data.stock = data.stock ? parseInt(data.stock, 10) : 0;
     
     if (data.priceOnRequest !== undefined) data.priceOnRequest = parseBool(data.priceOnRequest);
     if (data.exportAvailability !== undefined) data.exportAvailability = parseBool(data.exportAvailability);
@@ -77,9 +77,9 @@ const updateProduct = async (req, res) => {
     const data = { ...req.body };
     
     // Parse numeric and boolean fields coming from FormData
-    if (data.price) data.price = parseFloat(data.price);
-    if (data.minimumOrderQuantity) data.minimumOrderQuantity = parseInt(data.minimumOrderQuantity, 10);
-    if (data.stock) data.stock = parseInt(data.stock, 10);
+    if (data.price !== undefined) data.price = data.price ? parseFloat(data.price) : 0;
+    if (data.minimumOrderQuantity !== undefined) data.minimumOrderQuantity = data.minimumOrderQuantity ? parseInt(data.minimumOrderQuantity, 10) : 1;
+    if (data.stock !== undefined) data.stock = data.stock ? parseInt(data.stock, 10) : 0;
     
     if (data.priceOnRequest !== undefined) data.priceOnRequest = parseBool(data.priceOnRequest);
     if (data.exportAvailability !== undefined) data.exportAvailability = parseBool(data.exportAvailability);
