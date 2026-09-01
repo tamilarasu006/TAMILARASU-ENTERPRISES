@@ -27,15 +27,7 @@ const getAllOrders = async (req, res) => {
 
 const VALID_STATUSES = ['PENDING', 'QUOTED', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'COMPLETED', 'CANCELLED'];
 
-const ALLOWED_TRANSITIONS = {
-  PENDING: ['QUOTED', 'CANCELLED'],
-  QUOTED: ['CONFIRMED', 'PROCESSING', 'CANCELLED'],
-  CONFIRMED: ['PROCESSING', 'CANCELLED'],
-  PROCESSING: ['SHIPPED', 'CANCELLED'],
-  SHIPPED: ['COMPLETED'],
-  COMPLETED: [],
-  CANCELLED: []
-};
+// Transitions are not strictly enforced for admins to allow corrections
 
 const updateOrderStatus = async (req, res) => {
   try {
@@ -49,9 +41,7 @@ const updateOrderStatus = async (req, res) => {
       const current = await prisma.order.findUnique({ where: { id: req.params.id } });
       if (!current) return res.status(404).json({ success: false, message: 'Order not found' });
 
-      if (status !== current.status && !ALLOWED_TRANSITIONS[current.status]?.includes(status)) {
-        return res.status(400).json({ success: false, message: `Cannot move order from ${current.status} to ${status}` });
-      }
+
       updateData.status = status;
     }
     

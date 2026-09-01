@@ -169,7 +169,6 @@ export default function Orders() {
                     <label className="block text-sm font-bold text-gray-700 mb-2">Update Status</label>
                     <select className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" value={status} onChange={e => setStatus(e.target.value)}>
                       <option value="PENDING">PENDING</option>
-                      <option value="REVIEWING">REVIEWING</option>
                       <option value="QUOTED">QUOTED</option>
                       <option value="CONFIRMED">CONFIRMED</option>
                       <option value="PROCESSING">PROCESSING</option>
