@@ -1,0 +1,1 @@
+const prisma = require('./src/prisma'); async function run() { console.log(await prisma.user.findMany({ where: { OR: [{ email: 'tamilarasuv006@gmail.com' }, { phone: '+911234567890' }] } })); } run();
