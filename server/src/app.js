@@ -14,7 +14,8 @@ const prisma = require('./prisma');
 const app = express();
 const httpServer = createServer(app);
 const devOrigins = process.env.NODE_ENV !== 'production' ? ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5000'] : [];
-const allowedOrigins = [process.env.CLIENT_URL, process.env.ADMIN_URL, ...devOrigins].filter(Boolean);
+const prodOrigins = ['https://tamilarasuenterprises.netlify.app'];
+const allowedOrigins = [process.env.CLIENT_URL, process.env.ADMIN_URL, ...prodOrigins, ...devOrigins].filter(Boolean);
 
 const corsOptions = {
   origin: (origin, callback) => {
