@@ -9,6 +9,7 @@ const {
   forgotPassword,
   verifyResetOtp,
   resetPassword,
+  changePassword,
   me,
   testEmail,
   testSms 
@@ -25,6 +26,9 @@ router.post('/verify-email-otp', verifyEmailOtp);
 router.post('/forgot-password', forgotPassword);
 router.post('/verify-reset-otp', verifyResetOtp);
 router.post('/reset-password', resetPassword);
+
+const { authenticateUser } = require('../middleware/auth.middleware');
+router.post('/change-password', authenticateUser, changePassword);
 
 router.get('/me', me);
 

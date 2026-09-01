@@ -11,6 +11,7 @@ import About from './pages/About';
 import Services from './pages/Services';
 import VerifyAccount from './pages/VerifyAccount';
 import ForgotPassword from './pages/ForgotPassword';
+import Profile from './pages/Profile';
 import { AuthProvider } from './context/AuthContext';
 
 function AnimatedRoutes() {
@@ -29,6 +30,7 @@ function AnimatedRoutes() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/orders" element={<Orders />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </AnimatePresence>
   );

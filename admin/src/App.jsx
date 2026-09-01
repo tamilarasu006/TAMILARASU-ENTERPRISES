@@ -4,6 +4,7 @@ import Orders from './pages/Orders';
 import Login from './pages/Login';
 import Products from './pages/Products';
 import Services from './pages/Services';
+import Settings from './pages/Settings';
 import { useEffect } from 'react';
 import { io } from 'socket.io-client';
 
@@ -39,6 +40,7 @@ function AdminLayout({ children }) {
           <Link to="/orders" className={navLinkClass('/orders')}>Orders</Link>
           <Link to="/products" className={navLinkClass('/products')}>Products</Link>
           <Link to="/services" className={navLinkClass('/services')}>Services</Link>
+          <Link to="/settings" className={navLinkClass('/settings')}>Settings</Link>
           <button onClick={handleLogout} className="text-red-300 hover:text-red-100 ml-4 font-bold bg-white/10 px-3 py-1 rounded-md transition-colors">Logout</button>
         </div>
       </nav>
@@ -58,6 +60,7 @@ function App() {
         <Route path="/orders" element={<AdminLayout><Orders /></AdminLayout>} />
         <Route path="/products" element={<AdminLayout><Products /></AdminLayout>} />
         <Route path="/services" element={<AdminLayout><Services /></AdminLayout>} />
+        <Route path="/settings" element={<AdminLayout><Settings /></AdminLayout>} />
       </Routes>
     </BrowserRouter>
   );

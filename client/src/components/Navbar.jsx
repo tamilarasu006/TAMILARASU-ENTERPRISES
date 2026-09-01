@@ -145,6 +145,14 @@ export default function Navbar() {
                       className="absolute right-0 mt-3 w-48 bg-white rounded-xl shadow-xl overflow-hidden border border-gray-100 py-2"
                     >
                       <Link
+                        to="/profile"
+                        onClick={() => setShowProfileMenu(false)}
+                        className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors"
+                      >
+                        <User className="w-4 h-4 mr-3" />
+                        <span className="font-medium text-sm">Profile & Settings</span>
+                      </Link>
+                      <Link
                         to="/orders"
                         onClick={() => setShowProfileMenu(false)}
                         className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors"
@@ -215,6 +223,14 @@ export default function Navbar() {
                 </Link>
               ) : (
                 <>
+                  <Link
+                    to="/profile"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="text-white font-semibold flex items-center text-lg"
+                  >
+                    <User className="w-5 h-5 mr-3" />
+                    Profile & Settings
+                  </Link>
                   <Link
                     to="/orders"
                     onClick={() => setIsMobileMenuOpen(false)}
