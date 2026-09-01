@@ -151,13 +151,13 @@ export default function Home() {
                       transition={{ repeat: Infinity, duration: 2 }}
                       className="absolute w-4 h-4 bg-blue-600 rounded-full z-20 left-1/4"
                     />
-                    <svg className="absolute w-full h-full z-10" preserveAspectRatio="none">
+                    <svg className="absolute w-full h-full z-10" viewBox="0 0 100 100" preserveAspectRatio="none">
                       <motion.path
-                        d="M 25% 50% Q 50% 20% 75% 50%"
+                        d="M 25 50 Q 50 20 75 50"
                         fill="transparent"
                         stroke="#10b981"
-                        strokeWidth="3"
-                        strokeDasharray="5,5"
+                        strokeWidth="1.5"
+                        strokeDasharray="2,2"
                         initial={{ pathLength: 0 }}
                         whileInView={{ pathLength: 1 }}
                         viewport={{ once: true }}
@@ -174,12 +174,12 @@ export default function Home() {
 
                     {/* Moving cargo dot */}
                     <motion.div
-                      className="absolute w-3 h-3 bg-blue-900 rounded-full z-30"
+                      className="absolute w-3 h-3 bg-blue-900 rounded-full z-30 hidden md:block"
                       animate={{
                         offsetDistance: ["0%", "100%"]
                       }}
                       style={{
-                        offsetPath: "path('M 25% 50% Q 50% 20% 75% 50%')" // Approximation
+                        offsetPath: "path('M 250 150 Q 500 60 750 150')" // Approximate absolute pixel path for desktop
                       }}
                       transition={{
                         duration: 3,
