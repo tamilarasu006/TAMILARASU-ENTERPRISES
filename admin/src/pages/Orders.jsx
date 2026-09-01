@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5000' : '');
+
 export default function Orders() {
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
@@ -16,7 +18,7 @@ export default function Orders() {
     const token = localStorage.getItem('adminToken');
     if (!token) return navigate('/login');
     
-    axios.get(`http://localhost:5000/api/admin/orders?search=${search}`, { headers: { Authorization: `Bearer ${token}` } })
+    axios.get(`${API_URL}/api/admin/orders?search=${search}`, { headers: { Authorization: `Bearer ${token}` } })
       .then(res => setOrders(res.data.data))
       .catch(err => {
         console.error(err);
@@ -32,7 +34,7 @@ export default function Orders() {
     e.preventDefault();
     const token = localStorage.getItem('adminToken');
     try {
-      await axios.put(`http://localhost:5000/api/admin/orders/${selectedOrder.id}`, { 
+      await axios.put(`${API_URL}/api/admin/orders/${selectedOrder.id}`, { 
          status,
          internalNotes,
          quotedAmount

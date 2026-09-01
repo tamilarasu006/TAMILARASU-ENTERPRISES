@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Key } from 'lucide-react';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5000' : '');
 
 export default function Settings() {
   const [currentPassword, setCurrentPassword] = useState('');
@@ -111,3 +111,4 @@ export default function Settings() {
     </div>
   );
 }
+

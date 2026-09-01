@@ -8,7 +8,7 @@ import Settings from './pages/Settings';
 import { useEffect } from 'react';
 import { io } from 'socket.io-client';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5000' : '');
 
 function AdminLayout({ children }) {
   const navigate = useNavigate();

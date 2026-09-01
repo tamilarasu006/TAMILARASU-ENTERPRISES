@@ -4,6 +4,8 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5000' : '');
+
 export default function Dashboard() {
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
@@ -14,14 +16,14 @@ export default function Dashboard() {
     if (!token) {
       return navigate('/login');
     }
-    axios.get('http://localhost:5000/api/admin/orders', { headers: { Authorization: `Bearer ${token}` } })
+    axios.get(`${API_URL}/api/admin/orders`, { headers: { Authorization: `Bearer ${token}` } })
       .then(res => setOrders(res.data.data || []))
       .catch(err => {
         console.error(err);
         if (err.response?.status === 401 || err.response?.status === 403) navigate('/login');
       });
       
-    axios.get('http://localhost:5000/api/products', { headers: { Authorization: `Bearer ${token}` } })
+    axios.get(`${API_URL}/api/products`, { headers: { Authorization: `Bearer ${token}` } })
       .then(res => setProducts(res.data.data || []))
       .catch(console.error);
   }, [navigate]);
