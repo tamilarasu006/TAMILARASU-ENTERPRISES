@@ -12,6 +12,7 @@ const jwt = require('jsonwebtoken');
 const prisma = require('./prisma');
 
 const app = express();
+app.set('trust proxy', 1); // Trust first proxy (Render's load balancer)
 const httpServer = createServer(app);
 const devOrigins = process.env.NODE_ENV !== 'production' ? ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5000'] : [];
 const prodOrigins = ['https://tamilarasu-enterprises-1.onrender.com'];
