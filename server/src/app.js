@@ -20,9 +20,18 @@ const allowedOrigins = [process.env.CLIENT_URL, process.env.ADMIN_URL, ...prodOr
 const corsOptions = {
   origin: (origin, callback) => {
     // allow no-origin requests (curl, server-to-server, mobile apps)
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin) return callback(null, true);
+    
+    const cleanOrigin = origin.replace(/\/$/, ''); // remove trailing slash just in case
+    const isAllowed = allowedOrigins.some(allowedUrl => {
+       const cleanAllowed = allowedUrl.replace(/\/$/, '');
+       return cleanOrigin === cleanAllowed;
+    });
+
+    if (isAllowed || cleanOrigin.includes('onrender.com')) {
       callback(null, true);
     } else {
+      console.error(`Blocked by CORS: origin="${origin}", allowed="${allowedOrigins.join(',')}"`);
       callback(new Error(`Not allowed by CORS: ${origin}`));
     }
   }
