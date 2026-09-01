@@ -1,3 +1,4 @@
+require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
 const errorResponse = require('./utils/errorResponse');
 const express = require('express');
 const path = require('path');
@@ -12,7 +13,7 @@ const prisma = require('./prisma');
 
 const app = express();
 const httpServer = createServer(app);
-const devOrigins = process.env.NODE_ENV !== 'production' ? ['http://localhost:5173', 'http://localhost:5174'] : [];
+const devOrigins = process.env.NODE_ENV !== 'production' ? ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5000'] : [];
 const allowedOrigins = [process.env.CLIENT_URL, process.env.ADMIN_URL, ...devOrigins].filter(Boolean);
 
 const corsOptions = {
@@ -21,7 +22,7 @@ const corsOptions = {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(new Error(`Not allowed by CORS: ${origin}`));
     }
   }
 };
