@@ -37,6 +37,16 @@ const register = async (req, res) => {
     
     res.status(201).json({ success: true, message: 'Registration successful. Please verify your account.' });
   } catch (error) {
+    if (error.code === 'P2002') {
+      const target = error.meta?.target || [];
+      if (target.includes('email')) {
+        return res.status(400).json({ success: false, message: 'Email already exists' });
+      }
+      if (target.includes('phone')) {
+         return res.status(400).json({ success: false, message: 'Mobile number already exists' });
+      }
+      return res.status(400).json({ success: false, message: 'Account already exists' });
+    }
     return errorResponse(res, 500, 'Registration failed', error);
   }
 };
