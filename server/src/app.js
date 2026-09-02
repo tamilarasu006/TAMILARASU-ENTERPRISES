@@ -45,14 +45,17 @@ const io = new Server(httpServer, {
 // Middleware
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },
+  crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
+  referrerPolicy: { policy: "strict-origin-when-cross-origin" },
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://accounts.google.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com", "https://accounts.google.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com", "data:"],
       imgSrc: ["'self'", "data:", "blob:", "https:"],
       connectSrc: ["'self'", "http://localhost:*", "ws://localhost:*", "wss:", "https:"],
+      frameSrc: ["'self'", "https://accounts.google.com"],
     }
   }
 }));

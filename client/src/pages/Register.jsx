@@ -3,7 +3,9 @@ import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
+import { GoogleLogin } from '@react-oauth/google';
 import PageTransition from '../components/PageTransition';
+import { useAuth } from '../context/AuthContext';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
@@ -15,8 +17,30 @@ export default function Register() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const { login } = useAuth();
 
   const navigate = useNavigate();
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      setLoading(true);
+      setError('');
+      const res = await axios.post(`${API_URL}/api/auth/google`, {
+        credential: credentialResponse.credential,
+      });
+      login(res.data.data.user, res.data.data.token);
+      navigate('/products');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Unable to register with Google. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleError = () => {
+    setError('Google sign-in was cancelled.');
+  };
+
 
   const validatePassword = (pass) => {
     const minLength = pass.length >= 8;
@@ -85,6 +109,24 @@ export default function Register() {
               <p className="text-sm text-red-700">{error}</p>
             </motion.div>
           )}
+
+          <div className="flex justify-center mb-6">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={handleGoogleError}
+              theme="outline"
+              size="large"
+              width="100%"
+              text="continue_with"
+              shape="pill"
+            />
+          </div>
+
+          <div className="flex items-center my-6">
+            <div className="flex-grow border-t border-gray-200"></div>
+            <span className="px-4 text-sm text-gray-400 font-semibold uppercase tracking-wider">OR</span>
+            <div className="flex-grow border-t border-gray-200"></div>
+          </div>
 
           <div className="space-y-5">
             <div>

@@ -12,7 +12,9 @@ model User {
   name             String
   email            String   @unique
   phone            String?  @unique
-  password         String
+  password         String?
+  googleId         String?  @unique
+  authProvider     String   @default("LOCAL") // "LOCAL" or "GOOGLE"
   role             String   @default("CUSTOMER") // "CUSTOMER" or "ADMIN"
   emailVerified    Boolean  @default(false)
   emailVerifiedAt  DateTime?

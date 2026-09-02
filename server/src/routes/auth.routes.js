@@ -4,6 +4,7 @@ const {
   register, 
   login, 
   logout, 
+  googleAuth,
   sendEmailOtp, 
   verifyEmailOtp, 
   forgotPassword,
@@ -18,6 +19,8 @@ const {
 router.post('/register', register);
 router.post('/login', login);
 router.post('/logout', logout);
+router.post('/google', googleAuth);
+
 
 router.post('/send-email-otp', sendEmailOtp);
 router.post('/verify-email-otp', verifyEmailOtp);

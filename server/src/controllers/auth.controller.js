@@ -5,6 +5,9 @@ const prisma = require('../prisma');
 const { sendOTP, verifyOTP } = require('../services/otpService');
 const { sendEmail } = require('../services/emailService');
 const { sendSMS } = require('../services/smsService');
+const { OAuth2Client } = require('google-auth-library');
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // Registration
 const register = async (req, res) => {
@@ -67,12 +70,16 @@ const login = async (req, res) => {
     
     // If admin, bypass strict customer verification
     if (user.role === 'ADMIN') {
+      if (!user.password) return res.status(400).json({ success: false, message: 'Invalid credentials' });
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) return res.status(400).json({ success: false, message: 'Invalid credentials' });
       const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1d' });
       return res.json({ success: true, message: 'Login successful', data: { user: { id: user.id, name: user.name, email: user.email, role: user.role }, token } });
     }
 
+    if (!user.password) {
+      return res.status(400).json({ success: false, message: 'Please use "Continue with Google" to log in.' });
+    }
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ success: false, message: 'Invalid email/mobile number or password.' });
     
@@ -97,6 +104,68 @@ const login = async (req, res) => {
 const logout = async (req, res) => {
   res.json({ success: true, message: 'Logged out successfully' });
 };
+
+// Google Auth
+const googleAuth = async (req, res) => {
+  try {
+    const { credential } = req.body;
+    if (!credential) return res.status(400).json({ success: false, message: 'Google credential missing' });
+
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    
+    const payload = ticket.getPayload();
+    if (!payload || !payload.email) {
+      return res.status(400).json({ success: false, message: 'Invalid Google token' });
+    }
+
+    const { email, name, sub: googleId, email_verified } = payload;
+    const identifier = email.toLowerCase().trim();
+
+    if (!email_verified) {
+      return res.status(403).json({ success: false, message: 'Google email is not verified' });
+    }
+
+    let user = await prisma.user.findUnique({ where: { email: identifier } });
+
+    if (user) {
+      // Don't allow admins to login via Google customer portal
+      if (user.role === 'ADMIN') {
+        return res.status(403).json({ success: false, message: 'Admin accounts cannot login via Google' });
+      }
+      
+      // Link account safely if not linked
+      if (!user.googleId) {
+        user = await prisma.user.update({
+          where: { id: user.id },
+          data: { googleId, emailVerified: true }
+        });
+      }
+    } else {
+      // Create new user (password is null)
+      user = await prisma.user.create({
+        data: {
+          name,
+          email: identifier,
+          googleId,
+          authProvider: 'GOOGLE',
+          emailVerified: true
+        }
+      });
+    }
+
+    // Generate token matching normal login
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+    res.json({ success: true, message: 'Login successful', data: { user: { id: user.id, name: user.name, email: user.email, role: user.role }, token } });
+
+  } catch (error) {
+    console.error('Google Auth Error:', error);
+    return errorResponse(res, 500, 'Google authentication failed', error);
+  }
+};
+
 
 // Send Email OTP
 const sendEmailOtp = async (req, res) => {
@@ -285,6 +354,7 @@ module.exports = {
   register, 
   login, 
   logout, 
+  googleAuth,
   sendEmailOtp, 
   verifyEmailOtp, 
   forgotPassword,
