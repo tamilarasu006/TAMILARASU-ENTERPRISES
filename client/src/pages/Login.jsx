@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { AlertCircle, Loader2 } from 'lucide-react';
+import { AlertCircle, Loader2, Eye, EyeOff } from 'lucide-react';
 import { GoogleLogin } from '@react-oauth/google';
 import PageTransition from '../components/PageTransition';
 import { useAuth } from '../context/AuthContext';
@@ -11,6 +11,7 @@ const API_URL = import.meta.env.VITE_API_URL || '';
 export default function Login() {
   const [identifier, setIdentifier] = useState(''); // Email or Mobile
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [unverifiedData, setUnverifiedData] = useState(null);
@@ -103,13 +104,12 @@ export default function Login() {
             </motion.div>
           )}
 
-          <div className="flex justify-center mb-6">
+          <div className="google-login-container mb-6">
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
               onError={handleGoogleError}
               theme="outline"
               size="large"
-              width="100%"
               text="continue_with"
               shape="pill"
             />
@@ -131,7 +131,12 @@ export default function Login() {
                 <label className="block text-sm font-semibold text-gray-700">Password</label>
                 <Link to="/forgot-password" className="text-xs text-blue-600 font-semibold hover:underline">Forgot password?</Link>
               </div>
-              <input type="password" placeholder="••••••••" className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all" value={password} onChange={e => setPassword(e.target.value)} required />
+              <div className="relative">
+                <input type={showPassword ? "text" : "password"} placeholder="••••••••" className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all pr-12" value={password} onChange={e => setPassword(e.target.value)} required />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none">
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+              </div>
             </div>
           </div>
 

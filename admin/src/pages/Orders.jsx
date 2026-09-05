@@ -146,7 +146,7 @@ export default function Orders() {
             >
               <h3 className="text-2xl font-extrabold mb-6 text-gray-800 border-b pb-4">Manage Order: {selectedOrder.orderNumber}</h3>
               
-              <div className="grid grid-cols-2 gap-6 mb-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
                   <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Customer</p>
                   <p className="font-bold text-gray-800">{selectedOrder.user?.name}</p>
@@ -154,10 +154,14 @@ export default function Orders() {
                 </div>
                 <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
                   <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Company & Country</p>
-                  <p className="font-bold text-gray-800">{selectedOrder.company}</p>
-                  <p className="text-gray-600 text-sm">{selectedOrder.country}</p>
+                  <p className="font-bold text-gray-800">{selectedOrder.company || 'N/A'}</p>
+                  <p className="text-gray-600 text-sm">{selectedOrder.country || 'N/A'}</p>
                 </div>
-                <div className="col-span-2 bg-blue-50 p-4 rounded-xl border border-blue-100">
+                <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                  <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Target Delivery</p>
+                  <p className="font-bold text-gray-800">{selectedOrder.preferredDeliveryDate || 'Not specified'}</p>
+                </div>
+                <div className="col-span-1 md:col-span-3 bg-blue-50 p-4 rounded-xl border border-blue-100">
                   <p className="text-xs font-bold text-blue-800 uppercase tracking-wider mb-2">Customer Requirements</p>
                   <p className="text-gray-700 text-sm whitespace-pre-wrap">{selectedOrder.message || 'No additional message provided.'}</p>
                 </div>

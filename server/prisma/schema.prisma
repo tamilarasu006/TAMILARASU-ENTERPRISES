@@ -18,6 +18,20 @@ model User {
   role             String   @default("CUSTOMER") // "CUSTOMER" or "ADMIN"
   emailVerified    Boolean  @default(false)
   emailVerifiedAt  DateTime?
+  
+  // New Profile Fields
+  phoneVerified    Boolean  @default(false)
+  profileImage     String?
+  dateOfBirth      DateTime?
+  gender           String?
+  companyName      String?
+  address          String?
+  city             String?
+  state            String?
+  country          String?
+  postalCode       String?
+  pendingEmail     String?
+
   orders           Order[]
   otpVerifications OTPVerification[]
   createdAt        DateTime @default(now())

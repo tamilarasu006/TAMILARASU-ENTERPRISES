@@ -110,13 +110,12 @@ export default function Register() {
             </motion.div>
           )}
 
-          <div className="flex justify-center mb-6">
+          <div className="google-login-container mb-6">
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
               onError={handleGoogleError}
               theme="outline"
               size="large"
-              width="100%"
               text="continue_with"
               shape="pill"
             />

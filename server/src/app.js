@@ -1,4 +1,9 @@
 require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
+
+if (!process.env.GOOGLE_CLIENT_ID) {
+  console.warn("⚠️ WARNING: GOOGLE_CLIENT_ID is missing or empty in .env. Google Auth will fail.");
+}
+
 const errorResponse = require('./utils/errorResponse');
 const express = require('express');
 const path = require('path');
@@ -14,7 +19,7 @@ const prisma = require('./prisma');
 const app = express();
 app.set('trust proxy', 1); // Trust first proxy (Render's load balancer)
 const httpServer = createServer(app);
-const devOrigins = process.env.NODE_ENV !== 'production' ? ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5000'] : [];
+const devOrigins = process.env.NODE_ENV !== 'production' ? ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5000', 'http://localhost:3000'] : [];
 const prodOrigins = ['https://tamilarasu-enterprises-1.onrender.com'];
 const allowedOrigins = [process.env.CLIENT_URL, process.env.ADMIN_URL, ...prodOrigins, ...devOrigins].filter(Boolean);
 
@@ -46,7 +51,7 @@ const io = new Server(httpServer, {
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },
   crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
-  referrerPolicy: { policy: "strict-origin-when-cross-origin" },
+  referrerPolicy: { policy: "no-referrer-when-downgrade" },
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
@@ -77,6 +82,7 @@ const productRoutes = require('./routes/product.routes');
 const orderRoutes = require('./routes/order.routes');
 const adminOrderRoutes = require('./routes/adminOrder.routes');
 const serviceRoutes = require('./routes/service.routes');
+const profileRoutes = require('./routes/profile.routes');
 
 app.use('/api/', limiter); // Apply limiter only to API routes
 
@@ -85,6 +91,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/admin/orders', adminOrderRoutes);
 app.use('/api/services', serviceRoutes);
+app.use('/api/profile', profileRoutes);
 
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
