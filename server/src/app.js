@@ -4,6 +4,7 @@ if (!process.env.GOOGLE_CLIENT_ID) {
   console.warn("⚠️ WARNING: GOOGLE_CLIENT_ID is missing or empty in .env. Google Auth will fail.");
 }
 
+const fs = require('fs');
 const errorResponse = require('./utils/errorResponse');
 const express = require('express');
 const path = require('path');
@@ -19,32 +20,56 @@ const prisma = require('./prisma');
 const app = express();
 app.set('trust proxy', 1); // Trust first proxy (Render's load balancer)
 const httpServer = createServer(app);
-const devOrigins = process.env.NODE_ENV !== 'production' ? ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5000', 'http://localhost:3000'] : [];
-const prodOrigins = ['https://tamilarasu-enterprises-1.onrender.com'];
-const allowedOrigins = [process.env.CLIENT_URL, process.env.ADMIN_URL, ...prodOrigins, ...devOrigins].filter(Boolean);
 
-const corsOptions = {
-  origin: (origin, callback) => {
-    // allow no-origin requests (curl, server-to-server, mobile apps)
-    if (!origin) return callback(null, true);
-    
-    const cleanOrigin = origin.replace(/\/$/, ''); // remove trailing slash just in case
-    const isAllowed = allowedOrigins.some(allowedUrl => {
-       const cleanAllowed = allowedUrl.replace(/\/$/, '');
-       return cleanOrigin === cleanAllowed;
-    });
-
-    if (isAllowed || cleanOrigin.includes('onrender.com')) {
-      callback(null, true);
-    } else {
-      console.error(`Blocked by CORS: origin="${origin}", allowed="${allowedOrigins.join(',')}"`);
-      callback(new Error(`Not allowed by CORS: ${origin}`));
-    }
+const parseOrigin = (urlStr) => {
+  if (!urlStr) return null;
+  try {
+    const u = new URL(urlStr);
+    return `${u.protocol}//${u.host}`;
+  } catch {
+    return urlStr.replace(/\/$/, '');
   }
 };
 
+const configuredOrigins = [
+  parseOrigin(process.env.CLIENT_URL),
+  parseOrigin(process.env.ADMIN_URL),
+  'https://tamilarasu-enterprises-1.onrender.com',
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:5000',
+  'http://localhost:3000'
+].filter(Boolean);
+
+const isOriginAllowed = (origin) => {
+  if (!origin) return true; // allow non-browser requests (Postman, curl, server-to-server)
+  const clean = origin.replace(/\/$/, '').toLowerCase();
+  if (configuredOrigins.some(allowed => allowed.toLowerCase() === clean)) return true;
+  // Allow any deployment domain on Render, Netlify, or Vercel
+  if (clean.endsWith('.onrender.com') || clean.endsWith('.netlify.app') || clean.endsWith('.vercel.app')) {
+    return true;
+  }
+  return false;
+};
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (isOriginAllowed(origin)) {
+      callback(null, true);
+    } else {
+      console.warn(`[CORS] Blocked request from origin: "${origin}"`);
+      callback(null, false);
+    }
+  },
+  credentials: true
+};
+
 const io = new Server(httpServer, {
-  cors: { origin: allowedOrigins, methods: ['GET', 'POST', 'PATCH'] }
+  cors: { 
+    origin: (origin, callback) => callback(null, isOriginAllowed(origin)),
+    methods: ['GET', 'POST', 'PATCH'],
+    credentials: true
+  }
 });
 
 // Middleware
@@ -95,19 +120,33 @@ app.use('/api/profile', profileRoutes);
 
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
-// Serve static frontend files (Client and Admin)
+// Serve static frontend files (Client and Admin) if built
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
-app.use('/admin', express.static(path.join(__dirname, '../../admin/dist')));
-app.use(express.static(path.join(__dirname, '../../client/dist')));
 
-// Catch-all routes for React Router
-app.use('/admin', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../admin/dist/index.html'));
-});
+const adminDist = path.join(__dirname, '../../admin/dist');
+const clientDist = path.join(__dirname, '../../client/dist');
 
-app.use((req, res) => {
-  res.sendFile(path.join(__dirname, '../../client/dist/index.html'));
-});
+if (fs.existsSync(adminDist)) {
+  app.use('/admin', express.static(adminDist));
+  app.get('/admin*', (req, res) => {
+    res.sendFile(path.join(adminDist, 'index.html'));
+  });
+}
+
+if (fs.existsSync(clientDist)) {
+  app.use(express.static(clientDist));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(clientDist, 'index.html'));
+  });
+} else {
+  app.get('/', (req, res) => {
+    res.json({
+      success: true,
+      message: 'TAMILARASU ENTERPRISES API is running.',
+      version: '1.0.0'
+    });
+  });
+}
 
 // Global error handler
 app.use((err, req, res, next) => {

@@ -5,13 +5,31 @@ const API_URL = import.meta.env.VITE_API_URL || '';
 
 const AuthContext = createContext();
 
+const isTokenValid = (t) => {
+  if (!t || t === 'undefined' || t === 'null') return false;
+  try {
+    const parts = t.split('.');
+    if (parts.length !== 3) return false;
+    const payload = JSON.parse(atob(parts[1]));
+    if (payload.exp && payload.exp * 1000 < Date.now()) {
+      return false; // Token expired
+    }
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(() => localStorage.getItem('token') || null);
+  const [token, setToken] = useState(() => {
+    const saved = localStorage.getItem('token');
+    return isTokenValid(saved) ? saved : null;
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!token) {
+    if (!token || !isTokenValid(token)) {
       localStorage.removeItem('token');
       setUser(null);
       setLoading(false);
@@ -25,7 +43,8 @@ export const AuthProvider = ({ children }) => {
     })
       .then(res => setUser(res.data.data))
       .catch(() => {
-        // token invalid/expired
+        // token invalid/revoked on server
+        localStorage.removeItem('token');
         setToken(null);
         setUser(null);
       })
