@@ -81,6 +81,9 @@ model Order {
   quotedAmount          Float?
   orderItems            OrderItem[]
   payment               Payment?
+  qrToken               String?     @unique
+  qrGeneratedAt         DateTime?
+  qrEnabled             Boolean     @default(true)
   createdAt             DateTime    @default(now())
   updatedAt             DateTime    @updatedAt
 }

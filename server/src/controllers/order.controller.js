@@ -45,6 +45,10 @@ const createOrder = async (req, res) => {
 
     // Database Transaction
     const order = await prisma.$transaction(async (tx) => {
+      const crypto = require('crypto');
+      const qrToken = crypto.randomBytes(32).toString('hex');
+      const qrGeneratedAt = new Date();
+
       // 1. Create Order
       const newOrder = await tx.order.create({
         data: {
@@ -57,6 +61,8 @@ const createOrder = async (req, res) => {
           country,
           message,
           preferredDeliveryDate,
+          qrToken,
+          qrGeneratedAt,
           orderItems: {
             create: orderItemsData
           }

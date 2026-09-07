@@ -58,7 +58,15 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   try {
     let { email, password } = req.body; // 'email' field can be email or phone
-    const identifier = email?.toLowerCase().trim();
+    
+    if (!email || typeof email !== 'string') {
+      return res.status(400).json({ success: false, message: 'Invalid email/mobile number.' });
+    }
+    if (!password || typeof password !== 'string') {
+      return res.status(400).json({ success: false, message: 'Password is required.' });
+    }
+
+    const identifier = email.toLowerCase().trim();
 
     const user = await prisma.user.findFirst({
       where: {

@@ -128,14 +128,14 @@ const clientDist = path.join(__dirname, '../../client/dist');
 
 if (fs.existsSync(adminDist)) {
   app.use('/admin', express.static(adminDist));
-  app.get('/admin*', (req, res) => {
+  app.get(['/admin', /^\/admin\/.*/], (req, res) => {
     res.sendFile(path.join(adminDist, 'index.html'));
   });
 }
 
 if (fs.existsSync(clientDist)) {
   app.use(express.static(clientDist));
-  app.get('*', (req, res) => {
+  app.get(/.*/, (req, res) => {
     res.sendFile(path.join(clientDist, 'index.html'));
   });
 } else {
