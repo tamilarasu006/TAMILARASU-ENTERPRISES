@@ -489,10 +489,12 @@ const generateInvoicePDF = async (invoice, res) => {
         || 'Supply meant for export under bond / Letter of Undertaking (LUT) without payment of Integrated Tax as per Section 16(3)(a) of IGST Act, 2017.';
 
       const gstHdrY = sectionHeader(doc, '9. GST Export Declaration', M, y, CW);
-      doc.rect(M, y, CW, 14 + 30).strokeColor(BORDER).lineWidth(0.5).stroke();
       doc.font('Regular').fontSize(7.5).fillColor(LGREY).text(`GSTIN: ${company.gstin || '—'}  |  Tax Treatment: ${invoice.taxTreatment || '—'}`, M + 4, gstHdrY + 2);
       doc.font('Regular').fontSize(8).fillColor(BLACK).text(gstDeclarationText, M + 4, doc.y + 3, { width: CW - 8 });
-      y = doc.y + 8;
+      
+      const gstBoxH = Math.max(30, (doc.y - gstHdrY) + 4);
+      doc.rect(M, y, CW, 14 + gstBoxH).strokeColor(BORDER).lineWidth(0.5).stroke();
+      y = y + 14 + gstBoxH + 6;
 
       // ══════════════════════════════════════════════════════════════════════
       // SECTION 10: LEGAL DECLARATIONS & AUTHORISATION
@@ -503,7 +505,7 @@ const generateInvoicePDF = async (invoice, res) => {
         || `We declare that the information and particulars stated in this invoice are true and correct to the best of our knowledge and based on the records of ${company.name || 'TAMILARASU ENTERPRISES'}.`;
 
       const legalHdrY = sectionHeader(doc, '10. Legal Declarations & Authorisation', M, y, CW);
-      const legalBoxH = 60;
+      const legalBoxH = 85;
       doc.rect(M, y, CW, 14 + legalBoxH).strokeColor(BORDER).lineWidth(0.5).stroke();
 
       const declColW = CW * 0.6;
@@ -520,7 +522,7 @@ const generateInvoicePDF = async (invoice, res) => {
       doc.font('Bold').fontSize(8.5).fillColor(NAVY)
          .text(`For ${company.name || 'TAMILARASU ENTERPRISES'}`, sigX + 4, legalHdrY + 4, { width: sigColW - 8 });
 
-      const sigLineY = legalHdrY + legalBoxH - 20;
+      const sigLineY = legalHdrY + legalBoxH - 32;
       doc.moveTo(sigX + 10, sigLineY).lineTo(sigX + sigColW - 10, sigLineY).strokeColor(BORDER).lineWidth(0.5).stroke();
       doc.font('Bold').fontSize(8).fillColor(BLACK)
          .text(company.authorizedSignatoryName || 'Authorized Signatory', sigX + 4, sigLineY + 2, { width: sigColW - 8 });
