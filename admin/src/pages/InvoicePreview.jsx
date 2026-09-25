@@ -280,6 +280,7 @@ export default function InvoicePreview() {
           authorizedSignatoryName: latest.authorizedSignatoryName,
           authorizedSignatoryDesignation: latest.authorizedSignatoryDesignation,
           footerText: latest.footerText,
+          logoUrl: latest.logoUrl,
         }
       }));
       alert('Company settings synced! Click "Save Changes" to apply.');
@@ -428,7 +429,7 @@ export default function InvoicePreview() {
           {/* Logo */}
           <div className="w-20 mr-4 shrink-0">
             {co.logoUrl
-              ? <img src={co.logoUrl} alt="Logo" className="w-full h-auto object-contain" crossOrigin="anonymous" />
+              ? <img src={co.logoUrl.startsWith('/') ? `${API_URL}${co.logoUrl}` : co.logoUrl} alt="Logo" className="w-full h-auto object-contain" crossOrigin="anonymous" />
               : <div className="w-20 h-16 bg-[#1a2e5a] rounded flex items-center justify-center">
                   <span className="text-white font-black text-xs text-center leading-tight px-1">TE</span>
                 </div>

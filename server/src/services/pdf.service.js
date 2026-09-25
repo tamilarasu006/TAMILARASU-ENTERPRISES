@@ -112,8 +112,16 @@ const generateInvoicePDF = async (invoice, res) => {
       let logoBuffer = null;
       if (company.logoUrl) {
         try {
-          const r = await axios.get(company.logoUrl, { responseType: 'arraybuffer', timeout: 5000 });
-          logoBuffer = Buffer.from(r.data, 'binary');
+          if (company.logoUrl.startsWith('/uploads/')) {
+            const fs = require('fs');
+            const localPath = path.join(__dirname, '../../', company.logoUrl);
+            if (fs.existsSync(localPath)) {
+              logoBuffer = fs.readFileSync(localPath);
+            }
+          } else {
+            const r = await axios.get(company.logoUrl, { responseType: 'arraybuffer', timeout: 5000 });
+            logoBuffer = Buffer.from(r.data, 'binary');
+          }
         } catch (_) { /* no logo — continue */ }
       }
 
