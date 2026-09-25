@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "node src/app.js",
-    "build": "npm install --include=dev && npx prisma generate && npx prisma db push --accept-data-loss && npm rebuild"
+    "build": "npm install --include=dev && npx prisma generate && npm --prefix ../admin install && npm --prefix ../admin run build && npm rebuild"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
