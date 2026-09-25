@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Tamilarasu Enterprises</string>
+    <string name="title_activity_main">Tamilarasu Enterprises</string>
+    <string name="package_name">com.tamilarasu.enterprises</string>
+    <string name="custom_url_scheme">com.tamilarasu.enterprises</string>
+</resources>

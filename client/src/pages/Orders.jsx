@@ -38,6 +38,14 @@ export default function Orders() {
     }
   };
 
+  const handleDownloadInvoice = (invoiceId) => {
+    window.open(`${API_URL}/api/invoices/${invoiceId}/pdf?token=${token}`, '_blank');
+  };
+
+  const handlePreviewInvoice = (invoiceId) => {
+    window.open(`${API_URL}/api/invoices/${invoiceId}/pdf?token=${token}&action=preview`, '_blank');
+  };
+
   const handleScan = async (scannedData) => {
     try {
       const result = scannedData[0]?.rawValue || scannedData;
@@ -97,6 +105,22 @@ export default function Orders() {
                     >
                       <QrCode size={16} /> QR
                     </button>
+                  )}
+                  {o.invoices && o.invoices.length > 0 && (
+                    <>
+                      <button 
+                        onClick={() => handlePreviewInvoice(o.invoices[0].id)}
+                        className="bg-blue-100 text-blue-700 px-4 py-2 rounded shadow hover:bg-blue-200 transition font-bold text-sm"
+                      >
+                        Preview
+                      </button>
+                      <button 
+                        onClick={() => handleDownloadInvoice(o.invoices[0].id)}
+                        className="bg-purple-600 text-white px-4 py-2 rounded shadow hover:bg-purple-700 transition font-bold text-sm"
+                      >
+                        Download Invoice
+                      </button>
+                    </>
                   )}
                   {o.status === 'QUOTED' && (
                     <button 

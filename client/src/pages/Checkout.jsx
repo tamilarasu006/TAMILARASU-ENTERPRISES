@@ -19,6 +19,9 @@ export default function Checkout() {
   const [country, setCountry] = useState('');
   const [message, setMessage] = useState('');
   const [preferredDeliveryDate, setPreferredDeliveryDate] = useState('');
+  const [shippingAddress, setShippingAddress] = useState('');
+  const [billingAddress, setBillingAddress] = useState('');
+  const [sameAsShipping, setSameAsShipping] = useState(true);
   
   // Submit states: 'idle', 'submitting', 'success', 'error'
   const [submitState, setSubmitState] = useState('idle');
@@ -47,13 +50,24 @@ export default function Checkout() {
       return;
     }
 
+    if (!shippingAddress.trim()) {
+      alert('Please provide a shipping address.');
+      return;
+    }
+
+    const finalBilling = sameAsShipping ? shippingAddress : billingAddress;
+    if (!finalBilling.trim()) {
+      alert('Please provide a billing address.');
+      return;
+    }
+
     setSubmitState('submitting');
     
     try {
       const payload = {
         items: [{ productId: product.id, quantity: qty, price: product.price }],
-        shippingAddress: 'TBD', // Required by previous schema
-        billingAddress: 'TBD',
+        shippingAddress: shippingAddress,
+        billingAddress: finalBilling,
         company,
         country,
         message,
@@ -188,6 +202,41 @@ export default function Checkout() {
                       value={preferredDeliveryDate} onChange={e=>setPreferredDeliveryDate(e.target.value)}
                     />
                   </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-gray-700">Shipping Address *</label>
+                    <textarea 
+                      required rows="2"
+                      className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none" 
+                      value={shippingAddress} onChange={e=>setShippingAddress(e.target.value)}
+                      placeholder="Full delivery address"
+                    ></textarea>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <input 
+                      type="checkbox" 
+                      id="sameAddress" 
+                      checked={sameAsShipping} 
+                      onChange={(e) => setSameAsShipping(e.target.checked)}
+                      className="rounded text-blue-600 focus:ring-blue-500 w-4 h-4"
+                    />
+                    <label htmlFor="sameAddress" className="text-sm text-gray-700 font-medium">Billing address is same as shipping</label>
+                  </div>
+
+                  {!sameAsShipping && (
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-700">Billing Address *</label>
+                      <textarea 
+                        required={!sameAsShipping} rows="2"
+                        className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none" 
+                        value={billingAddress} onChange={e=>setBillingAddress(e.target.value)}
+                        placeholder="Full billing address"
+                      ></textarea>
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-2">

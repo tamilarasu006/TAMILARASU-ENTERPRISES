@@ -37,7 +37,7 @@ export default function Products() {
     setIsLoading(true);
     axios.get(`${API_URL}/api/products`)
       .then(res => {
-        setProducts(res.data.data);
+        setProducts(res.data.data || []);
         setIsLoading(false);
       })
       .catch((err) => {

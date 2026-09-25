@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Checkout from './pages/Checkout';
 import Orders from './pages/Orders';
+import Invoices from './pages/Invoices';
 import About from './pages/About';
 import Services from './pages/Services';
 import VerifyAccount from './pages/VerifyAccount';
@@ -30,6 +31,7 @@ function AnimatedRoutes() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/orders" element={<Orders />} />
+        <Route path="/invoices" element={<Invoices />} />
         <Route path="/profile" element={<Profile />} />
       </Routes>
     </AnimatePresence>

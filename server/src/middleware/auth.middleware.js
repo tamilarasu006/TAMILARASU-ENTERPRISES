@@ -3,7 +3,10 @@ const prisma = require('../prisma');
 
 const authenticateUser = async (req, res, next) => {
   try {
-    const token = req.headers.authorization?.split(' ')[1];
+    let token = req.headers.authorization?.split(' ')[1];
+    if (!token && req.query.token) {
+      token = req.query.token;
+    }
     if (!token) {
       return res.status(401).json({ success: false, message: 'Authentication required' });
     }
@@ -20,11 +23,19 @@ const authenticateUser = async (req, res, next) => {
 };
 
 const requireAdmin = (req, res, next) => {
-  if (req.user && req.user.role === 'ADMIN') {
+  if (req.user && (req.user.role === 'ADMIN' || req.user.role === 'SUPER_ADMIN')) {
     next();
   } else {
     res.status(403).json({ success: false, message: 'Admin access required' });
   }
 };
 
-module.exports = { authenticateUser, requireAdmin };
+const requireSuperAdmin = (req, res, next) => {
+  if (req.user && req.user.role === 'SUPER_ADMIN') {
+    next();
+  } else {
+    res.status(403).json({ success: false, message: 'Super Admin access required' });
+  }
+};
+
+module.exports = { authenticateUser, requireAdmin, requireSuperAdmin };

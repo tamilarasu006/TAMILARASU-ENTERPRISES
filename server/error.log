@@ -1,0 +1,311 @@
+2026-09-20T12:09:08.596Z ERROR: PrismaClientInitializationError: 
+Invalid `prisma.user.findFirst()` invocation in
+E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:36
+
+  66   return res.status(400).json({ success: false, message: 'Please provide email/phone and password.' });
+  67 }
+  68 
+→ 69 const user = await prisma.user.findFirst(
+Can't reach database server at `dpg-da7v6oijnfac739guon0-a.oregon-postgres.render.com:5432`
+
+Please make sure your database server is running at `dpg-da7v6oijnfac739guon0-a.oregon-postgres.render.com:5432`.
+    at $n.handleRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:7615)
+    at $n.handleAndLogRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async login (E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:18)
+2026-09-20T12:09:08.602Z ERROR: PrismaClientInitializationError: 
+Invalid `prisma.user.findFirst()` invocation in
+E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:36
+
+  66   return res.status(400).json({ success: false, message: 'Please provide email/phone and password.' });
+  67 }
+  68 
+→ 69 const user = await prisma.user.findFirst(
+Can't reach database server at `dpg-da7v6oijnfac739guon0-a.oregon-postgres.render.com:5432`
+
+Please make sure your database server is running at `dpg-da7v6oijnfac739guon0-a.oregon-postgres.render.com:5432`.
+    at $n.handleRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:7615)
+    at $n.handleAndLogRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async login (E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:18)
+2026-09-20T12:10:28.761Z ERROR: PrismaClientInitializationError: 
+Invalid `prisma.user.findFirst()` invocation in
+E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:36
+
+  66   return res.status(400).json({ success: false, message: 'Please provide email/phone and password.' });
+  67 }
+  68 
+→ 69 const user = await prisma.user.findFirst(
+Can't reach database server at `dpg-da7v6oijnfac739guon0-a.oregon-postgres.render.com:5432`
+
+Please make sure your database server is running at `dpg-da7v6oijnfac739guon0-a.oregon-postgres.render.com:5432`.
+    at $n.handleRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:7615)
+    at $n.handleAndLogRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async login (E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:18)
+2026-09-20T12:15:20.265Z ERROR: PrismaClientInitializationError: 
+Invalid `prisma.user.findFirst()` invocation in
+E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:36
+
+  66   return res.status(400).json({ success: false, message: 'Please provide email/phone and password.' });
+  67 }
+  68 
+→ 69 const user = await prisma.user.findFirst(
+Can't reach database server at `dpg-da7v6oijnfac739guon0-a.oregon-postgres.render.com:5432`
+
+Please make sure your database server is running at `dpg-da7v6oijnfac739guon0-a.oregon-postgres.render.com:5432`.
+    at $n.handleRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:7615)
+    at $n.handleAndLogRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async login (E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:18)
+2026-09-20T12:50:16.069Z ERROR: PrismaClientInitializationError: 
+Invalid `prisma.user.findFirst()` invocation in
+E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:36
+
+  66   return res.status(400).json({ success: false, message: 'Please provide email/phone and password.' });
+  67 }
+  68 
+→ 69 const user = await prisma.user.findFirst(
+Can't reach database server at `aws-0-ap-northeast-2.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-0-ap-northeast-2.pooler.supabase.com:5432`.
+    at $n.handleRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:7615)
+    at $n.handleAndLogRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async login (E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:18)
+2026-09-20T16:10:35.478Z ERROR: PrismaClientKnownRequestError: 
+Invalid `prisma.user.findFirst()` invocation in
+E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:36
+
+  66   return res.status(400).json({ success: false, message: 'Please provide email/phone and password.' });
+  67 }
+  68 
+→ 69 const user = await prisma.user.findFirst(
+Can't reach database server at `aws-0-ap-northeast-2.pooler.supabase.com:6543`
+
+Please make sure your database server is running at `aws-0-ap-northeast-2.pooler.supabase.com:6543`.
+    at $n.handleRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:7315)
+    at $n.handleAndLogRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async login (E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:18)
+2026-09-24T15:22:15.573Z ERROR: PrismaClientKnownRequestError: 
+Invalid `prisma.user.findFirst()` invocation in
+E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:36
+
+  66   return res.status(400).json({ success: false, message: 'Please provide email/phone and password.' });
+  67 }
+  68 
+→ 69 const user = await prisma.user.findFirst(
+Can't reach database server at `aws-0-ap-northeast-2.pooler.supabase.com:6543`
+
+Please make sure your database server is running at `aws-0-ap-northeast-2.pooler.supabase.com:6543`.
+    at $n.handleRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:7315)
+    at $n.handleAndLogRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async login (E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:18)
+2026-09-24T15:22:20.575Z ERROR: PrismaClientKnownRequestError: 
+Invalid `prisma.user.findFirst()` invocation in
+E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:36
+
+  66   return res.status(400).json({ success: false, message: 'Please provide email/phone and password.' });
+  67 }
+  68 
+→ 69 const user = await prisma.user.findFirst(
+Can't reach database server at `aws-0-ap-northeast-2.pooler.supabase.com:6543`
+
+Please make sure your database server is running at `aws-0-ap-northeast-2.pooler.supabase.com:6543`.
+    at $n.handleRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:7315)
+    at $n.handleAndLogRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async login (E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:18)
+2026-09-24T15:47:48.157Z ERROR: PrismaClientKnownRequestError: 
+Invalid `prisma.user.findFirst()` invocation in
+E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:36
+
+  66   return res.status(400).json({ success: false, message: 'Please provide email/phone and password.' });
+  67 }
+  68 
+→ 69 const user = await prisma.user.findFirst(
+Can't reach database server at `aws-0-ap-northeast-2.pooler.supabase.com:6543`
+
+Please make sure your database server is running at `aws-0-ap-northeast-2.pooler.supabase.com:6543`.
+    at $n.handleRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:7315)
+    at $n.handleAndLogRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async Proxy.<anonymous> (E:\TAMILARASU-ENTERPRISES\server\src\prisma\index.js:68:18)
+    at async login (E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:18)
+2026-09-24T15:48:02.422Z ERROR: PrismaClientInitializationError: 
+Invalid `prisma.user.findFirst()` invocation in
+E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:36
+
+  66   return res.status(400).json({ success: false, message: 'Please provide email/phone and password.' });
+  67 }
+  68 
+→ 69 const user = await prisma.user.findFirst(
+Can't reach database server at `aws-0-ap-northeast-2.pooler.supabase.com:6543`
+
+Please make sure your database server is running at `aws-0-ap-northeast-2.pooler.supabase.com:6543`.
+    at $n.handleRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:7615)
+    at $n.handleAndLogRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async Proxy.<anonymous> (E:\TAMILARASU-ENTERPRISES\server\src\prisma\index.js:68:18)
+    at async login (E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:18)
+2026-09-24T15:48:25.488Z ERROR: PrismaClientInitializationError: 
+Invalid `prisma.user.findFirst()` invocation in
+E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:36
+
+  66   return res.status(400).json({ success: false, message: 'Please provide email/phone and password.' });
+  67 }
+  68 
+→ 69 const user = await prisma.user.findFirst(
+Can't reach database server at `aws-0-ap-northeast-2.pooler.supabase.com:6543`
+
+Please make sure your database server is running at `aws-0-ap-northeast-2.pooler.supabase.com:6543`.
+    at $n.handleRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:7615)
+    at $n.handleAndLogRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async Proxy.<anonymous> (E:\TAMILARASU-ENTERPRISES\server\src\prisma\index.js:68:18)
+    at async login (E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:18)
+2026-09-24T15:48:25.492Z ERROR: PrismaClientInitializationError: 
+Invalid `prisma.user.findFirst()` invocation in
+E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:36
+
+  66   return res.status(400).json({ success: false, message: 'Please provide email/phone and password.' });
+  67 }
+  68 
+→ 69 const user = await prisma.user.findFirst(
+Can't reach database server at `aws-0-ap-northeast-2.pooler.supabase.com:6543`
+
+Please make sure your database server is running at `aws-0-ap-northeast-2.pooler.supabase.com:6543`.
+    at $n.handleRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:7615)
+    at $n.handleAndLogRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async Proxy.<anonymous> (E:\TAMILARASU-ENTERPRISES\server\src\prisma\index.js:68:18)
+    at async login (E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:18)
+2026-09-24T15:48:25.495Z ERROR: PrismaClientInitializationError: 
+Invalid `prisma.user.findFirst()` invocation in
+E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:36
+
+  66   return res.status(400).json({ success: false, message: 'Please provide email/phone and password.' });
+  67 }
+  68 
+→ 69 const user = await prisma.user.findFirst(
+Can't reach database server at `aws-0-ap-northeast-2.pooler.supabase.com:6543`
+
+Please make sure your database server is running at `aws-0-ap-northeast-2.pooler.supabase.com:6543`.
+    at $n.handleRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:7615)
+    at $n.handleAndLogRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async Proxy.<anonymous> (E:\TAMILARASU-ENTERPRISES\server\src\prisma\index.js:68:18)
+    at async login (E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:18)
+2026-09-24T15:48:25.498Z ERROR: PrismaClientInitializationError: 
+Invalid `prisma.user.findFirst()` invocation in
+E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:36
+
+  66   return res.status(400).json({ success: false, message: 'Please provide email/phone and password.' });
+  67 }
+  68 
+→ 69 const user = await prisma.user.findFirst(
+Can't reach database server at `aws-0-ap-northeast-2.pooler.supabase.com:6543`
+
+Please make sure your database server is running at `aws-0-ap-northeast-2.pooler.supabase.com:6543`.
+    at $n.handleRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:7615)
+    at $n.handleAndLogRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async Proxy.<anonymous> (E:\TAMILARASU-ENTERPRISES\server\src\prisma\index.js:68:18)
+    at async login (E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:18)
+2026-09-24T15:48:48.275Z ERROR: PrismaClientInitializationError: 
+Invalid `prisma.user.findFirst()` invocation in
+E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:36
+
+  66   return res.status(400).json({ success: false, message: 'Please provide email/phone and password.' });
+  67 }
+  68 
+→ 69 const user = await prisma.user.findFirst(
+Can't reach database server at `aws-0-ap-northeast-2.pooler.supabase.com:6543`
+
+Please make sure your database server is running at `aws-0-ap-northeast-2.pooler.supabase.com:6543`.
+    at $n.handleRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:7615)
+    at $n.handleAndLogRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async Proxy.<anonymous> (E:\TAMILARASU-ENTERPRISES\server\src\prisma\index.js:68:18)
+    at async login (E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:18)
+2026-09-24T15:49:21.908Z ERROR: PrismaClientInitializationError: 
+Invalid `prisma.user.findFirst()` invocation in
+E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:36
+
+  66   return res.status(400).json({ success: false, message: 'Please provide email/phone and password.' });
+  67 }
+  68 
+→ 69 const user = await prisma.user.findFirst(
+Can't reach database server at `aws-0-ap-northeast-2.pooler.supabase.com:6543`
+
+Please make sure your database server is running at `aws-0-ap-northeast-2.pooler.supabase.com:6543`.
+    at $n.handleRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:7615)
+    at $n.handleAndLogRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async Proxy.<anonymous> (E:\TAMILARASU-ENTERPRISES\server\src\prisma\index.js:68:18)
+    at async login (E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:18)
+2026-09-24T15:59:41.677Z ERROR: PrismaClientKnownRequestError: 
+Invalid `prisma.user.findFirst()` invocation in
+E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:36
+
+  66   return res.status(400).json({ success: false, message: 'Please provide email/phone and password.' });
+  67 }
+  68 
+→ 69 const user = await prisma.user.findFirst(
+Timed out fetching a new connection from the connection pool. More info: http://pris.ly/d/connection-pool (Current connection pool timeout: 15, connection limit: 9)
+    at $n.handleRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:7315)
+    at $n.handleAndLogRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async Proxy.<anonymous> (E:\TAMILARASU-ENTERPRISES\server\src\prisma\index.js:68:18)
+    at async login (E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:18)
+2026-09-24T16:01:11.855Z ERROR: PrismaClientKnownRequestError: 
+Invalid `prisma.user.findFirst()` invocation in
+E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:36
+
+  66   return res.status(400).json({ success: false, message: 'Please provide email/phone and password.' });
+  67 }
+  68 
+→ 69 const user = await prisma.user.findFirst(
+Can't reach database server at `aws-0-ap-northeast-2.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-0-ap-northeast-2.pooler.supabase.com:5432`.
+    at $n.handleRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:7315)
+    at $n.handleAndLogRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async Proxy.<anonymous> (E:\TAMILARASU-ENTERPRISES\server\src\prisma\index.js:68:18)
+    at async login (E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:18)
+2026-09-24T16:20:17.805Z ERROR: PrismaClientKnownRequestError: 
+Invalid `prisma.user.findFirst()` invocation in
+E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:36
+
+  66   return res.status(400).json({ success: false, message: 'Please provide email/phone and password.' });
+  67 }
+  68 
+→ 69 const user = await prisma.user.findFirst(
+Timed out fetching a new connection from the connection pool. More info: http://pris.ly/d/connection-pool (Current connection pool timeout: 15, connection limit: 9)
+    at $n.handleRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:7315)
+    at $n.handleAndLogRequestError (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (E:\TAMILARASU-ENTERPRISES\server\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async Proxy.<anonymous> (E:\TAMILARASU-ENTERPRISES\server\src\prisma\index.js:68:18)
+    at async login (E:\TAMILARASU-ENTERPRISES\server\src\controllers\auth.controller.js:69:18)

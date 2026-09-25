@@ -108,6 +108,9 @@ const orderRoutes = require('./routes/order.routes');
 const adminOrderRoutes = require('./routes/adminOrder.routes');
 const serviceRoutes = require('./routes/service.routes');
 const profileRoutes = require('./routes/profile.routes');
+const invoiceRoutes = require('./routes/invoice.routes');
+const adminRoutes = require('./routes/admin.routes');
+const settingsRoutes = require('./routes/settings.routes');
 
 app.use('/api/', limiter); // Apply limiter only to API routes
 
@@ -115,8 +118,11 @@ app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/admin/orders', adminOrderRoutes);
+app.use('/api/admin', adminRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/profile', profileRoutes);
+app.use('/api/invoices', invoiceRoutes);
+app.use('/api/settings', settingsRoutes);
 
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
@@ -166,7 +172,7 @@ io.use(async (socket, next) => {
     if (!token) return next(new Error('Authentication required'));
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await prisma.user.findUnique({ where: { id: decoded.id } });
-    if (!user || user.role !== 'ADMIN') return next(new Error('Admin access required'));
+    if (!user || (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN')) return next(new Error('Admin access required'));
     socket.user = user;
     next();
   } catch (err) {

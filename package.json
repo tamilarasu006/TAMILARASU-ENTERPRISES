@@ -5,5 +5,10 @@
   "scripts": {
     "build": "npm --prefix client install && npm --prefix client run build && npm --prefix admin install && npm --prefix admin run build && npm --prefix server install && cd server && npx prisma generate",
     "start": "node server/src/app.js"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.1",
+    "@capacitor/cli": "^8.5.1",
+    "@capacitor/core": "^8.5.1"
   }
 }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { User, LogOut, Package, Menu, X } from 'lucide-react';
+import { User, LogOut, Package, Menu, X, FileText } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
@@ -160,6 +160,14 @@ export default function Navbar() {
                         <Package className="w-4 h-4 mr-3" />
                         <span className="font-medium text-sm">My Orders</span>
                       </Link>
+                      <Link
+                        to="/invoices"
+                        onClick={() => setShowProfileMenu(false)}
+                        className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors"
+                      >
+                        <FileText className="w-4 h-4 mr-3" />
+                        <span className="font-medium text-sm">My Invoices</span>
+                      </Link>
                       <div className="h-px bg-gray-100 my-1"></div>
                       <button
                         onClick={() => {
@@ -238,6 +246,14 @@ export default function Navbar() {
                   >
                     <Package className="w-5 h-5 mr-3" />
                     My Orders
+                  </Link>
+                  <Link
+                    to="/invoices"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="text-white font-semibold flex items-center text-lg"
+                  >
+                    <FileText className="w-5 h-5 mr-3" />
+                    My Invoices
                   </Link>
                   <button
                     onClick={() => {

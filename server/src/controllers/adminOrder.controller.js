@@ -16,7 +16,7 @@ const getAllOrders = async (req, res) => {
     
     const orders = await prisma.order.findMany({
       where,
-      include: { user: { select: { name: true, email: true, phone: true } }, orderItems: { include: { product: true } } },
+      include: { user: { select: { name: true, email: true, phone: true } }, orderItems: { include: { product: true } }, invoices: true },
       orderBy: { createdAt: 'desc' }
     });
     res.json({ success: true, data: orders });

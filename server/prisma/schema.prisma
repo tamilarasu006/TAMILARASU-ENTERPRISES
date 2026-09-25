@@ -33,7 +33,9 @@ model User {
   pendingEmail     String?
 
   orders           Order[]
+  invoices         Invoice[]
   otpVerifications OTPVerification[]
+  adminInvitationsSent AdminInvitation[] @relation("AdminInvitationsSent")
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 }
@@ -44,6 +46,7 @@ model Product {
   description          String
   category             String
   hsnCode              String?
+  taxRate              Float       @default(18.0)
   price                Float
   priceOnRequest       Boolean     @default(false)
   unit                 String
@@ -83,6 +86,7 @@ model Order {
   payment               Payment?
   qrToken               String?     @unique
   qrGeneratedAt         DateTime?
+  invoices              Invoice[]
   qrEnabled             Boolean     @default(true)
   createdAt             DateTime    @default(now())
   updatedAt             DateTime    @updatedAt
@@ -141,4 +145,126 @@ model OTPVerification {
   lastSentAt  DateTime @default(now())
   verifiedAt  DateTime?
   createdAt   DateTime @default(now())
+}
+
+model Invoice {
+  id                      String        @id @default(uuid())
+  invoiceNumber           String        @unique
+  orderId                 String
+  order                   Order         @relation(fields: [orderId], references: [id])
+  userId                  String
+  user                    User          @relation(fields: [userId], references: [id])
+  invoiceDate             DateTime      @default(now())
+  status                  String        @default("ISSUED") // DRAFT, ISSUED, PAID, CANCELLED, FINALIZED
+  subtotal                Float
+  discount                Float         @default(0)
+  taxableAmount           Float
+  cgstAmount              Float         @default(0)
+  sgstAmount              Float         @default(0)
+  igstAmount              Float         @default(0)
+  totalTax                Float         @default(0)
+  freight                 Float         @default(0)
+  insurance               Float         @default(0)
+  fobValue                Float         @default(0)
+  totalCifValue           Float         @default(0)
+  currency                String        @default("INR")
+  grandTotal              Float
+  amountPaid              Float         @default(0)
+  balanceDue              Float
+  paymentStatus           String        @default("UNPAID")
+  paymentMethod           String?
+  notes                   String?
+  terms                   String?
+
+  // Export / Shipping Fields
+  incoterms               String?       // e.g. FOB, CIF, EXW
+  paymentTerms            String?       // e.g. T/T 30 days
+  taxTreatment            String?       // e.g. EXPORT_LUT, EXPORT_WITH_IGST, DOMESTIC
+  countryOfOrigin         String?       @default("India")
+  countryOfDestination    String?
+  preCarriage             String?       // By Road, By Air etc.
+  placeOfReceipt          String?
+  portOfLoading           String?       // e.g. Chennai
+  portOfDischarge         String?       // e.g. Singapore
+  vesselFlightNo          String?
+  notifyParty             String?
+  gstDeclaration          String?       // configurable declaration text snapshot
+  finalizedAt             DateTime?
+  finalizedById           String?       // admin user who finalized
+
+  // Snapshots
+  companySnapshot         Json?
+  customerSnapshot        Json?
+  billingAddressSnapshot  Json?
+  shippingAddressSnapshot Json?
+  
+  items                   InvoiceItem[]
+  createdAt               DateTime      @default(now())
+  updatedAt               DateTime      @updatedAt
+}
+
+model InvoiceItem {
+  id            String  @id @default(uuid())
+  invoiceId     String
+  invoice       Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  productId     String?
+  description   String
+  hsnSac        String?
+  quantity      Int
+  unitPrice     Float
+  discount      Float   @default(0)
+  taxRate       Float   @default(0)
+  taxableAmount Float
+  cgstAmount    Float   @default(0)
+  sgstAmount    Float   @default(0)
+  igstAmount    Float   @default(0)
+  lineTotal     Float
+}
+
+model AdminInvitation {
+  id              String   @id @default(uuid())
+  email           String
+  name            String?
+  role            String
+  tokenHash       String   @unique
+  invitedById     String
+  expiresAt       DateTime
+  acceptedAt      DateTime?
+  revokedAt       DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  invitedBy       User     @relation("AdminInvitationsSent", fields: [invitedById], references: [id])
+
+  @@index([email])
+  @@index([expiresAt])
+}
+
+model InvoiceSettings {
+  id                              String   @id @default("default")
+  companyName                     String?
+  businessType                    String?  @default("Import \u2022 Export \u2022 Trading")
+  logoUrl                         String?
+  address                         String?
+  email                           String?
+  phone                           String?
+  gstin                           String?
+  pan                             String?
+  bankName                        String?
+  branch                          String?
+  accountName                     String?
+  accountNumber                   String?
+  ifsc                            String?
+  swiftBic                        String?
+  defaultCurrency                 String   @default("INR")
+  defaultPaymentTerms             String?
+  defaultIncoterms                String?
+  authorizedSignatoryName         String?
+  authorizedSignatoryDesignation  String?
+  declarationText                 String?
+  gstExportDeclaration            String?  // GST export declaration text (configurable)
+  footerText                      String?
+  invoicePrefix                   String?  @default("TE")
+  createdAt                       DateTime @default(now())
+  updatedAt                       DateTime @updatedAt
 }

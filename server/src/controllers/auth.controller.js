@@ -57,16 +57,14 @@ const register = async (req, res) => {
 // Login
 const login = async (req, res) => {
   try {
-    let { email, password } = req.body; // 'email' field can be email or phone
+    const { email, phone, password } = req.body;
     
-    if (!email || typeof email !== 'string') {
-      return res.status(400).json({ success: false, message: 'Invalid email/mobile number.' });
+    // Determine if input is email or phone
+    const identifier = email?.toLowerCase().trim() || phone?.trim();
+    
+    if (!identifier || !password) {
+      return res.status(400).json({ success: false, message: 'Please provide email/phone and password.' });
     }
-    if (!password || typeof password !== 'string') {
-      return res.status(400).json({ success: false, message: 'Password is required.' });
-    }
-
-    const identifier = email.toLowerCase().trim();
 
     const user = await prisma.user.findFirst({
       where: {
@@ -77,7 +75,7 @@ const login = async (req, res) => {
     if (!user) return res.status(400).json({ success: false, message: 'Invalid email/mobile number or password.' });
     
     // If admin, bypass strict customer verification
-    if (user.role === 'ADMIN') {
+    if (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') {
       if (!user.password) return res.status(400).json({ success: false, message: 'Invalid credentials' });
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) return res.status(400).json({ success: false, message: 'Invalid credentials' });
@@ -93,17 +91,45 @@ const login = async (req, res) => {
     
     // Check verification status for customers
     if (!user.emailVerified) {
-       return res.status(403).json({ 
-         success: false, 
-         message: 'Please verify your email before logging in.', 
-         code: 'UNVERIFIED_ACCOUNT',
-         data: { email: user.email, phone: user.phone, emailVerified: user.emailVerified }
-       });
+      const { generateOTP } = require('../services/otpService');
+      const otp = generateOTP();
+      
+      const updatedUser = await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          pendingEmail: user.email,
+          emailVerificationToken: otp.code,
+          emailVerificationExpires: otp.expires
+        }
+      });
+      
+      await sendEmail(
+        user.email,
+        'Verify your account',
+        `Your verification code is: ${otp.code}. It will expire in 10 minutes.`
+      );
+      
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Please verify your email to continue. A new verification code has been sent.',
+        requiresVerification: true,
+        userId: user.id,
+        email: user.email
+      });
     }
 
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1d' });
-    res.json({ success: true, message: 'Login successful', data: { user: { id: user.id, name: user.name, email: user.email, role: user.role }, token } });
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '30d' });
+
+    res.json({
+      success: true,
+      message: 'Login successful',
+      data: {
+        user: { id: user.id, name: user.name, email: user.email, role: user.role },
+        token
+      }
+    });
   } catch (error) {
+    require('fs').appendFileSync('error.log', new Date().toISOString() + ' ERROR: ' + error.stack + '\n');
     return errorResponse(res, 500, 'Login failed', error);
   }
 };
@@ -140,7 +166,7 @@ const googleAuth = async (req, res) => {
 
     if (user) {
       // Don't allow admins to login via Google customer portal
-      if (user.role === 'ADMIN') {
+      if (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') {
         return res.status(403).json({ success: false, message: 'Admin accounts cannot login via Google' });
       }
       

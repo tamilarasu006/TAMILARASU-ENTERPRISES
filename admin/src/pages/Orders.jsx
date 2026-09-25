@@ -64,6 +64,27 @@ export default function Orders() {
     setQuotedAmount(order.quotedAmount || '');
   };
 
+  const handleGenerateInvoice = async (orderId) => {
+    try {
+      const token = localStorage.getItem('adminToken');
+      const res = await axios.post(`${API_URL}/api/invoices/order/${orderId}/generate`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      // Navigate directly to the new HTML/CSS preview
+      navigate(`/invoices/${res.data.data.id}`);
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to generate invoice');
+    }
+  };
+
+  const handleDownloadInvoice = (invoiceId) => {
+    navigate(`/invoices/${invoiceId}`);
+  };
+
+  const handlePreviewInvoice = (invoiceId) => {
+    navigate(`/invoices/${invoiceId}`);
+  };
+
   const handleScan = async (scannedData) => {
     try {
       const result = scannedData[0]?.rawValue || scannedData;
@@ -241,9 +262,35 @@ export default function Orders() {
                   <textarea rows="3" className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none" value={internalNotes} onChange={e => setInternalNotes(e.target.value)} placeholder="Add private admin notes here..."></textarea>
                 </div>
 
-                <div className="flex justify-end space-x-4 pt-6">
-                  <button type="button" onClick={() => setSelectedOrder(null)} className="px-6 py-3 border border-gray-300 rounded-lg font-bold text-gray-600 hover:bg-gray-50 transition-colors">Cancel</button>
-                  <button type="submit" className="px-6 py-3 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 shadow-md transition-colors">Save Changes</button>
+                <div className="flex justify-between items-center pt-6">
+                  <div className="flex space-x-2">
+                    {selectedOrder.status === 'CONFIRMED' || selectedOrder.status === 'PROCESSING' || selectedOrder.status === 'SHIPPED' || selectedOrder.status === 'COMPLETED' ? (
+                      (!selectedOrder.invoices || selectedOrder.invoices.length === 0) ? (
+                        <button type="button" onClick={() => handleGenerateInvoice(selectedOrder.id)} className="px-4 py-2 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700 shadow-md transition-colors">
+                          Generate Invoice
+                        </button>
+                      ) : (
+                        <>
+                          <button type="button" onClick={() => handlePreviewInvoice(selectedOrder.invoices[0].id)} className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg font-bold hover:bg-blue-200 shadow-md transition-colors">
+                            Preview PDF
+                          </button>
+                          <button type="button" onClick={() => handleDownloadInvoice(selectedOrder.invoices[0].id)} className="px-4 py-2 bg-purple-600 text-white rounded-lg font-bold hover:bg-purple-700 shadow-md transition-colors">
+                            Download PDF
+                          </button>
+                          <button type="button" onClick={() => {
+                            const token = localStorage.getItem('adminToken');
+                            window.open(`${API_URL}/api/invoices/${selectedOrder.invoices[0].id}/docx?token=${token}`, '_blank');
+                          }} className="px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 shadow-md transition-colors">
+                            Download DOCX
+                          </button>
+                        </>
+                      )
+                    ) : null}
+                  </div>
+                  <div className="flex justify-end space-x-4">
+                    <button type="button" onClick={() => setSelectedOrder(null)} className="px-6 py-3 border border-gray-300 rounded-lg font-bold text-gray-600 hover:bg-gray-50 transition-colors">Cancel</button>
+                    <button type="submit" className="px-6 py-3 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 shadow-md transition-colors">Save Changes</button>
+                  </div>
                 </div>
               </form>
             </motion.div>
