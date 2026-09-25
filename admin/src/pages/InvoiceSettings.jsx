@@ -60,6 +60,7 @@ export default function InvoiceSettings() {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   const [message, setMessage] = useState('');
 
   useEffect(() => { fetchSettings(); }, []);
@@ -84,6 +85,36 @@ export default function InvoiceSettings() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setSettings(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleLogoUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploadingLogo(true);
+    setMessage('');
+    
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const token = localStorage.getItem('adminToken');
+      const res = await axios.post(`${API_URL}/api/settings/upload`, formData, {
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      if (res.data.url) {
+        setSettings(prev => ({ ...prev, logoUrl: res.data.url }));
+        setMessage('✅ Logo uploaded successfully! Remember to click Save.');
+      }
+    } catch (err) {
+      console.error(err);
+      setMessage('❌ Failed to upload logo.');
+    } finally {
+      setUploadingLogo(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -131,7 +162,29 @@ export default function InvoiceSettings() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Field label="Company Name" name="companyName" value={settings.companyName} onChange={handleChange} />
             <Field label="Business Type" name="businessType" value={settings.businessType} onChange={handleChange} placeholder="Import • Export • Trading" />
-            <Field label="Logo URL" name="logoUrl" value={settings.logoUrl} onChange={handleChange} placeholder="https://..." />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Company Logo</label>
+              <div className="flex items-center space-x-3">
+                {settings.logoUrl && (
+                  <img src={settings.logoUrl} alt="Logo" className="h-10 w-10 object-contain rounded border border-gray-200" />
+                )}
+                <div className="flex-1 relative">
+                  <input 
+                    type="file" 
+                    accept="image/*"
+                    onChange={handleLogoUpload}
+                    disabled={uploadingLogo}
+                    className="block w-full text-sm text-gray-500
+                      file:mr-4 file:py-2 file:px-4
+                      file:rounded-md file:border-0
+                      file:text-sm file:font-semibold
+                      file:bg-blue-50 file:text-blue-700
+                      hover:file:bg-blue-100 cursor-pointer disabled:opacity-50"
+                  />
+                  {uploadingLogo && <span className="absolute right-3 top-2.5 text-xs text-blue-600 font-semibold animate-pulse">Uploading...</span>}
+                </div>
+              </div>
+            </div>
             <Field label="Invoice Prefix" name="invoicePrefix" value={settings.invoicePrefix} onChange={handleChange} placeholder="TE" />
             <div className="md:col-span-2">
               <TextareaField label="Address" name="address" value={settings.address} onChange={handleChange} rows={3} />
