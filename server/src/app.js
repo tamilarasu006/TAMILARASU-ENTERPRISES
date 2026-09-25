@@ -126,6 +126,16 @@ app.use('/api/settings', settingsRoutes);
 
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
+app.get('/api/test-db', async (req, res) => {
+  try {
+    const prisma = require('./prisma');
+    const result = await prisma.order.findFirst({ include: { invoices: true } });
+    res.json({ success: true, result });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message, name: error.name });
+  }
+});
+
 // Serve static frontend files (Client and Admin) if built
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
