@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import Orders from './pages/Orders';
 import Login from './pages/Login';
@@ -76,7 +76,7 @@ function AdminLayout({ children }) {
 
 function App() {
   return (
-    <BrowserRouter basename="/admin">
+    <Router>
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/accept-invite" element={<AcceptInvite />} />
@@ -90,7 +90,7 @@ function App() {
         <Route path="/settings" element={<AdminLayout><Settings /></AdminLayout>} />
         <Route path="/settings/invoice" element={<AdminLayout><InvoiceSettings /></AdminLayout>} />
       </Routes>
-    </BrowserRouter>
+    </Router>
   );
 }
 

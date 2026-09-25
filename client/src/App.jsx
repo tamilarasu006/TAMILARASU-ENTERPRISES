@@ -33,9 +33,15 @@ function AnimatedRoutes() {
         <Route path="/orders" element={<Orders />} />
         <Route path="/invoices" element={<Invoices />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/admin/*" element={<AdminRedirect />} />
       </Routes>
     </AnimatePresence>
   );
+}
+
+function AdminRedirect() {
+  window.location.replace('/admin/index.html#/login');
+  return null;
 }
 
 function App() {

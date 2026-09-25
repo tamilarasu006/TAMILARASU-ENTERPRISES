@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && npm --prefix ../admin install && npm --prefix ../admin run build && node -e \"const fs=require('fs'); fs.cpSync('../admin/dist', 'dist/admin', {recursive:true})\"",
     "lint": "oxlint",
     "preview": "vite preview"
   },
