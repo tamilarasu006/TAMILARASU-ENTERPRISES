@@ -16,6 +16,15 @@ const { Server } = require('socket.io');
 const rateLimit = require('express-rate-limit');
 const jwt = require('jsonwebtoken');
 const prisma = require('./prisma');
+const { execSync } = require('child_process');
+
+try {
+  console.log('[SYSTEM] Pushing database schema to live database...');
+  execSync('npx prisma db push --accept-data-loss', { stdio: 'inherit' });
+  console.log('[SYSTEM] Database schema updated successfully.');
+} catch (err) {
+  console.error('[SYSTEM] Failed to push database schema:', err.message);
+}
 
 const app = express();
 app.set('trust proxy', 1); // Trust first proxy (Render's load balancer)
