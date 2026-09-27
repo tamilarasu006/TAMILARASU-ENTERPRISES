@@ -15,6 +15,8 @@ import ForgotPassword from './pages/ForgotPassword';
 import Profile from './pages/Profile';
 import { AuthProvider } from './context/AuthContext';
 
+import Contact from './pages/Contact';
+
 function AnimatedRoutes() {
   const location = useLocation();
   
@@ -23,6 +25,7 @@ function AnimatedRoutes() {
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
         <Route path="/services" element={<Services />} />
         <Route path="/products" element={<Products />} />
         <Route path="/login" element={<Login />} />
