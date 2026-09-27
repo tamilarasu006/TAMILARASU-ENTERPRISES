@@ -8,7 +8,7 @@ const Contact = () => {
     subject: '',
     message: ''
   });
-  
+
   const [status, setStatus] = useState(null);
 
   const handleChange = (e) => {
@@ -39,9 +39,9 @@ const Contact = () => {
       className="min-h-screen bg-gray-50 pt-24 pb-12"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Header */}
-        <motion.div 
+        <motion.div
           initial="hidden"
           animate="visible"
           variants={fadeInUp}
@@ -56,9 +56,9 @@ const Contact = () => {
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
+
           {/* Contact Info Cards */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -81,8 +81,8 @@ const Contact = () => {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Call Us</h3>
               <p className="text-gray-600 mb-4">Mon-Fri from 8am to 5pm.</p>
-              <a href="tel:+911234567890" className="text-[#1f3a8a] font-medium hover:underline">
-                +91 123 456 7890
+              <a href="tel:+916383772487" className="text-[#1f3a8a] font-medium hover:underline">
+                +91 638 377 2487
               </a>
             </div>
 
@@ -93,14 +93,14 @@ const Contact = () => {
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Visit Us</h3>
               <p className="text-gray-600 mb-4">Come say hello at our office HQ.</p>
               <address className="text-[#1f3a8a] font-medium not-italic">
-                Tamil Nadu, India<br/>
+                Tamil Nadu, India<br />
                 Chennai
               </address>
             </div>
           </motion.div>
 
           {/* Contact Form */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
@@ -109,7 +109,7 @@ const Contact = () => {
             <div className="bg-white rounded-2xl shadow-xl border border-gray-50 overflow-hidden">
               <div className="px-8 py-10 sm:p-12">
                 <h2 className="text-2xl font-bold text-gray-900 mb-8">Send us a message</h2>
-                
+
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
@@ -187,7 +187,7 @@ const Contact = () => {
                   </button>
 
                   {status === 'success' && (
-                    <motion.div 
+                    <motion.div
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       className="p-4 bg-green-50 border-l-4 border-green-500 text-green-700 rounded-md"
