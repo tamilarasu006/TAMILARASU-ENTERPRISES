@@ -25,8 +25,8 @@ const scanOrderQR = async (req, res) => {
       return res.status(403).json({ success: false, message: 'This QR code has been disabled' });
     }
 
-    // Access Control: Admin can view any order. Customer can only view their own order.
-    if (req.user.role !== 'ADMIN' && order.userId !== req.user.id) {
+    // Access Control: Admin/Super Admin can view any order. Customer can only view their own order.
+    if (req.user.role !== 'ADMIN' && req.user.role !== 'SUPER_ADMIN' && order.userId !== req.user.id) {
       return res.status(403).json({ success: false, message: 'You are not authorized to view this order' });
     }
 
