@@ -7,6 +7,7 @@ import {
   AlertCircle, ChevronRight, Settings, Loader2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { countryCodes } from '../data/countryCodes';
 
 const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5000' : '');
 
@@ -25,7 +26,7 @@ export default function Profile() {
   });
   const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
   const [emailForm, setEmailForm] = useState({ newEmail: '', otp: '', step: 1 });
-  const [phoneForm, setPhoneForm] = useState({ newPhone: '', otp: '', step: 1 });
+  const [phoneForm, setPhoneForm] = useState({ countryCode: '+91', phone: '' });
 
   // UI State
   const [isSaving, setIsSaving] = useState(false);
@@ -155,16 +156,17 @@ export default function Profile() {
   // --- Phone Change Flow ---
   const handleUpdatePhone = async (e) => {
     e.preventDefault();
-    if (!phoneForm.newPhone) return showMessage('error', 'Please enter a mobile number');
+    if (!phoneForm.phone) return showMessage('error', 'Please enter a mobile number');
     setIsSaving(true);
     try {
+      const fullPhone = `${phoneForm.countryCode} ${phoneForm.phone}`;
       const res = await axios.put(`${API_URL}/api/profile`, 
-        { phone: phoneForm.newPhone }, 
+        { phone: fullPhone }, 
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setProfileData(res.data.data);
       updateUser(res.data.data);
-      setPhoneForm({ newPhone: '', otp: '', step: 1 });
+      setPhoneForm({ countryCode: '+91', phone: '' });
       showMessage('success', 'Mobile number updated successfully!');
     } catch (err) {
       showMessage('error', err.response?.data?.message || 'Failed to update mobile number');
@@ -475,29 +477,39 @@ export default function Profile() {
                       <p className="text-lg font-bold text-gray-900">{profileData.phone || 'Not provided'}</p>
                     </div>
                     <div>
-                      {profileData.phone ? (
-                        profileData.phoneVerified ? (
-                          <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-semibold flex items-center">
-                            <CheckCircle2 className="w-4 h-4 mr-1" /> Verified
-                          </span>
-                        ) : (
-                          <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-semibold flex items-center">
-                            <AlertCircle className="w-4 h-4 mr-1" /> Not Verified
-                          </span>
-                        )
-                      ) : null}
                     </div>
                   </div>
 
                   <div className="border-t pt-8">
-                    <h3 className="text-lg font-bold text-gray-900 mb-4">{profileData.phone ? 'Change Mobile Number' : 'Add Mobile Number'}</h3>
-                    <form onSubmit={handleUpdatePhone} className="space-y-4 max-w-md">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">New Mobile Number (with country code, e.g. +91)</label>
-                        <input required type="tel" className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 border" 
-                          value={phoneForm.newPhone} onChange={e => setPhoneForm({...phoneForm, newPhone: e.target.value})} placeholder="+91 9876543210" />
-                      </div>
-                      <button type="submit" disabled={isSaving} className="bg-blue-600 text-white font-bold py-2.5 px-6 rounded-lg hover:bg-blue-700 disabled:opacity-50">
+                     <h3 className="text-lg font-bold text-gray-900 mb-4">{profileData.phone ? 'Change Mobile Number' : 'Add Mobile Number'}</h3>
+                     <form onSubmit={handleUpdatePhone} className="space-y-4 max-w-md">
+                       <div>
+                         <label className="block text-sm font-medium text-gray-700 mb-1">Mobile Number</label>
+                         <div className="flex">
+                           <select
+                             name="countryCode"
+                             value={phoneForm.countryCode}
+                             onChange={e => setPhoneForm({...phoneForm, countryCode: e.target.value})}
+                             className="px-3 py-3 rounded-l-xl border border-r-0 border-gray-300 bg-gray-50 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors w-28 overflow-hidden text-ellipsis"
+                           >
+                             {countryCodes.map((country, idx) => (
+                               <option key={idx} value={country.code}>
+                                 {country.iso} ({country.code})
+                               </option>
+                             ))}
+                           </select>
+                           <input
+                             required
+                             type="tel"
+                             name="phone"
+                             className="w-full border-gray-300 rounded-r-xl shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 border"
+                             value={phoneForm.phone}
+                             onChange={e => setPhoneForm({...phoneForm, phone: e.target.value})}
+                             placeholder="1234567890"
+                           />
+                         </div>
+                       </div>
+                       <button type="submit" disabled={isSaving} className="bg-blue-600 text-white font-bold py-2.5 px-6 rounded-lg hover:bg-blue-700 disabled:opacity-50">
                         {isSaving ? 'Updating...' : 'Update Mobile Number'}
                       </button>
                     </form>
@@ -520,17 +532,6 @@ export default function Profile() {
                         <span className="font-medium text-gray-800">Email Verification</span>
                       </div>
                       {profileData.emailVerified ? <CheckCircle2 className="w-5 h-5 text-green-500" /> : <AlertCircle className="w-5 h-5 text-yellow-500" />}
-                    </button>
-                    
-                    <button 
-                      onClick={() => setActiveTab('phone')}
-                      className="border rounded-xl p-4 flex items-center justify-between hover:bg-gray-50 hover:border-blue-300 transition-colors text-left"
-                    >
-                      <div className="flex items-center">
-                        <Phone className="w-5 h-5 text-gray-400 mr-3" />
-                        <span className="font-medium text-gray-800">Mobile Verification</span>
-                      </div>
-                      {profileData.phoneVerified ? <CheckCircle2 className="w-5 h-5 text-green-500" /> : <AlertCircle className="w-5 h-5 text-yellow-500" />}
                     </button>
                     
                     <button 
