@@ -8,6 +8,7 @@ import Settings from './pages/Settings';
 import Invoices from './pages/Invoices';
 import ManageAdmins from './pages/ManageAdmins';
 import AcceptInvite from './pages/AcceptInvite';
+import Inquiries from './pages/Inquiries';
 import InvoiceSettings from './pages/InvoiceSettings';
 import InvoicePreview from './pages/InvoicePreview';
 import { useEffect, useState } from 'react';
@@ -61,6 +62,9 @@ function AdminLayout({ children }) {
           <Link to="/products" className={navLinkClass('/products')}>Products</Link>
           <Link to="/services" className={navLinkClass('/services')}>Services</Link>
           {userRole === 'SUPER_ADMIN' && (
+            <Link to="/inquiries" className={navLinkClass('/inquiries')}>Inquiries</Link>
+          )}
+          {userRole === 'SUPER_ADMIN' && (
             <Link to="/admins" className={navLinkClass('/admins')}>Manage Admins</Link>
           )}
           <Link to="/settings" className={navLinkClass('/settings')}>Settings</Link>
@@ -86,6 +90,7 @@ function App() {
         <Route path="/invoices/:id" element={<AdminLayout><InvoicePreview /></AdminLayout>} />
         <Route path="/products" element={<AdminLayout><Products /></AdminLayout>} />
         <Route path="/services" element={<AdminLayout><Services /></AdminLayout>} />
+        <Route path="/inquiries" element={<AdminLayout><Inquiries /></AdminLayout>} />
         <Route path="/admins" element={<AdminLayout><ManageAdmins /></AdminLayout>} />
         <Route path="/settings" element={<AdminLayout><Settings /></AdminLayout>} />
         <Route path="/settings/invoice" element={<AdminLayout><InvoiceSettings /></AdminLayout>} />

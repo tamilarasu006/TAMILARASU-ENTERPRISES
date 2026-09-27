@@ -120,6 +120,7 @@ const profileRoutes = require('./routes/profile.routes');
 const invoiceRoutes = require('./routes/invoice.routes');
 const adminRoutes = require('./routes/admin.routes');
 const settingsRoutes = require('./routes/settings.routes');
+const contactRoutes = require('./routes/contact.routes');
 
 app.use('/api/', limiter); // Apply limiter only to API routes
 
@@ -132,6 +133,7 @@ app.use('/api/services', serviceRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/invoices', invoiceRoutes);
 app.use('/api/settings', settingsRoutes);
+app.use('/api/contact', contactRoutes);
 
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 

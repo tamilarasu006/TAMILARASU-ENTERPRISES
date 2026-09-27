@@ -15,15 +15,29 @@ const Contact = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simulate sending form
     setStatus('sending');
-    setTimeout(() => {
+    try {
+      // Send to backend API which saves to DB and emails Admin
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) throw new Error('Failed to send');
+      
       setStatus('success');
       setFormData({ name: '', email: '', subject: '', message: '' });
       setTimeout(() => setStatus(null), 5000);
-    }, 1500);
+    } catch (error) {
+      console.error(error);
+      setStatus('error');
+      setTimeout(() => setStatus(null), 5000);
+    }
   };
 
   const fadeInUp = {
@@ -193,6 +207,16 @@ const Contact = () => {
                       className="p-4 bg-green-50 border-l-4 border-green-500 text-green-700 rounded-md"
                     >
                       Thank you! Your message has been sent successfully. We will get back to you soon.
+                    </motion.div>
+                  )}
+
+                  {status === 'error' && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-md"
+                    >
+                      Oops! Something went wrong. Please try again later.
                     </motion.div>
                   )}
                 </form>
