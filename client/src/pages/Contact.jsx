@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { countryCodes } from '../data/countryCodes';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -173,13 +174,13 @@ const Contact = () => {
                         name="countryCode"
                         value={formData.countryCode}
                         onChange={handleChange}
-                        className="px-3 py-3 rounded-l-xl border border-r-0 border-gray-300 bg-gray-50 text-gray-700 focus:ring-2 focus:ring-[#1f3a8a] focus:border-[#1f3a8a] outline-none transition-colors"
+                        className="px-3 py-3 rounded-l-xl border border-r-0 border-gray-300 bg-gray-50 text-gray-700 focus:ring-2 focus:ring-[#1f3a8a] focus:border-[#1f3a8a] outline-none transition-colors w-28 overflow-hidden text-ellipsis"
                       >
-                        <option value="+91">+91 (IN)</option>
-                        <option value="+1">+1 (US/CA)</option>
-                        <option value="+44">+44 (UK)</option>
-                        <option value="+61">+61 (AU)</option>
-                        <option value="+971">+971 (AE)</option>
+                        {countryCodes.map((country, idx) => (
+                          <option key={idx} value={country.code}>
+                            {country.iso} ({country.code})
+                          </option>
+                        ))}
                       </select>
                       <input
                         type="tel"
