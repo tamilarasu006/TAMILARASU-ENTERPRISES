@@ -68,7 +68,7 @@ const getAdmins = async (req, res) => {
   }
 };
 
-// Delete an admin
+// Delete an admin or an invitation
 const removeAdmin = async (req, res) => {
   try {
     const { id } = req.params;
@@ -78,9 +78,17 @@ const removeAdmin = async (req, res) => {
        return res.status(400).json({ success: false, message: 'You cannot remove yourself' });
     }
 
+    // 1. Check if it's an invitation being deleted
+    const invitation = await prisma.adminInvitation.findUnique({ where: { id } });
+    if (invitation) {
+      await prisma.adminInvitation.delete({ where: { id } });
+      return res.json({ success: true, message: 'Invitation deleted successfully' });
+    }
+
+    // 2. Otherwise, check if it's a User
     const admin = await prisma.user.findUnique({ where: { id } });
     if (!admin || !['ADMIN', 'SUPER_ADMIN'].includes(admin.role)) {
-       return res.status(404).json({ success: false, message: 'Admin not found' });
+       return res.status(404).json({ success: false, message: 'Admin or Invitation not found' });
     }
 
     if (admin.role === 'SUPER_ADMIN') {
@@ -93,7 +101,7 @@ const removeAdmin = async (req, res) => {
     await prisma.user.delete({ where: { id } });
     res.json({ success: true, message: 'Admin removed successfully' });
   } catch (error) {
-    return errorResponse(res, 500, 'Failed to remove admin', error);
+    return errorResponse(res, 500, 'Failed to remove admin or invitation', error);
   }
 };
 

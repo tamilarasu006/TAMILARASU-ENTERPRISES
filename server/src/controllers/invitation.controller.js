@@ -29,8 +29,8 @@ const createInvitation = async (req, res) => {
       where: { email: identifier }
     });
 
-    if (existingUser) {
-      return res.status(400).json({ success: false, message: 'User with this email already exists' });
+    if (existingUser && (existingUser.role === 'ADMIN' || existingUser.role === 'SUPER_ADMIN')) {
+      return res.status(400).json({ success: false, message: 'User with this email is already an Admin' });
     }
 
     // 2. Revoke any existing active invitations for this email
@@ -207,6 +207,7 @@ const acceptInvitation = async (req, res) => {
 
     res.json({ success: true, message: 'Your admin account has been activated successfully.' });
   } catch (error) {
+    console.error('[INVITATION ERROR] Failed to accept invitation:', error);
     return errorResponse(res, 500, 'Failed to accept invitation', error);
   }
 };

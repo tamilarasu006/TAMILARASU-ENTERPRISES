@@ -162,6 +162,9 @@ export default function ManageAdmins() {
                       <button onClick={() => handleRevoke(admin.id)} className="text-red-600 hover:text-red-900">Revoke</button>
                     </>
                   )}
+                  {admin.isInvitation && (admin.status === 'REVOKED' || admin.status === 'EXPIRED') && (
+                    <button onClick={() => handleRemove(admin.id)} className="text-red-600 hover:text-red-900">Delete</button>
+                  )}
                 </td>
               </tr>
             ))}
