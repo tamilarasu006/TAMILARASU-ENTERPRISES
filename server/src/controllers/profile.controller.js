@@ -51,9 +51,13 @@ exports.getProfile = async (req, res) => {
 
 exports.updateProfile = async (req, res) => {
   try {
-    const { name, dateOfBirth, gender, companyName, address, city, state, country, postalCode } = req.body;
+    const { name, dateOfBirth, gender, companyName, address, city, state, country, postalCode, phone } = req.body;
     
-    // We do NOT allow updating email or phone directly here
+    // Check if phone is being changed
+    const currentUser = await prisma.user.findUnique({ where: { id: req.user.id } });
+    const isPhoneChanged = phone && currentUser.phone !== phone.trim();
+
+    // We do NOT allow updating email directly here
     const updatedUser = await prisma.user.update({
       where: { id: req.user.id },
       data: {
@@ -65,7 +69,8 @@ exports.updateProfile = async (req, res) => {
         city,
         state,
         country,
-        postalCode
+        postalCode,
+        ...(isPhoneChanged && { phone: phone.trim(), phoneVerified: false })
       }
     });
 

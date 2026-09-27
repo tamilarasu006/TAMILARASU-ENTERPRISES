@@ -153,29 +153,13 @@ export default function Profile() {
   };
 
   // --- Phone Change Flow ---
-  const handleRequestPhoneChange = async (e) => {
+  const handleUpdatePhone = async (e) => {
     e.preventDefault();
+    if (!phoneForm.newPhone) return showMessage('error', 'Please enter a mobile number');
     setIsSaving(true);
     try {
-      await axios.post(`${API_URL}/api/profile/change-phone/request`, 
-        { newPhone: phoneForm.newPhone }, 
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setPhoneForm({ ...phoneForm, step: 2 });
-      showMessage('success', 'OTP sent to your new mobile number.');
-    } catch (err) {
-      showMessage('error', err.response?.data?.message || 'Failed to request mobile number change');
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const handleVerifyPhoneChange = async (e) => {
-    e.preventDefault();
-    setIsSaving(true);
-    try {
-      const res = await axios.post(`${API_URL}/api/profile/change-phone/verify`, 
-        { otp: phoneForm.otp, newPhone: phoneForm.newPhone }, 
+      const res = await axios.put(`${API_URL}/api/profile`, 
+        { phone: phoneForm.newPhone }, 
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setProfileData(res.data.data);
@@ -183,11 +167,12 @@ export default function Profile() {
       setPhoneForm({ newPhone: '', otp: '', step: 1 });
       showMessage('success', 'Mobile number updated successfully!');
     } catch (err) {
-      showMessage('error', err.response?.data?.message || 'Invalid OTP');
+      showMessage('error', err.response?.data?.message || 'Failed to update mobile number');
     } finally {
       setIsSaving(false);
     }
   };
+
 
   if (authLoading || loading) {
     return (
@@ -506,37 +491,16 @@ export default function Profile() {
 
                   <div className="border-t pt-8">
                     <h3 className="text-lg font-bold text-gray-900 mb-4">{profileData.phone ? 'Change Mobile Number' : 'Add Mobile Number'}</h3>
-                    {phoneForm.step === 1 ? (
-                      <form onSubmit={handleRequestPhoneChange} className="space-y-4 max-w-md">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">New Mobile Number (with country code, e.g. +91)</label>
-                          <input required type="tel" className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 border" 
-                            value={phoneForm.newPhone} onChange={e => setPhoneForm({...phoneForm, newPhone: e.target.value})} placeholder="+91 9876543210" />
-                        </div>
-                        <button type="submit" disabled={isSaving} className="bg-blue-600 text-white font-bold py-2.5 px-6 rounded-lg hover:bg-blue-700 disabled:opacity-50">
-                          {isSaving ? 'Sending OTP...' : 'Send Verification Code'}
-                        </button>
-                      </form>
-                    ) : (
-                      <form onSubmit={handleVerifyPhoneChange} className="space-y-4 max-w-md">
-                        <div className="bg-blue-50 p-4 rounded-lg text-sm text-blue-800 mb-4">
-                          We sent an SMS with a 6-digit code to <strong>{phoneForm.newPhone}</strong>.
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Verification Code (OTP)</label>
-                          <input required type="text" maxLength={6} className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 border text-center text-lg tracking-widest" 
-                            value={phoneForm.otp} onChange={e => setPhoneForm({...phoneForm, otp: e.target.value})} placeholder="000000" />
-                        </div>
-                        <div className="flex gap-4">
-                          <button type="button" onClick={() => setPhoneForm({...phoneForm, step: 1})} className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200">
-                            Cancel
-                          </button>
-                          <button type="submit" disabled={isSaving} className="flex-1 bg-green-600 text-white font-bold py-2.5 px-6 rounded-lg hover:bg-green-700 disabled:opacity-50">
-                            {isSaving ? 'Verifying...' : 'Verify & Update Mobile'}
-                          </button>
-                        </div>
-                      </form>
-                    )}
+                    <form onSubmit={handleUpdatePhone} className="space-y-4 max-w-md">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">New Mobile Number (with country code, e.g. +91)</label>
+                        <input required type="tel" className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 border" 
+                          value={phoneForm.newPhone} onChange={e => setPhoneForm({...phoneForm, newPhone: e.target.value})} placeholder="+91 9876543210" />
+                      </div>
+                      <button type="submit" disabled={isSaving} className="bg-blue-600 text-white font-bold py-2.5 px-6 rounded-lg hover:bg-blue-700 disabled:opacity-50">
+                        {isSaving ? 'Updating...' : 'Update Mobile Number'}
+                      </button>
+                    </form>
                   </div>
                 </motion.div>
               )}
