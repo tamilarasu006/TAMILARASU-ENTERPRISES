@@ -91,23 +91,10 @@ const login = async (req, res) => {
     
     // Check verification status for customers
     if (!user.emailVerified) {
-      const { generateOTP } = require('../services/otpService');
-      const otp = generateOTP();
+      const { sendOTP } = require('../services/otpService');
       
-      const updatedUser = await prisma.user.update({
-        where: { id: user.id },
-        data: {
-          pendingEmail: user.email,
-          emailVerificationToken: otp.code,
-          emailVerificationExpires: otp.expires
-        }
-      });
+      await sendOTP(user.id, user.email, user.phone, 'EMAIL');
       
-      await sendEmail(
-        user.email,
-        'Verify your account',
-        `Your verification code is: ${otp.code}. It will expire in 10 minutes.`
-      );
       
       return res.status(403).json({ 
         success: false, 
