@@ -4,20 +4,20 @@ const { sendEmail } = require('../services/emailService');
 
 const submitContact = async (req, res) => {
   try {
-    const { name, email, subject, message } = req.body;
+    const { name, email, phone, subject, message } = req.body;
 
     if (!name || !email || !subject || !message) {
-      return res.status(400).json({ success: false, message: 'All fields are required' });
+      return res.status(400).json({ success: false, message: 'All required fields must be filled' });
     }
 
     // Save to database
     const contactMsg = await prisma.contactMessage.create({
-      data: { name, email, subject, message }
+      data: { name, email, phone, subject, message }
     });
 
     // Email to Super Admin
     try {
-      const emailText = `New Contact Form Submission\n\nName: ${name}\nEmail: ${email}\nSubject: ${subject}\n\nMessage:\n${message}`;
+      const emailText = `New Contact Form Submission\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone || 'N/A'}\nSubject: ${subject}\n\nMessage:\n${message}`;
       // In a real scenario, fetch the SUPER_ADMIN email from DB or use environment variable
       // For now we send it to a standard support email or fallback
       const adminEmail = 'tamilarasuv423@gmail.com'; 

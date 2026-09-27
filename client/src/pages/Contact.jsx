@@ -5,6 +5,8 @@ const Contact = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    countryCode: '+91',
+    phone: '',
     subject: '',
     message: ''
   });
@@ -19,19 +21,29 @@ const Contact = () => {
     e.preventDefault();
     setStatus('sending');
     try {
-      // Send to backend API which saves to DB and emails Admin
+      // Combine country code and phone before sending
+      const fullPhone = formData.phone ? `${formData.countryCode} ${formData.phone}` : '';
+      
+      const payload = {
+        name: formData.name,
+        email: formData.email,
+        phone: fullPhone,
+        subject: formData.subject,
+        message: formData.message
+      };
+
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) throw new Error('Failed to send');
       
       setStatus('success');
-      setFormData({ name: '', email: '', subject: '', message: '' });
+      setFormData({ name: '', email: '', countryCode: '+91', phone: '', subject: '', message: '' });
       setTimeout(() => setStatus(null), 5000);
     } catch (error) {
       console.error(error);
@@ -150,6 +162,33 @@ const Contact = () => {
                         onChange={handleChange}
                         className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#1f3a8a] focus:border-[#1f3a8a] outline-none transition-colors"
                         placeholder="john@example.com"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                    <div className="flex">
+                      <select
+                        name="countryCode"
+                        value={formData.countryCode}
+                        onChange={handleChange}
+                        className="px-3 py-3 rounded-l-xl border border-r-0 border-gray-300 bg-gray-50 text-gray-700 focus:ring-2 focus:ring-[#1f3a8a] focus:border-[#1f3a8a] outline-none transition-colors"
+                      >
+                        <option value="+91">+91 (IN)</option>
+                        <option value="+1">+1 (US/CA)</option>
+                        <option value="+44">+44 (UK)</option>
+                        <option value="+61">+61 (AU)</option>
+                        <option value="+971">+971 (AE)</option>
+                      </select>
+                      <input
+                        type="tel"
+                        name="phone"
+                        id="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 rounded-r-xl border border-gray-300 focus:ring-2 focus:ring-[#1f3a8a] focus:border-[#1f3a8a] outline-none transition-colors"
+                        placeholder="1234567890"
                       />
                     </div>
                   </div>
