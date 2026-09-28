@@ -4,7 +4,7 @@ const prisma = require('../prisma');
 const errorResponse = require('../utils/errorResponse');
 const { sendEmail } = require('../services/emailService');
 
-const ADMIN_FRONTEND_URL = process.env.ADMIN_FRONTEND_URL || 'http://localhost:5173';
+const ADMIN_FRONTEND_URL = process.env.ADMIN_FRONTEND_URL || (process.env.NODE_ENV === 'production' ? 'https://tamilarasu-enterprises.onrender.com' : 'http://localhost:5173');
 const EXPIRY_HOURS = parseInt(process.env.ADMIN_INVITATION_EXPIRY_HOURS || '72', 10);
 
 // Helper: Hash a token
@@ -63,7 +63,7 @@ const createInvitation = async (req, res) => {
     });
 
     // 5. Send email
-    const inviteLink = `${ADMIN_FRONTEND_URL}/admin/accept-invite?token=${rawToken}`;
+    const inviteLink = `${ADMIN_FRONTEND_URL}/admin/#/accept-invite?token=${rawToken}`;
     const subject = 'You’re invited to join TAMILARASU ENTERPRISES Admin Portal';
     
     // Explicit format requested by user
@@ -253,7 +253,7 @@ const resendInvitation = async (req, res) => {
     });
 
     // Send email
-    const inviteLink = `${ADMIN_FRONTEND_URL}/admin/accept-invite?token=${rawToken}`;
+    const inviteLink = `${ADMIN_FRONTEND_URL}/admin/#/accept-invite?token=${rawToken}`;
     const subject = 'You’re invited to join TAMILARASU ENTERPRISES Admin Portal';
     
     const text = `TAMILARASU ENTERPRISES\n\nHello ${oldInvitation.name || 'there'},\n\nYou have been invited by the Super Admin to join the TAMILARASU ENTERPRISES Admin Portal.\n\nYour account details:\n\nEmail: ${oldInvitation.email}\nRole: ${oldInvitation.role}\n\nClick the button below to accept your invitation and create your password.\n\n[ JOIN ADMIN PORTAL ]\n${inviteLink}\n\nInvitation expires in ${EXPIRY_HOURS} hours.\n\nIf you did not expect this invitation, you can safely ignore this email.\n\nRegards,\nTAMILARASU ENTERPRISES\nAdmin Team`;
