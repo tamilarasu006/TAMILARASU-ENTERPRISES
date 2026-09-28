@@ -1,5 +1,15 @@
 require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
 
+if (!process.env.DATABASE_URL) {
+  console.error("⚠️ CRITICAL: DATABASE_URL is missing in .env.");
+  process.exit(1);
+}
+
+if (!process.env.JWT_SECRET) {
+  console.error("⚠️ CRITICAL: JWT_SECRET is missing in .env.");
+  process.exit(1);
+}
+
 if (!process.env.GOOGLE_CLIENT_ID) {
   console.warn("⚠️ WARNING: GOOGLE_CLIENT_ID is missing or empty in .env. Google Auth will fail.");
 }
@@ -17,14 +27,6 @@ const rateLimit = require('express-rate-limit');
 const jwt = require('jsonwebtoken');
 const prisma = require('./prisma');
 const { execSync } = require('child_process');
-
-try {
-  console.log('[SYSTEM] Pushing database schema to live database...');
-  execSync('npx prisma db push --accept-data-loss', { stdio: 'inherit' });
-  console.log('[SYSTEM] Database schema updated successfully.');
-} catch (err) {
-  console.error('[SYSTEM] Failed to push database schema:', err.message);
-}
 
 const app = express();
 app.set('trust proxy', 1); // Trust first proxy (Render's load balancer)
@@ -99,12 +101,21 @@ app.use(helmet({
   }
 }));
 app.use(cors(corsOptions));
-app.use(express.json());
-app.use(morgan('dev'));
+const crypto = require('crypto');
+
+app.use((req, res, next) => {
+  req.id = req.headers['x-request-id'] || crypto.randomUUID();
+  res.setHeader('X-Request-ID', req.id);
+  next();
+});
+
+morgan.token('id', req => req.id);
+app.use(express.json({ limit: '10mb' }));
+app.use(morgan(process.env.NODE_ENV === 'production' ? ':id :remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"' : 'dev'));
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
+  max: 500 // limit each IP to 500 requests per windowMs
 });
 
 // Store socket io instance to be accessible from controllers
@@ -205,5 +216,26 @@ io.on('connection', (socket) => {
   socket.join('admins');
   console.log('Admin connected:', socket.id, socket.user?.email);
 });
+
+// Graceful Shutdown
+const gracefulShutdown = () => {
+  console.log('[SYSTEM] Starting graceful shutdown...');
+  httpServer.close(() => {
+    console.log('[SYSTEM] HTTP server closed.');
+    prisma.$disconnect().then(() => {
+      console.log('[SYSTEM] Database connection closed.');
+      process.exit(0);
+    });
+  });
+
+  // Force close after 10 seconds
+  setTimeout(() => {
+    console.error('[SYSTEM] Forcing shutdown after timeout.');
+    process.exit(1);
+  }, 10000);
+};
+
+process.on('SIGTERM', gracefulShutdown);
+process.on('SIGINT', gracefulShutdown);
 
 module.exports = { app, httpServer };
