@@ -9,7 +9,8 @@ const {
   emailInvoice,
   downloadInvoicePDF, 
   downloadInvoiceDOCX,
-  getMyInvoices 
+  getMyInvoices,
+  logPayment
 } = require('../controllers/invoice.controller');
 const { authenticateUser, requireRoles } = require('../middleware/auth.middleware');
 
@@ -23,6 +24,7 @@ router.get('/:id',         authenticateUser, getInvoiceById);
 router.post('/order/:orderId/generate', authenticateUser, requireRoles(['ACCOUNTS_ADMIN']), generateInvoice);
 router.put('/:id',                      authenticateUser, requireRoles(['ACCOUNTS_ADMIN']), updateInvoice);
 router.post('/:id/finalize',            authenticateUser, requireRoles(['ACCOUNTS_ADMIN']), finalizeInvoice);
+router.post('/:id/payment',             authenticateUser, requireRoles(['ACCOUNTS_ADMIN']), logPayment);
 router.post('/:id/email',               authenticateUser, requireRoles(['ACCOUNTS_ADMIN', 'SALES_ADMIN']), emailInvoice);
 router.get('/',                         authenticateUser, requireRoles(['ACCOUNTS_ADMIN', 'SALES_ADMIN', 'ORDER_ADMIN']), getInvoices);
 

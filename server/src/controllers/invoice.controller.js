@@ -99,7 +99,7 @@ const updateInvoice = async (req, res) => {
       'portOfLoading', 'portOfDischarge', 'vesselFlightNo', 'notifyParty',
       'incoterms', 'paymentTerms', 'taxTreatment', 'gstDeclaration',
       'fobValue', 'freight', 'insurance', 'totalCifValue', 'grandTotal', 'totalTax',
-      'subtotal', 'currency'
+      'subtotal', 'currency', 'discount'
     ];
 
     const data = {};
@@ -332,6 +332,72 @@ const getMyInvoices = async (req, res) => {
   }
 };
 
+const logPayment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { amountPaid, paymentMethod, transactionId } = req.body;
+    
+    if (!amountPaid || amountPaid <= 0) {
+      return res.status(400).json({ success: false, message: 'Invalid payment amount' });
+    }
+
+    const invoice = await prisma.invoice.findUnique({ where: { id } });
+    if (!invoice) return res.status(404).json({ success: false, message: 'Invoice not found' });
+    
+    const newAmountPaid = invoice.amountPaid + parseFloat(amountPaid);
+    const newBalanceDue = invoice.grandTotal - newAmountPaid;
+    
+    let paymentStatus = 'PARTIAL';
+    if (newBalanceDue <= 0) {
+      paymentStatus = 'PAID';
+    }
+
+    const updated = await prisma.invoice.update({
+      where: { id },
+      data: {
+        amountPaid: newAmountPaid,
+        balanceDue: newBalanceDue > 0 ? newBalanceDue : 0,
+        paymentStatus,
+        paymentMethod: paymentMethod || invoice.paymentMethod
+      }
+    });
+
+    // Optionally log this into a separate Payments table if we wanted, 
+    // but the schema already supports Payment model connected to Order,
+    // so let's also create the Payment record for the Order if not exists.
+    if (invoice.orderId) {
+      const order = await prisma.order.findUnique({ where: { id: invoice.orderId }, include: { payment: true } });
+      if (order) {
+        if (order.payment) {
+          await prisma.payment.update({
+            where: { id: order.payment.id },
+            data: { 
+              amount: newAmountPaid, 
+              paymentMethod: paymentMethod || order.payment.paymentMethod, 
+              paymentStatus,
+              transactionId: transactionId || order.payment.transactionId
+            }
+          });
+        } else {
+          await prisma.payment.create({
+            data: {
+              orderId: order.id,
+              amount: newAmountPaid,
+              paymentMethod: paymentMethod || 'MANUAL',
+              paymentStatus,
+              transactionId
+            }
+          });
+        }
+      }
+    }
+
+    res.json({ success: true, message: 'Payment logged successfully', data: updated });
+  } catch (error) {
+    return errorResponse(res, 500, 'Failed to log payment', error);
+  }
+};
+
 module.exports = {
   generateInvoice,
   getInvoices,
@@ -341,5 +407,6 @@ module.exports = {
   emailInvoice,
   downloadInvoicePDF,
   downloadInvoiceDOCX,
-  getMyInvoices
+  getMyInvoices,
+  logPayment
 };
