@@ -57,6 +57,11 @@ const sendOTP = async (userId, userEmail, userPhone, channel) => {
     const subject = channel === 'RESET' ? 'Reset your TAMILARASU ENTERPRISES password' : 'Verify your TAMILARASU ENTERPRISES account';
     const text = `Hello,\n\nYour ${action} OTP is: ${otp}\n\nThis OTP expires in 5 minutes.\n\nIf you did not request this ${action}, ignore this email.\n\nRegards,\nTAMILARASU ENTERPRISES`;
     await sendEmail(userEmail, subject, text);
+  } else if (channel === 'MOBILE' || channel === 'MOBILE_LOGIN') {
+    if (!userPhone) throw new Error('No mobile number associated with this user.');
+    const action = channel === 'MOBILE_LOGIN' ? 'login' : 'verification';
+    const message = `Your ${action} OTP for TAMILARASU ENTERPRISES is ${otp}. It expires in 5 minutes.`;
+    await sendSMS(userPhone, message);
   }
 
   return true;

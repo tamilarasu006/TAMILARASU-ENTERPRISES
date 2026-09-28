@@ -13,11 +13,13 @@ const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const register = async (req, res) => {
   try {
     console.log(`[AUTH] Registration started`);
-    let { name, email, password, phone } = req.body;
+    let { name, email, password, phone, country, companyName } = req.body;
     
     // Normalize
     email = email?.toLowerCase().trim();
     phone = phone?.trim();
+    country = country?.trim();
+    companyName = companyName?.trim();
 
     // Check duplicate
     const existingUser = await prisma.user.findFirst({
@@ -35,7 +37,7 @@ const register = async (req, res) => {
     
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({
-      data: { name, email, password: hashedPassword, phone, emailVerified: false }
+      data: { name, email, password: hashedPassword, phone, country, companyName, emailVerified: false }
     });
     
     res.status(201).json({ success: true, message: 'Registration successful. Please verify your account.' });
@@ -116,7 +118,7 @@ const login = async (req, res) => {
       }
     });
   } catch (error) {
-    require('fs').appendFileSync('error.log', new Date().toISOString() + ' ERROR: ' + error.stack + '\n');
+    console.error('[AUTH] Login Error:', error);
     return errorResponse(res, 500, 'Login failed', error);
   }
 };
@@ -188,7 +190,48 @@ const googleAuth = async (req, res) => {
 };
 
 
-// Send Email OTP
+// Request Login OTP
+const requestLoginOtp = async (req, res) => {
+  try {
+    const { phone } = req.body;
+    if (!phone) return res.status(400).json({ success: false, message: 'Phone number is required' });
+
+    const user = await prisma.user.findFirst({ where: { phone: phone.trim() } });
+    if (!user) return res.status(400).json({ success: false, message: 'No account found with this mobile number' });
+
+    await sendOTP(user.id, user.email, user.phone, 'MOBILE_LOGIN');
+    res.json({ success: true, message: 'Login OTP sent successfully' });
+  } catch (error) {
+    return errorResponse(res, 500, 'Failed to send login OTP', error);
+  }
+};
+
+// Login with OTP
+const loginWithOtp = async (req, res) => {
+  try {
+    const { phone, otp } = req.body;
+    if (!phone || !otp) return res.status(400).json({ success: false, message: 'Phone and OTP are required' });
+
+    const user = await prisma.user.findFirst({ where: { phone: phone.trim() } });
+    if (!user) return res.status(400).json({ success: false, message: 'User not found' });
+
+    await verifyOTP(user.id, 'MOBILE_LOGIN', otp);
+
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '30d' });
+
+    res.json({
+      success: true,
+      message: 'Login successful',
+      data: {
+        user: { id: user.id, name: user.name, email: user.email, role: user.role },
+        token
+      }
+    });
+  } catch (error) {
+    return errorResponse(res, 400, error.message || 'Login failed', error);
+  }
+};
+
 const sendEmailOtp = async (req, res) => {
   try {
     const email = req.body.email?.toLowerCase().trim();
@@ -222,6 +265,43 @@ const verifyEmailOtp = async (req, res) => {
     res.json({ success: true, message: 'Email verified successfully' });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message, code: error.code });
+  }
+};
+
+// Send Mobile OTP
+const sendMobileOtp = async (req, res) => {
+  try {
+    const phone = req.body.phone?.trim();
+    const user = await prisma.user.findFirst({ where: { phone } });
+    if (!user) return res.status(400).json({ success: false, message: 'User not found' });
+
+    if (user.phoneVerified) return res.status(400).json({ success: false, message: 'Mobile already verified' });
+
+    await sendOTP(user.id, user.email, user.phone, 'MOBILE');
+    res.json({ success: true, message: 'OTP sent to mobile successfully' });
+  } catch (error) {
+    return errorResponse(res, 400, error.message || 'Failed to send Mobile OTP', error);
+  }
+};
+
+// Verify Mobile OTP
+const verifyMobileOtp = async (req, res) => {
+  try {
+    const phone = req.body.phone?.trim();
+    const { otp } = req.body;
+    const user = await prisma.user.findFirst({ where: { phone } });
+    if (!user) return res.status(400).json({ success: false, message: 'User not found' });
+
+    await verifyOTP(user.id, 'MOBILE', otp);
+    
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { phoneVerified: true }
+    });
+
+    res.json({ success: true, message: 'Mobile verified successfully' });
+  } catch (error) {
+    return errorResponse(res, 400, error.message || 'Failed to verify Mobile OTP', error);
   }
 };
 
@@ -386,6 +466,10 @@ module.exports = {
   resetPassword,
   changePassword,
   me,
+  requestLoginOtp,
+  loginWithOtp,
+  sendMobileOtp,
+  verifyMobileOtp,
   testEmail,
   testSms
 };
