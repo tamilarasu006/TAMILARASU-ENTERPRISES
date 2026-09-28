@@ -79,6 +79,14 @@ function AdminLayout({ children }) {
 }
 
 function App() {
+  // Fix for email clients stripping the hash fragment or old links
+  useEffect(() => {
+    if (window.location.pathname.includes('/accept-invite')) {
+      const search = window.location.search;
+      window.location.replace(`${window.location.origin}/admin/#/accept-invite${search}`);
+    }
+  }, []);
+
   return (
     <Router>
       <Routes>
