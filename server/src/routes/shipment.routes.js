@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { authenticateUser, requireRoles } = require('../middleware/auth.middleware');
-const upload = require('../middleware/upload.middleware');
+const uploadDocument = require('../middleware/uploadDocument.middleware');
 const {
   createShipment,
   getAllShipments,
@@ -26,7 +26,7 @@ router.post('/admin', requireShippingAdmin, createShipment);
 router.get('/admin/list', requireShippingAdmin, getAllShipments);
 router.put('/admin/:id', requireShippingAdmin, updateShipment);
 router.post('/admin/:id/events', requireShippingAdmin, addShipmentEvent);
-router.post('/admin/:id/documents', requireShippingAdmin, upload.single('document'), addExportDocument);
+router.post('/admin/:id/documents', requireShippingAdmin, uploadDocument.single('document'), addExportDocument);
 router.delete('/admin/documents/:documentId', requireShippingAdmin, deleteExportDocument);
 
 module.exports = router;

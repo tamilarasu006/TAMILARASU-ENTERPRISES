@@ -14,6 +14,7 @@ import InvoicePreview from './pages/InvoicePreview';
 import { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import axios from 'axios';
+import NotificationDropdown from './components/NotificationDropdown';
 
 const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5000' : '');
 
@@ -68,7 +69,11 @@ function AdminLayout({ children }) {
             <Link to="/admins" className={navLinkClass('/admins')}>Manage Admins</Link>
           )}
           <Link to="/settings" className={navLinkClass('/settings')}>Settings</Link>
-          <button onClick={handleLogout} className="text-red-300 hover:text-red-100 ml-4 font-bold bg-white/10 px-3 py-1 rounded-md transition-colors">Logout</button>
+          
+          <div className="flex items-center ml-2 border-l border-blue-800 pl-4">
+            <NotificationDropdown />
+            <button onClick={handleLogout} className="text-red-300 hover:text-red-100 ml-4 font-bold bg-white/10 px-3 py-1 rounded-md transition-colors">Logout</button>
+          </div>
         </div>
       </nav>
       <main className="p-8">

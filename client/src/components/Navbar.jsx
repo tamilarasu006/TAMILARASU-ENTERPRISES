@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { User, LogOut, Package, Menu, X, FileText } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import NotificationDropdown from './NotificationDropdown';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -128,15 +129,18 @@ export default function Navbar() {
                 Login
               </Link>
             ) : (
-              <div className="relative ml-4">
-                <button
-                  onClick={() => setShowProfileMenu(!showProfileMenu)}
-                  className="bg-white/20 hover:bg-white/30 p-2 rounded-full text-white transition focus:outline-none flex items-center justify-center"
-                >
-                  <User className="w-5 h-5" />
-                </button>
+              <div className="relative ml-4 flex items-center space-x-2">
+                <NotificationDropdown />
                 
-                <AnimatePresence>
+                <div className="relative">
+                  <button
+                    onClick={() => setShowProfileMenu(!showProfileMenu)}
+                    className="bg-white/20 hover:bg-white/30 p-2 rounded-full text-white transition focus:outline-none flex items-center justify-center"
+                  >
+                    <User className="w-5 h-5" />
+                  </button>
+                  
+                  <AnimatePresence>
                   {showProfileMenu && (
                     <motion.div
                       initial={{ opacity: 0, y: 10, scale: 0.95 }}
@@ -183,6 +187,7 @@ export default function Navbar() {
                     </motion.div>
                   )}
                 </AnimatePresence>
+                </div>
               </div>
             )}
           </motion.div>

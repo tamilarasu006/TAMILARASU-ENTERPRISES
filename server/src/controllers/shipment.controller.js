@@ -33,6 +33,15 @@ const createShipment = async (req, res) => {
       include: { events: true }
     });
 
+    const { createNotification } = require('./notification.controller');
+    await createNotification(
+      order.userId,
+      'Shipment Created',
+      `Your order ${order.orderNumber} is ready to ship. Tracking No: ${shipmentNumber}`,
+      'SHIPMENT',
+      `/orders`
+    );
+
     res.status(201).json({ success: true, message: 'Shipment created successfully', data: shipment });
   } catch (error) {
     return errorResponse(res, 500, 'Failed to create shipment', error);
@@ -80,7 +89,7 @@ const addShipmentEvent = async (req, res) => {
     const { id } = req.params;
     const { status, location, description, eventDate } = req.body;
 
-    const shipment = await prisma.shipment.findUnique({ where: { id } });
+    const shipment = await prisma.shipment.findUnique({ where: { id }, include: { order: { select: { userId: true, orderNumber: true } } } });
     if (!shipment) return res.status(404).json({ success: false, message: 'Shipment not found' });
 
     const updated = await prisma.$transaction(async (tx) => {
@@ -104,6 +113,15 @@ const addShipmentEvent = async (req, res) => {
 
       return event;
     });
+
+    const { createNotification } = require('./notification.controller');
+    await createNotification(
+      shipment.order.userId,
+      'Shipment Update',
+      `New tracking milestone for order ${shipment.order.orderNumber}: ${status || shipment.status} at ${location || 'unknown location'}.`,
+      'SHIPMENT',
+      `/orders`
+    );
 
     res.status(201).json({ success: true, message: 'Tracking milestone added', data: updated });
   } catch (error) {

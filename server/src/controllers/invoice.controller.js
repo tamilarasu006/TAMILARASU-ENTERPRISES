@@ -10,6 +10,18 @@ const generateInvoice = async (req, res) => {
     const adminUserId = req.user.id;
 
     const invoice = await createInvoiceForOrder(orderId, adminUserId);
+    
+    // Notify user
+    if (invoice && invoice.userId) {
+      const { createNotification } = require('./notification.controller');
+      await createNotification(
+        invoice.userId,
+        'Invoice Generated',
+        `Invoice ${invoice.invoiceNumber} has been generated for your order.`,
+        'PAYMENT',
+        `/invoices`
+      );
+    }
 
     res.status(201).json({
       success: true,

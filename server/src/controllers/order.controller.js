@@ -82,11 +82,17 @@ const createOrder = async (req, res) => {
     
     console.log('[ORDER] Created in DB:', order.orderNumber);
     
-    // Notify admin via Socket.IO
+    // Notify admin via Socket.IO and DB Notification
     const io = req.app.get('io');
     if (io) {
       io.to('admins').emit('new_order', { orderNumber: order.orderNumber, customerName: order.user.name, company: order.company, totalAmount: order.totalAmount });
       console.log('[ORDER] Emitted socket notification to admins.');
+    }
+
+    const { createNotification } = require('./notification.controller');
+    const admins = await prisma.user.findMany({ where: { role: { in: ['ADMIN', 'SUPER_ADMIN'] } } });
+    for (const admin of admins) {
+      await createNotification(admin.id, 'New Order Received', `Order ${order.orderNumber} placed by ${order.user.name}.`, 'ORDER', `/admin/orders/${order.id}`);
     }
     
     res.status(201).json({ success: true, message: 'Order created successfully', data: order });

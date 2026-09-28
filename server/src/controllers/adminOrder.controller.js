@@ -67,6 +67,17 @@ const updateOrderStatus = async (req, res) => {
       where: { id: req.params.id },
       data: updateData
     });
+
+    if (status && status !== current.status) {
+      const { createNotification } = require('./notification.controller');
+      await createNotification(
+        current.userId,
+        'Order Status Updated',
+        `Your order ${current.orderNumber} is now ${status}.`,
+        'ORDER',
+        `/orders`
+      );
+    }
     res.json({ success: true, message: 'Order updated', data: order });
   } catch (error) {
     return errorResponse(res, 500, 'Failed to update order', error);

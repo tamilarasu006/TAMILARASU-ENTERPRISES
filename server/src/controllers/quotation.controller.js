@@ -70,9 +70,16 @@ const createQuotation = async (req, res) => {
         }
       },
       include: {
-        items: true
+        items: true,
+        user: { select: { name: true } }
       }
     });
+
+    const { createNotification } = require('./notification.controller');
+    const admins = await prisma.user.findMany({ where: { role: { in: ['ADMIN', 'SUPER_ADMIN', 'SALES_ADMIN'] } } });
+    for (const admin of admins) {
+      await createNotification(admin.id, 'New RFQ Received', `Quotation ${quotationNumber} requested by ${quotation.user.name}.`, 'QUOTATION', `/admin/quotations/${quotation.id}`);
+    }
 
     res.status(201).json({ success: true, message: 'Quotation request submitted successfully', data: quotation });
   } catch (error) {
@@ -163,6 +170,12 @@ const acceptQuotation = async (req, res) => {
 
       return { updatedQuote, newOrder };
     });
+
+    const { createNotification } = require('./notification.controller');
+    const admins = await prisma.user.findMany({ where: { role: { in: ['ADMIN', 'SUPER_ADMIN', 'SALES_ADMIN'] } } });
+    for (const admin of admins) {
+      await createNotification(admin.id, 'Quotation Accepted', `Quotation ${quotation.quotationNumber} accepted. Order ${result.newOrder.orderNumber} created.`, 'ORDER', `/admin/orders/${result.newOrder.id}`);
+    }
 
     res.json({ success: true, message: 'Quotation accepted and Order created', data: result.newOrder });
   } catch (error) {
@@ -324,7 +337,7 @@ const updateQuotationAdmin = async (req, res) => {
 const sendQuotationToCustomer = async (req, res) => {
   try {
     const { id } = req.params;
-    await prisma.quotation.update({
+    const quotation = await prisma.quotation.update({
       where: { id },
       data: {
         status: 'SENT',
@@ -337,6 +350,16 @@ const sendQuotationToCustomer = async (req, res) => {
         }
       }
     });
+
+    const { createNotification } = require('./notification.controller');
+    await createNotification(
+      quotation.userId,
+      'Quotation Sent',
+      `Your quotation ${quotation.quotationNumber} has been priced and is ready for your review.`,
+      'QUOTATION',
+      `/quotations/${quotation.id}`
+    );
+
     res.json({ success: true, message: 'Quotation marked as SENT' });
   } catch (error) {
     return errorResponse(res, 500, 'Failed to send quotation', error);
