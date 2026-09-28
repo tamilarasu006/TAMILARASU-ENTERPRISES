@@ -25,24 +25,32 @@ const getAllOrders = async (req, res) => {
   }
 };
 
-const VALID_STATUSES = ['PENDING', 'QUOTED', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'COMPLETED', 'CANCELLED'];
+const VALID_STATUSES = ['PENDING', 'QUOTED', 'CONFIRMED', 'PROCESSING', 'READY_TO_SHIP', 'SHIPPED', 'COMPLETED', 'CANCELLED'];
 
 // Transitions are not strictly enforced for admins to allow corrections
 
 const updateOrderStatus = async (req, res) => {
   try {
-    const { status, internalNotes, quotedAmount } = req.body;
+    const { status, internalNotes, quotedAmount, reason } = req.body;
     
     const updateData = {};
-    if (status) {
+    const current = await prisma.order.findUnique({ where: { id: req.params.id } });
+    if (!current) return res.status(404).json({ success: false, message: 'Order not found' });
+
+    if (status && status !== current.status) {
       if (!VALID_STATUSES.includes(status)) {
         return res.status(400).json({ success: false, message: `Invalid status: ${status}` });
       }
-      const current = await prisma.order.findUnique({ where: { id: req.params.id } });
-      if (!current) return res.status(404).json({ success: false, message: 'Order not found' });
-
 
       updateData.status = status;
+      updateData.history = {
+        create: {
+          oldStatus: current.status,
+          newStatus: status,
+          reason: reason || 'Admin updated order status',
+          actorId: req.user.id
+        }
+      };
     }
     
     if (internalNotes !== undefined) updateData.internalNotes = internalNotes;

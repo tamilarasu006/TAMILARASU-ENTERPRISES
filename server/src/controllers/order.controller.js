@@ -65,6 +65,13 @@ const createOrder = async (req, res) => {
           qrGeneratedAt,
           orderItems: {
             create: orderItemsData
+          },
+          history: {
+            create: {
+              newStatus: 'PENDING',
+              reason: 'Customer placed direct order',
+              actorId: userId
+            }
           }
         },
         include: { orderItems: true, user: { select: { name: true, email: true } } }
@@ -121,7 +128,17 @@ const confirmOrder = async (req, res) => {
 
     const updatedOrder = await prisma.order.update({
       where: { id: orderId },
-      data: { status: 'CONFIRMED' }
+      data: { 
+        status: 'CONFIRMED',
+        history: {
+          create: {
+            oldStatus: order.status,
+            newStatus: 'CONFIRMED',
+            reason: 'Customer confirmed quoted order',
+            actorId: req.user.id
+          }
+        }
+      }
     });
     
     // Notify admin via Socket.IO
