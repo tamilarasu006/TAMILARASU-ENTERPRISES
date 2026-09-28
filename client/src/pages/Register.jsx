@@ -6,13 +6,14 @@ import { AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
 import { GoogleLogin } from '@react-oauth/google';
 import PageTransition from '../components/PageTransition';
 import { useAuth } from '../context/AuthContext';
+import { countryCodes } from '../data/countryCodes';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
 export default function Register() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
+  const [phone, setPhone] = useState({ countryCode: '+91', number: '' });
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -52,7 +53,8 @@ export default function Register() {
   };
 
   const validatePhone = (ph) => {
-    // E.164 format: +[1-9]\d{1,14}
+    // Basic validation, since the user might enter without a plus, we construct it.
+    // The constructed phone will be E.164: +[1-9]\d{1,14}
     return /^\+[1-9]\d{1,14}$/.test(ph);
   };
 
@@ -63,9 +65,12 @@ export default function Register() {
     if (name.trim().length < 2) {
       return setError('Name must be at least 2 characters long.');
     }
-    if (!validatePhone(phone)) {
-      return setError('Mobile must be in international format (e.g. +919876543210).');
+    
+    const fullPhone = `${phone.countryCode}${phone.number.trim().replace(/^0+/, '')}`; // Ensure no extra 0s
+    if (!validatePhone(fullPhone)) {
+      return setError('Mobile must be a valid number (e.g. 9876543210).');
     }
+    
     if (!validatePassword(password)) {
       return setError('Password must be at least 8 characters, with 1 uppercase, 1 lowercase, 1 number, and 1 special character.');
     }
@@ -75,7 +80,7 @@ export default function Register() {
 
     try {
       setLoading(true);
-      await axios.post(`${API_URL}/api/auth/register`, { name, email, phone, password });
+      await axios.post(`${API_URL}/api/auth/register`, { name, email, phone: fullPhone, password });
       
       // On success, redirect to verify account
       navigate(`/verify-account?email=${encodeURIComponent(email)}`);
@@ -138,7 +143,27 @@ export default function Register() {
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">Mobile Number</label>
-              <input type="text" placeholder="+919876543210" className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all" value={phone} onChange={e => setPhone(e.target.value)} required />
+              <div className="flex">
+                <select
+                  value={phone.countryCode || '+91'}
+                  onChange={e => setPhone({ ...phone, countryCode: e.target.value })}
+                  className="px-3 py-3 rounded-l-xl border border-r-0 border-gray-200 bg-gray-50 text-gray-700 focus:ring-2 focus:ring-blue-500 outline-none transition-all w-28 overflow-hidden text-ellipsis"
+                >
+                  {countryCodes.map((country, idx) => (
+                    <option key={idx} value={country.code}>
+                      {country.iso} ({country.code})
+                    </option>
+                  ))}
+                </select>
+                <input 
+                  type="tel" 
+                  placeholder="9876543210" 
+                  className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-r-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all" 
+                  value={phone.number || ''} 
+                  onChange={e => setPhone({ ...phone, number: e.target.value })} 
+                  required 
+                />
+              </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>

@@ -8,8 +8,7 @@ const calculateProfileCompletion = (user) => {
   if (user.name) score += 10;
   if (user.email) score += 10;
   if (user.emailVerified) score += 10;
-  if (user.phone) score += 10;
-  if (user.phoneVerified) score += 10;
+  if (user.phone) score += 20; // 20 points for just providing phone (removed OTP requirement for completion)
   if (user.profileImage) score += 10;
   if (user.address) score += 10;
   if (user.city) score += 10;

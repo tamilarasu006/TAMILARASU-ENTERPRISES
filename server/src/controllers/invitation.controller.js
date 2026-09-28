@@ -63,7 +63,9 @@ const createInvitation = async (req, res) => {
     });
 
     // 5. Send email
-    const inviteLink = `${ADMIN_FRONTEND_URL}/admin/#/accept-invite?token=${rawToken}`;
+    // Use standard path without hash so email clients don't strip it. 
+    // App.jsx will rewrite this to /admin/#/accept-invite automatically.
+    const inviteLink = `${ADMIN_FRONTEND_URL}/admin/accept-invite?token=${rawToken}`;
     const subject = 'You’re invited to join TAMILARASU ENTERPRISES Admin Portal';
     
     // Explicit format requested by user
@@ -253,7 +255,9 @@ const resendInvitation = async (req, res) => {
     });
 
     // Send email
-    const inviteLink = `${ADMIN_FRONTEND_URL}/admin/#/accept-invite?token=${rawToken}`;
+    // Use standard path without hash so email clients don't strip it. 
+    // App.jsx will rewrite this to /admin/#/accept-invite automatically.
+    const inviteLink = `${ADMIN_FRONTEND_URL}/admin/accept-invite?token=${rawToken}`;
     const subject = 'You’re invited to join TAMILARASU ENTERPRISES Admin Portal';
     
     const text = `TAMILARASU ENTERPRISES\n\nHello ${oldInvitation.name || 'there'},\n\nYou have been invited by the Super Admin to join the TAMILARASU ENTERPRISES Admin Portal.\n\nYour account details:\n\nEmail: ${oldInvitation.email}\nRole: ${oldInvitation.role}\n\nClick the button below to accept your invitation and create your password.\n\n[ JOIN ADMIN PORTAL ]\n${inviteLink}\n\nInvitation expires in ${EXPIRY_HOURS} hours.\n\nIf you did not expect this invitation, you can safely ignore this email.\n\nRegards,\nTAMILARASU ENTERPRISES\nAdmin Team`;
