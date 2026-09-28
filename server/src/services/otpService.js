@@ -64,6 +64,19 @@ const sendOTP = async (userId, userEmail, userPhone, channel) => {
     await sendSMS(userPhone, message);
   }
 
+  try {
+    await prisma.auditLog.create({
+      data: {
+        actorId: userId,
+        action: 'REQUEST_OTP',
+        resourceType: 'OTP',
+        newValue: { channel }
+      }
+    });
+  } catch (err) {
+    console.error('[OTP] Failed to write to audit log:', err.message);
+  }
+
   return true;
 };
 
@@ -102,6 +115,18 @@ const verifyOTP = async (userId, channel, providedOtp) => {
       data: { attempts: record.attempts + 1 }
     });
     console.warn(`[OTP] Invalid OTP provided for user ${userId}, channel ${channel}`);
+    
+    try {
+      await prisma.auditLog.create({
+        data: {
+          actorId: userId,
+          action: 'VERIFY_OTP_FAILED',
+          resourceType: 'OTP',
+          newValue: { channel, attempts: record.attempts + 1 }
+        }
+      });
+    } catch (err) {}
+
     throw new Error('Invalid OTP.');
   }
 
@@ -110,6 +135,17 @@ const verifyOTP = async (userId, channel, providedOtp) => {
     data: { verifiedAt: new Date() }
   });
   
+  try {
+    await prisma.auditLog.create({
+      data: {
+        actorId: userId,
+        action: 'VERIFY_OTP_SUCCESS',
+        resourceType: 'OTP',
+        newValue: { channel }
+      }
+    });
+  } catch (err) {}
+
   console.log(`[OTP] ${channel} OTP successfully verified for user ${userId}`);
   return true;
 };
