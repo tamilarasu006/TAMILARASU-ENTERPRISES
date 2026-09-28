@@ -189,6 +189,80 @@ const googleAuth = async (req, res) => {
   }
 };
 
+const admin = require('../config/firebaseAdmin');
+
+// Firebase Phone Login
+const firebasePhoneLogin = async (req, res) => {
+  try {
+    const { idToken } = req.body;
+    if (!idToken) return res.status(400).json({ success: false, message: 'Firebase ID token is required' });
+
+    if (!admin) {
+      return res.status(500).json({ success: false, message: 'Firebase Admin not configured on server' });
+    }
+
+    // Verify ID Token
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    const { uid, phone_number } = decodedToken;
+
+    if (!phone_number) {
+      return res.status(400).json({ success: false, message: 'No phone number found in Firebase token' });
+    }
+
+    // Find or create user
+    // We lookup by firebaseUid first, then phone
+    let user = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { firebaseUid: uid },
+          { phone: phone_number }
+        ]
+      }
+    });
+
+    if (user) {
+      // User exists. Link firebaseUid if missing and ensure phoneVerified is true
+      if (user.firebaseUid !== uid || !user.phoneVerified) {
+        user = await prisma.user.update({
+          where: { id: user.id },
+          data: { firebaseUid: uid, phoneVerified: true }
+        });
+      }
+      
+      // DO NOT GRANT ADMIN via phone login if they don't have it
+      // Proceed with normal login
+    } else {
+      // Create new customer account
+      user = await prisma.user.create({
+        data: {
+          name: `User ${phone_number.slice(-4)}`,
+          phone: phone_number,
+          email: `${uid}@temp.tamilarasu.com`, // Temp email to bypass unique constraint if needed
+          firebaseUid: uid,
+          phoneVerified: true,
+          authProvider: 'FIREBASE',
+          role: 'CUSTOMER'
+        }
+      });
+    }
+
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '30d' });
+
+    res.json({
+      success: true,
+      message: 'Mobile login successful',
+      data: {
+        user: { id: user.id, name: user.name, email: user.email, role: user.role, phone: user.phone },
+        token
+      }
+    });
+
+  } catch (error) {
+    console.error('Firebase Auth Error:', error);
+    return errorResponse(res, 401, 'Firebase authentication failed', error);
+  }
+};
+
 
 // Request Login OTP
 const requestLoginOtp = async (req, res) => {
@@ -459,6 +533,7 @@ module.exports = {
   login, 
   logout, 
   googleAuth,
+  firebasePhoneLogin,
   sendEmailOtp, 
   verifyEmailOtp, 
   forgotPassword,

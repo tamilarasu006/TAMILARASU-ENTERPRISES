@@ -14,7 +14,8 @@ model User {
   phone            String?  @unique
   password         String?
   googleId         String?  @unique
-  authProvider     String   @default("LOCAL") // "LOCAL" or "GOOGLE"
+  authProvider     String   @default("LOCAL") // "LOCAL" or "GOOGLE" or "FIREBASE"
+  firebaseUid      String?  @unique
   role             String   @default("CUSTOMER") // "CUSTOMER" or "ADMIN"
   emailVerified    Boolean  @default(false)
   emailVerifiedAt  DateTime?

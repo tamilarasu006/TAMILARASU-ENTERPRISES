@@ -5,6 +5,7 @@ const {
   login, 
   logout, 
   googleAuth,
+  firebasePhoneLogin,
   sendEmailOtp, 
   verifyEmailOtp, 
   forgotPassword,
@@ -24,6 +25,7 @@ router.post('/register', register);
 router.post('/login', login);
 router.post('/logout', logout);
 router.post('/google', googleAuth);
+router.post('/firebase/phone', firebasePhoneLogin);
 router.post('/login/otp/request', requestLoginOtp);
 router.post('/login/otp/verify', loginWithOtp);
 

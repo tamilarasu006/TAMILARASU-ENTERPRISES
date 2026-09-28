@@ -199,3 +199,52 @@ exports.verifyPhoneChange = async (req, res) => {
     res.status(400).json({ success: false, message: error.message, code: error.code });
   }
 };
+
+const admin = require('../config/firebaseAdmin');
+
+exports.verifyFirebasePhoneChange = async (req, res) => {
+  try {
+    const { idToken } = req.body;
+    if (!idToken) return res.status(400).json({ success: false, message: 'Firebase ID token is required' });
+
+    if (!admin) {
+      return res.status(500).json({ success: false, message: 'Firebase Admin not configured on server' });
+    }
+
+    // Verify ID Token
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    const { uid, phone_number } = decodedToken;
+
+    if (!phone_number) {
+      return res.status(400).json({ success: false, message: 'No phone number found in Firebase token' });
+    }
+
+    // Check if phone number is already used by someone else
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        phone: phone_number,
+        id: { not: req.user.id }
+      }
+    });
+
+    if (existingUser) {
+      return res.status(400).json({ success: false, message: 'This mobile number is already registered to another account.' });
+    }
+
+    // Update current user's phone and link firebaseUid
+    const updatedUser = await prisma.user.update({
+      where: { id: req.user.id },
+      data: {
+        phone: phone_number,
+        firebaseUid: uid,
+        phoneVerified: true
+      }
+    });
+
+    delete updatedUser.password;
+    res.json({ success: true, message: 'Mobile number verified and updated successfully', data: updatedUser });
+  } catch (error) {
+    console.error('Firebase Auth Error:', error);
+    return errorResponse(res, 401, 'Firebase authentication failed', error);
+  }
+};

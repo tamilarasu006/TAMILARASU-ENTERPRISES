@@ -15,4 +15,6 @@ router.post('/change-email/verify', profileController.verifyEmailChange);
 router.post('/change-phone/request', profileController.requestPhoneChange);
 router.post('/change-phone/verify', profileController.verifyPhoneChange);
 
+router.post('/firebase-phone', profileController.verifyFirebasePhoneChange);
+
 module.exports = router;

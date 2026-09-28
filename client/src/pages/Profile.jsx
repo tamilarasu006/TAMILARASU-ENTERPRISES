@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { countryCodes } from '../data/countryCodes';
+import PhoneOtpVerification from '../components/PhoneOtpVerification';
 
 const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5000' : '');
 
@@ -153,21 +154,18 @@ export default function Profile() {
     }
   };
 
-  // --- Phone Change Flow ---
-  const handleUpdatePhone = async (e) => {
-    e.preventDefault();
-    if (!phoneForm.phone) return showMessage('error', 'Please enter a mobile number');
+  // --- Phone Change Flow via Firebase ---
+  const handleFirebasePhoneSuccess = async (idToken) => {
     setIsSaving(true);
     try {
-      const fullPhone = `${phoneForm.countryCode} ${phoneForm.phone}`;
-      const res = await axios.put(`${API_URL}/api/profile`, 
-        { phone: fullPhone }, 
+      const res = await axios.post(`${API_URL}/api/profile/firebase-phone`, 
+        { idToken }, 
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setProfileData(res.data.data);
       updateUser(res.data.data);
-      setPhoneForm({ countryCode: '+91', phone: '' });
-      showMessage('success', 'Mobile number updated successfully!');
+      showMessage('success', 'Mobile number verified and updated successfully!');
+      // Assuming you want to reset state or close modal if you had one, but we'll leave it simple
     } catch (err) {
       showMessage('error', err.response?.data?.message || 'Failed to update mobile number');
     } finally {
@@ -482,37 +480,12 @@ export default function Profile() {
 
                   <div className="border-t pt-8">
                      <h3 className="text-lg font-bold text-gray-900 mb-4">{profileData.phone ? 'Change Mobile Number' : 'Add Mobile Number'}</h3>
-                     <form onSubmit={handleUpdatePhone} className="space-y-4 max-w-md">
-                       <div>
-                         <label className="block text-sm font-medium text-gray-700 mb-1">Mobile Number</label>
-                         <div className="flex">
-                           <select
-                             name="countryCode"
-                             value={phoneForm.countryCode}
-                             onChange={e => setPhoneForm({...phoneForm, countryCode: e.target.value})}
-                             className="px-3 py-3 rounded-l-xl border border-r-0 border-gray-300 bg-gray-50 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors w-28 overflow-hidden text-ellipsis"
-                           >
-                             {countryCodes.map((country, idx) => (
-                               <option key={idx} value={country.code}>
-                                 {country.iso} ({country.code})
-                               </option>
-                             ))}
-                           </select>
-                           <input
-                             required
-                             type="tel"
-                             name="phone"
-                             className="w-full border-gray-300 rounded-r-xl shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 border"
-                             value={phoneForm.phone}
-                             onChange={e => setPhoneForm({...phoneForm, phone: e.target.value})}
-                             placeholder="1234567890"
-                           />
-                         </div>
-                       </div>
-                       <button type="submit" disabled={isSaving} className="bg-blue-600 text-white font-bold py-2.5 px-6 rounded-lg hover:bg-blue-700 disabled:opacity-50">
-                        {isSaving ? 'Updating...' : 'Update Mobile Number'}
-                      </button>
-                    </form>
+                     <div className="max-w-md">
+                       <PhoneOtpVerification 
+                         buttonText="Update Mobile Number" 
+                         onSuccess={handleFirebasePhoneSuccess} 
+                       />
+                     </div>
                   </div>
                 </motion.div>
               )}
