@@ -77,7 +77,7 @@ const login = async (req, res) => {
     if (!user) return res.status(400).json({ success: false, message: 'Invalid email/mobile number or password.' });
     
     // If admin, bypass strict customer verification
-    if (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') {
+    if (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN' || user.role.endsWith('_ADMIN')) {
       if (!user.password) return res.status(400).json({ success: false, message: 'Invalid credentials' });
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) return res.status(400).json({ success: false, message: 'Invalid credentials' });
@@ -155,7 +155,7 @@ const googleAuth = async (req, res) => {
 
     if (user) {
       // Don't allow admins to login via Google customer portal
-      if (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') {
+      if (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN' || user.role.endsWith('_ADMIN')) {
         return res.status(403).json({ success: false, message: 'Admin accounts cannot login via Google' });
       }
       

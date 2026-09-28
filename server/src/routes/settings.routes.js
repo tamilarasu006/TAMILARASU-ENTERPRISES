@@ -3,10 +3,10 @@ const router = express.Router();
 const { getSettings, updateSettings, getInvoiceSettings, updateInvoiceSettings } = require('../controllers/settings.controller');
 const { authenticateUser, requireSuperAdmin, requireAdmin } = require('../middleware/auth.middleware');
 
-router.get('/', authenticateUser, requireAdmin, getSettings);
-router.post('/', authenticateUser, requireAdmin, updateSettings);
+router.get('/', authenticateUser, requireSuperAdmin, getSettings);
+router.post('/', authenticateUser, requireSuperAdmin, updateSettings);
 
-router.get('/invoice', authenticateUser, requireAdmin, getInvoiceSettings);
+router.get('/invoice', authenticateUser, requireSuperAdmin, getInvoiceSettings);
 router.put('/invoice', authenticateUser, requireSuperAdmin, updateInvoiceSettings);
 
 const upload = require('../middleware/upload.middleware');

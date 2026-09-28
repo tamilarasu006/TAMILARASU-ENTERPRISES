@@ -23,7 +23,7 @@ const authenticateUser = async (req, res, next) => {
 };
 
 const requireAdmin = (req, res, next) => {
-  if (req.user && (req.user.role === 'ADMIN' || req.user.role === 'SUPER_ADMIN')) {
+  if (req.user && req.user.role && (req.user.role === 'ADMIN' || req.user.role.endsWith('_ADMIN'))) {
     next();
   } else {
     res.status(403).json({ success: false, message: 'Admin access required' });
@@ -38,4 +38,14 @@ const requireSuperAdmin = (req, res, next) => {
   }
 };
 
-module.exports = { authenticateUser, requireAdmin, requireSuperAdmin };
+const requireRoles = (allowedRoles) => {
+  return (req, res, next) => {
+    if (req.user && req.user.role) {
+      if (req.user.role === 'SUPER_ADMIN') return next();
+      if (allowedRoles.includes(req.user.role)) return next();
+    }
+    res.status(403).json({ success: false, error: { code: 'FORBIDDEN', message: 'Insufficient privileges' } });
+  };
+};
+
+module.exports = { authenticateUser, requireAdmin, requireSuperAdmin, requireRoles };
