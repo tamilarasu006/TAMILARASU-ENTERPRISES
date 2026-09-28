@@ -10,7 +10,11 @@ const getProducts = async (req, res) => {
       where: { isActive: true },
       orderBy: { createdAt: 'desc' }
     });
-    res.json({ success: true, data: products });
+    const maskedProducts = products.map(p => ({
+      ...p,
+      price: p.priceOnRequest ? null : p.price
+    }));
+    res.json({ success: true, data: maskedProducts });
   } catch (error) {
     return errorResponse(res, 500, 'Failed to fetch products', error);
   }
@@ -32,6 +36,7 @@ const getProductById = async (req, res) => {
   try {
     const product = await prisma.product.findUnique({ where: { id: req.params.id } });
     if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
+    if (product.priceOnRequest) product.price = null;
     res.json({ success: true, data: product });
   } catch (error) {
     return errorResponse(res, 500, 'Failed to fetch product', error);
@@ -51,6 +56,7 @@ const createProduct = async (req, res) => {
     
     // Parse numeric and boolean fields coming from FormData
     if (data.price !== undefined) data.price = data.price ? parseFloat(data.price) : 0;
+    if (data.taxRate !== undefined) data.taxRate = data.taxRate ? parseFloat(data.taxRate) : 0;
     if (data.minimumOrderQuantity !== undefined) data.minimumOrderQuantity = data.minimumOrderQuantity ? parseInt(data.minimumOrderQuantity, 10) : 1;
     if (data.stock !== undefined) data.stock = data.stock ? parseInt(data.stock, 10) : 0;
     
@@ -78,6 +84,7 @@ const updateProduct = async (req, res) => {
     
     // Parse numeric and boolean fields coming from FormData
     if (data.price !== undefined) data.price = data.price ? parseFloat(data.price) : 0;
+    if (data.taxRate !== undefined) data.taxRate = data.taxRate ? parseFloat(data.taxRate) : 0;
     if (data.minimumOrderQuantity !== undefined) data.minimumOrderQuantity = data.minimumOrderQuantity ? parseInt(data.minimumOrderQuantity, 10) : 1;
     if (data.stock !== undefined) data.stock = data.stock ? parseInt(data.stock, 10) : 0;
     
