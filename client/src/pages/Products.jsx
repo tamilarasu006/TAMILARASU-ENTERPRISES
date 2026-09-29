@@ -54,17 +54,39 @@ export default function Products() {
     }
   }, [categoryParam]);
 
-  const categories = ['All', 'Fruits', 'Vegetables', 'Spices', 'Grains & Pulses'];
+  // Generate dynamic categories from products to handle 'Nuts', 'Others', etc.
+  const rawCategories = Array.from(new Set(products.map(p => p.category).filter(Boolean)));
+  const normalizedCategories = new Set();
+  
+  rawCategories.forEach(cat => {
+    const lower = cat.toLowerCase();
+    if (lower.includes('fruit')) normalizedCategories.add('Fruits');
+    else if (lower.includes('vegetable')) normalizedCategories.add('Vegetables');
+    else if (lower.includes('spice')) normalizedCategories.add('Spices');
+    else if (lower.includes('grain') || lower.includes('pulse')) normalizedCategories.add('Grains & Pulses');
+    else if (lower.includes('nut')) normalizedCategories.add('Nuts');
+    else {
+      // For any other new categories, capitalize and add it directly
+      const cleanCat = cat.charAt(0).toUpperCase() + cat.slice(1);
+      normalizedCategories.add(cleanCat);
+    }
+  });
+
+  const categories = ['All', ...Array.from(normalizedCategories)];
 
   const filteredProducts = selectedCategory === 'All' 
     ? products 
     : products.filter(p => {
         const dbCat = (p.category || '').toLowerCase();
         const uiCat = selectedCategory.toLowerCase();
-        if (uiCat === 'fruits' && (dbCat.includes('fruit'))) return true;
-        if (uiCat === 'vegetables' && (dbCat.includes('vegetable'))) return true;
-        if (uiCat === 'spices' && (dbCat.includes('spice'))) return true;
+        
+        if (uiCat === 'fruits' && dbCat.includes('fruit')) return true;
+        if (uiCat === 'vegetables' && dbCat.includes('vegetable')) return true;
+        if (uiCat === 'spices' && dbCat.includes('spice')) return true;
         if (uiCat === 'grains & pulses' && (dbCat.includes('grain') || dbCat.includes('pulse'))) return true;
+        if (uiCat === 'nuts' && dbCat.includes('nut')) return true;
+        
+        // Exact match fallback for any other custom categories added by Admin
         return dbCat === uiCat;
       });
 
