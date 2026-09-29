@@ -56,20 +56,17 @@ export default function Products() {
 
   const categories = ['All', 'Fruits', 'Vegetables', 'Spices', 'Grains & Pulses'];
 
-  // Map UI category names to backend database enums
-  const mapCategoryToDb = (uiCategory) => {
-    switch (uiCategory) {
-      case 'Fruits': return 'FRUIT';
-      case 'Vegetables': return 'VEGETABLE';
-      case 'Spices': return 'SPICE';
-      case 'Grains & Pulses': return 'GRAIN';
-      default: return uiCategory;
-    }
-  };
-
   const filteredProducts = selectedCategory === 'All' 
     ? products 
-    : products.filter(p => p.category === mapCategoryToDb(selectedCategory));
+    : products.filter(p => {
+        const dbCat = (p.category || '').toLowerCase();
+        const uiCat = selectedCategory.toLowerCase();
+        if (uiCat === 'fruits' && (dbCat.includes('fruit'))) return true;
+        if (uiCat === 'vegetables' && (dbCat.includes('vegetable'))) return true;
+        if (uiCat === 'spices' && (dbCat.includes('spice'))) return true;
+        if (uiCat === 'grains & pulses' && (dbCat.includes('grain') || dbCat.includes('pulse'))) return true;
+        return dbCat === uiCat;
+      });
 
   return (
     <PageTransition>
