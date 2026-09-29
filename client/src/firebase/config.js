@@ -12,6 +12,26 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-export const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-auth.useDeviceLanguage();
+let app;
+let auth;
+
+let isFirebaseInitialized = true;
+try {
+  if (!firebaseConfig.apiKey || firebaseConfig.apiKey.includes('your_api_key')) {
+    throw new Error('Firebase API Key is missing or invalid. Please update client/.env');
+  }
+  app = initializeApp(firebaseConfig);
+  auth = getAuth(app);
+  auth.useDeviceLanguage();
+} catch (error) {
+  console.error('Firebase initialization error:', error.message);
+  isFirebaseInitialized = false;
+  // Provide a dummy auth object so the app doesn't crash on load
+  auth = {
+    useDeviceLanguage: () => {},
+    onAuthStateChanged: () => () => {},
+    // add other dummy methods if necessary
+  };
+}
+
+export { app, auth, isFirebaseInitialized };

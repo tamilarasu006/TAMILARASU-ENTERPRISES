@@ -82,6 +82,8 @@ const io = new Server(httpServer, {
     credentials: true
   }
 });
+const socketUtil = require('./utils/socket');
+socketUtil.init(io);
 
 // Middleware
 app.use(helmet({
@@ -91,12 +93,12 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://accounts.google.com"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://accounts.google.com", "https://apis.google.com", "https://www.google.com/recaptcha/", "https://www.gstatic.com/recaptcha/"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com", "https://accounts.google.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com", "data:"],
       imgSrc: ["'self'", "data:", "blob:", "https:"],
       connectSrc: ["'self'", "http://localhost:*", "ws://localhost:*", "wss:", "https:"],
-      frameSrc: ["'self'", "https://accounts.google.com"],
+      frameSrc: ["'self'", "https://accounts.google.com", "https://www.google.com/recaptcha/", "https://recaptcha.google.com/recaptcha/"],
     }
   }
 }));
@@ -214,7 +216,7 @@ io.use(async (socket, next) => {
     if (!token) return next(new Error('Authentication required'));
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await prisma.user.findUnique({ where: { id: decoded.id } });
-    if (!user || (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN')) return next(new Error('Admin access required'));
+    if (!user) return next(new Error('User not found'));
     socket.user = user;
     next();
   } catch (err) {
@@ -223,8 +225,16 @@ io.use(async (socket, next) => {
 });
 
 io.on('connection', (socket) => {
-  socket.join('admins');
-  console.log('Admin connected:', socket.id, socket.user?.email);
+  // Everyone joins a room with their own user ID
+  socket.join(socket.user.id);
+  
+  // Admins also join the 'admins' room
+  if (socket.user.role === 'ADMIN' || socket.user.role === 'SUPER_ADMIN' || socket.user.role === 'SALES_ADMIN') {
+    socket.join('admins');
+    console.log('Admin connected:', socket.id, socket.user.email);
+  } else {
+    console.log('User connected:', socket.id, socket.user.email);
+  }
 });
 
 // Graceful Shutdown

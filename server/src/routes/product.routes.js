@@ -4,9 +4,9 @@ const { getProducts, getAdminProducts, getProductById, createProduct, updateProd
 const { authenticateUser, requireRoles } = require('../middleware/auth.middleware');
 const upload = require('../middleware/upload.middleware');
 
-router.get('/', authenticateUser, getProducts);
+router.get('/', getProducts);
 router.get('/admin', authenticateUser, requireRoles(['PRODUCT_ADMIN', 'SALES_ADMIN', 'ORDER_ADMIN']), getAdminProducts);
-router.get('/:id', authenticateUser, getProductById);
+router.get('/:id', getProductById);
 router.post('/', authenticateUser, requireRoles(['PRODUCT_ADMIN']), upload.single('image'), createProduct);
 router.put('/:id', authenticateUser, requireRoles(['PRODUCT_ADMIN']), upload.single('image'), updateProduct);
 router.patch('/:id/status', authenticateUser, requireRoles(['PRODUCT_ADMIN']), updateProductStatus);

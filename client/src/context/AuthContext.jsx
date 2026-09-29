@@ -52,6 +52,9 @@ export const AuthProvider = ({ children }) => {
   }, [token]);
 
   const login = (userData, jwtToken) => {
+    if (jwtToken) {
+      localStorage.setItem('token', jwtToken);
+    }
     setToken(jwtToken);
     setUser(userData);
   };

@@ -46,7 +46,7 @@ exports.markAllAsRead = async (req, res) => {
 // Internal utility to create notifications
 exports.createNotification = async (userId, title, message, type = 'SYSTEM', link = null) => {
   try {
-    return await prisma.notification.create({
+    const notification = await prisma.notification.create({
       data: {
         userId,
         title,
@@ -55,6 +55,14 @@ exports.createNotification = async (userId, title, message, type = 'SYSTEM', lin
         link
       }
     });
+
+    const { getIo } = require('../utils/socket');
+    const io = getIo();
+    if (io) {
+      io.to(userId).emit('notification', notification);
+    }
+    
+    return notification;
   } catch (error) {
     console.error('Failed to create notification:', error);
   }

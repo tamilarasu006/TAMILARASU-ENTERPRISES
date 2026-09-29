@@ -2,16 +2,14 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AlertCircle, Loader2, Eye, EyeOff, Mail, Phone } from 'lucide-react';
+import { AlertCircle, Loader2, Eye, EyeOff, Mail } from 'lucide-react';
 import { GoogleLogin } from '@react-oauth/google';
 import PageTransition from '../components/PageTransition';
 import { useAuth } from '../context/AuthContext';
-import PhoneOtpVerification from '../components/PhoneOtpVerification';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
 export default function Login() {
-  const [loginMethod, setLoginMethod] = useState('EMAIL'); // 'EMAIL' or 'MOBILE'
   const [identifier, setIdentifier] = useState(''); // Email
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -72,21 +70,6 @@ export default function Login() {
     setError('Google sign-in was cancelled.');
   };
 
-  const handleFirebaseSuccess = async (idToken) => {
-    try {
-      setLoading(true);
-      setError('');
-      // Phase 6: Send idToken to backend
-      const res = await axios.post(`${API_URL}/api/auth/firebase/phone`, { idToken });
-      login(res.data.data.user, res.data.data.token);
-      navigate('/products');
-    } catch (err) {
-      setError(err.response?.data?.message || 'Unable to authenticate with mobile number.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <PageTransition>
       <div className="min-h-[calc(100vh-88px)] flex items-center justify-center bg-gray-50 py-12 relative overflow-hidden">
@@ -101,24 +84,6 @@ export default function Login() {
           <div className="text-center mb-6">
             <h2 className="text-3xl font-extrabold text-blue-900 mb-2">Customer Login</h2>
             <p className="text-gray-500">Welcome back to Tamilarasu Enterprises.</p>
-          </div>
-
-          {/* Toggle Login Method */}
-          <div className="flex bg-gray-100 p-1 rounded-xl mb-6">
-            <button
-              type="button"
-              onClick={() => { setLoginMethod('EMAIL'); setError(''); }}
-              className={`flex-1 py-2 text-sm font-semibold rounded-lg flex items-center justify-center transition-all ${loginMethod === 'EMAIL' ? 'bg-white shadow-sm text-blue-900' : 'text-gray-500 hover:text-gray-700'}`}
-            >
-              <Mail className="w-4 h-4 mr-2" /> Email
-            </button>
-            <button
-              type="button"
-              onClick={() => { setLoginMethod('MOBILE'); setError(''); }}
-              className={`flex-1 py-2 text-sm font-semibold rounded-lg flex items-center justify-center transition-all ${loginMethod === 'MOBILE' ? 'bg-white shadow-sm text-blue-900' : 'text-gray-500 hover:text-gray-700'}`}
-            >
-              <Phone className="w-4 h-4 mr-2" /> Mobile OTP
-            </button>
           </div>
 
           {error && (
@@ -140,7 +105,6 @@ export default function Login() {
           )}
 
           <AnimatePresence mode="wait">
-            {loginMethod === 'EMAIL' ? (
               <motion.form 
                 key="email-form"
                 initial={{ opacity: 0, x: -20 }}
@@ -171,16 +135,6 @@ export default function Login() {
                   {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Login'}
                 </button>
               </motion.form>
-            ) : (
-              <motion.div 
-                key="mobile-form"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-              >
-                <PhoneOtpVerification onSuccess={handleFirebaseSuccess} buttonText="Send Login OTP" />
-              </motion.div>
-            )}
           </AnimatePresence>
 
           <div className="flex items-center my-6">

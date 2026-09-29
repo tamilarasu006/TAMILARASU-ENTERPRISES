@@ -60,9 +60,16 @@ export default function VerifyAccount() {
     try {
       setLoading(true);
       setError('');
-      await axios.post(`${API_URL}/api/auth/verify-email-otp`, { email: emailParam, otp });
-      setOtp('');
-      setStep(2);
+      const res = await axios.post(`${API_URL}/api/auth/verify-email-otp`, { email: emailParam, otp });
+      
+      // Auto login after verification
+      if (res.data.data && res.data.data.token) {
+        login(res.data.data.user, res.data.data.token);
+        navigate('/products');
+      } else {
+        // Fallback if no token returned
+        navigate('/login?verified=true');
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid Email OTP');
     } finally {
@@ -98,28 +105,10 @@ export default function VerifyAccount() {
           {/* Progress Indicator */}
           <div className="flex justify-center items-center mb-10">
             <div className={`flex flex-col items-center text-blue-600`}>
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 ${step > 1 ? 'bg-green-100 text-green-600' : 'bg-blue-100'}`}>
-                {step > 1 ? <CheckCircle className="w-5 h-5" /> : <Mail className="w-5 h-5" />}
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 bg-blue-100`}>
+                <Mail className="w-5 h-5" />
               </div>
-              <span className="text-xs font-semibold">Email</span>
-            </div>
-            
-            <div className={`w-8 h-1 mx-2 rounded ${step >= 2 ? 'bg-green-600' : 'bg-gray-200'}`}></div>
-            
-            <div className={`flex flex-col items-center ${step >= 2 ? 'text-blue-600' : 'text-gray-300'}`}>
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 ${step > 2 ? 'bg-green-100 text-green-600' : (step === 2 ? 'bg-blue-100' : 'bg-gray-100')}`}>
-                {step > 2 ? <CheckCircle className="w-5 h-5" /> : <Smartphone className="w-5 h-5" />}
-              </div>
-              <span className="text-xs font-semibold">Mobile</span>
-            </div>
-
-            <div className={`w-8 h-1 mx-2 rounded ${step >= 3 ? 'bg-green-600' : 'bg-gray-200'}`}></div>
-
-            <div className={`flex flex-col items-center ${step >= 3 ? 'text-green-600' : 'text-gray-300'}`}>
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 ${step >= 3 ? 'bg-green-100' : 'bg-gray-100'}`}>
-                <CheckCircle className="w-5 h-5" />
-              </div>
-              <span className="text-xs font-semibold">Done</span>
+              <span className="text-xs font-semibold">Email Verification</span>
             </div>
           </div>
 
@@ -166,45 +155,6 @@ export default function VerifyAccount() {
                   )}
                 </div>
               </motion.form>
-            )}
-
-            {step === 2 && (
-              <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-                <div className="text-center mb-6">
-                  <p className="text-gray-600">Please verify your mobile number.</p>
-                </div>
-                <PhoneOtpVerification 
-                  buttonText="Verify Mobile" 
-                  onSuccess={async (idToken) => {
-                    try {
-                      setLoading(true);
-                      setError('');
-                      await axios.post(`${API_URL}/api/auth/firebase/phone`, { idToken });
-                      setStep(3);
-                    } catch (err) {
-                      setError(err.response?.data?.message || 'Failed to link mobile number.');
-                    } finally {
-                      setLoading(false);
-                    }
-                  }} 
-                />
-              </motion.div>
-            )}
-
-            {step === 3 && (
-              <motion.div key="step3" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center">
-                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-green-500">
-                  <CheckCircle className="w-10 h-10" />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-800 mb-2">Account Verified</h3>
-                <p className="text-gray-600 mb-8">Your TAMILARASU ENTERPRISES account is ready.</p>
-                <button 
-                  onClick={() => navigate('/login')}
-                  className="w-full bg-green-600 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-green-700 transition-all flex items-center justify-center"
-                >
-                  Continue to Login <ArrowRight className="ml-2 w-5 h-5" />
-                </button>
-              </motion.div>
             )}
           </AnimatePresence>
 

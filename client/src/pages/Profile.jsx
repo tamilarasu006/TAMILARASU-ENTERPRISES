@@ -350,6 +350,11 @@ export default function Profile() {
                           value={editForm.companyName} onChange={e => setEditForm({...editForm, companyName: e.target.value})} />
                       </div>
                       <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Mobile Number</label>
+                        <input type="text" placeholder="e.g. +91 9876543210" className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 border" 
+                          value={editForm.phone || ''} onChange={e => setEditForm({...editForm, phone: e.target.value})} />
+                      </div>
+                      <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
                         <input type="date" className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 border" 
                           value={editForm.dateOfBirth} onChange={e => setEditForm({...editForm, dateOfBirth: e.target.value})} />
@@ -464,31 +469,7 @@ export default function Profile() {
                 </motion.div>
               )}
 
-              {/* TAB: MOBILE */}
-              {activeTab === 'phone' && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-8">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-6">Mobile Number</h2>
-                  
-                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-8 flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-gray-500 font-medium">Current Mobile</p>
-                      <p className="text-lg font-bold text-gray-900">{profileData.phone || 'Not provided'}</p>
-                    </div>
-                    <div>
-                    </div>
-                  </div>
 
-                  <div className="border-t pt-8">
-                     <h3 className="text-lg font-bold text-gray-900 mb-4">{profileData.phone ? 'Change Mobile Number' : 'Add Mobile Number'}</h3>
-                     <div className="max-w-md">
-                       <PhoneOtpVerification 
-                         buttonText="Update Mobile Number" 
-                         onSuccess={handleFirebasePhoneSuccess} 
-                       />
-                     </div>
-                  </div>
-                </motion.div>
-              )}
 
               {/* TAB: SECURITY */}
               {activeTab === 'security' && (

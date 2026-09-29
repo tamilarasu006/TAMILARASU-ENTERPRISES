@@ -99,6 +99,8 @@ function App() {
         <Route path="/accept-invite" element={<AcceptInvite />} />
         <Route path="/" element={<AdminLayout><Dashboard /></AdminLayout>} />
         <Route path="/orders" element={<AdminLayout><Orders /></AdminLayout>} />
+        <Route path="/orders/:id" element={<AdminLayout><Orders /></AdminLayout>} />
+        <Route path="/quotations/:id" element={<AdminLayout><Orders /></AdminLayout>} />
         <Route path="/invoices" element={<AdminLayout><Invoices /></AdminLayout>} />
         <Route path="/invoices/:id" element={<AdminLayout><InvoicePreview /></AdminLayout>} />
         <Route path="/products" element={<AdminLayout><Products /></AdminLayout>} />

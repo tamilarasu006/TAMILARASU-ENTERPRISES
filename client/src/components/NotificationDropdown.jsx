@@ -3,9 +3,33 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, Check, Trash2, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { io } from 'socket.io-client';
 import { useAuth } from '../context/AuthContext';
 
 const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5000' : '');
+
+const playNotificationSound = () => {
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = 'sine';
+    // Gentle ping sound
+    osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+    osc.frequency.exponentialRampToValueAtTime(1046.50, ctx.currentTime + 0.1); // C6
+    gain.gain.setValueAtTime(0, ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.4);
+  } catch(e) {
+    console.error('Audio play failed', e);
+  }
+};
 
 export default function NotificationDropdown() {
   const [notifications, setNotifications] = useState([]);
@@ -34,7 +58,21 @@ export default function NotificationDropdown() {
   useEffect(() => {
     fetchNotifications();
     const interval = setInterval(fetchNotifications, 60000); // Check every minute
-    return () => clearInterval(interval);
+    
+    const token = localStorage.getItem('token');
+    let socket;
+    if (token && isLoggedIn) {
+      socket = io(API_URL, { auth: { token } });
+      socket.on('notification', (newNotif) => {
+        playNotificationSound();
+        fetchNotifications();
+      });
+    }
+
+    return () => {
+      clearInterval(interval);
+      if (socket) socket.disconnect();
+    };
   }, [isLoggedIn]);
 
   const markAsRead = async (id, e) => {

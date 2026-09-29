@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { QRCodeSVG } from 'qrcode.react';
 import { Scanner } from '@yudiel/react-qr-scanner';
@@ -10,6 +10,7 @@ const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://l
 
 export default function Orders() {
   const navigate = useNavigate();
+  const { id } = useParams();
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [internalNotes, setInternalNotes] = useState('');
@@ -37,6 +38,15 @@ export default function Orders() {
   useEffect(() => {
     fetchOrders();
   }, [search]);
+
+  useEffect(() => {
+    if (id && orders.length > 0) {
+      const orderToOpen = orders.find(o => o.id === id);
+      if (orderToOpen && !selectedOrder) {
+        openOrderDetails(orderToOpen);
+      }
+    }
+  }, [id, orders]);
 
   const handleUpdate = async (e) => {
     e.preventDefault();

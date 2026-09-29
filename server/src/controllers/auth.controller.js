@@ -326,17 +326,27 @@ const verifyEmailOtp = async (req, res) => {
   try {
     const email = req.body.email?.toLowerCase().trim();
     const { otp } = req.body;
-    const user = await prisma.user.findUnique({ where: { email } });
+    let user = await prisma.user.findUnique({ where: { email } });
     if (!user) return res.status(400).json({ success: false, message: 'User not found' });
 
     await verifyOTP(user.id, 'EMAIL', otp);
     
-    await prisma.user.update({
+    user = await prisma.user.update({
       where: { id: user.id },
       data: { emailVerified: true, emailVerifiedAt: new Date() }
     });
 
-    res.json({ success: true, message: 'Email verified successfully' });
+    const jwt = require('jsonwebtoken');
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '30d' });
+
+    res.json({ 
+      success: true, 
+      message: 'Email verified successfully',
+      data: {
+        user: { id: user.id, name: user.name, email: user.email, role: user.role },
+        token
+      }
+    });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message, code: error.code });
   }

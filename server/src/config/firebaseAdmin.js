@@ -1,4 +1,7 @@
-const admin = require('firebase-admin');
+const { initializeApp, cert } = require('firebase-admin/app');
+const { getAuth } = require('firebase-admin/auth');
+
+let isInitialized = false;
 
 try {
   // If FIREBASE_PRIVATE_KEY is a multiline string in env, we replace escaped \n with actual newlines
@@ -7,14 +10,15 @@ try {
     : undefined;
 
   if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_CLIENT_EMAIL && privateKey) {
-    admin.initializeApp({
-      credential: admin.credential.cert({
+    initializeApp({
+      credential: cert({
         projectId: process.env.FIREBASE_PROJECT_ID,
         clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
         privateKey: privateKey,
       }),
     });
     console.log('[FIREBASE] Admin SDK initialized successfully.');
+    isInitialized = true;
   } else {
     console.warn('[FIREBASE] Missing Firebase Admin credentials in environment variables. Phone auth will fail.');
   }
@@ -22,4 +26,4 @@ try {
   console.error('[FIREBASE] Error initializing Admin SDK:', error);
 }
 
-module.exports = admin;
+module.exports = isInitialized ? { auth: getAuth } : null;

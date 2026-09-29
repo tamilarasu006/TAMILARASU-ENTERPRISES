@@ -1,4 +1,4 @@
-import { auth } from './config';
+import { auth, isFirebaseInitialized } from './config';
 import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
 
 /**
@@ -8,6 +8,7 @@ import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
  * @param {Function} callback - Callback when solved
  */
 export const setupRecaptcha = (containerId, callback) => {
+  if (!isFirebaseInitialized) return;
   if (!window.recaptchaVerifier) {
     window.recaptchaVerifier = new RecaptchaVerifier(auth, containerId, {
       size: 'invisible', // or 'normal'
@@ -26,6 +27,11 @@ export const setupRecaptcha = (containerId, callback) => {
  * @param {string} phoneNumber - Full E.164 phone number.
  */
 export const requestPhoneOTP = async (phoneNumber) => {
+  if (!isFirebaseInitialized) {
+    const err = new Error('Firebase API key is missing');
+    err.code = 'auth/invalid-api-key';
+    throw err;
+  }
   try {
     const appVerifier = window.recaptchaVerifier;
     const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
@@ -56,8 +62,13 @@ export const verifyPhoneOTP = async (otpCode) => {
  * Maps Firebase auth errors to user-friendly messages.
  */
 export const mapAuthError = (error) => {
+  console.error('[Firebase Auth Error] Code:', error.code, 'Message:', error.message);
   const code = error.code;
   switch (code) {
+    case 'auth/invalid-api-key':
+      return 'Firebase API key is missing. Please add your Firebase credentials to client/.env to enable OTP.';
+    case 'auth/billing-not-enabled':
+      return 'Firebase Billing is not enabled. Please upgrade to the Blaze plan or use a Test Phone Number.';
     case 'auth/invalid-phone-number':
       return 'Please enter a valid mobile number.';
     case 'auth/too-many-requests':

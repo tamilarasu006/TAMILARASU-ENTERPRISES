@@ -3,7 +3,31 @@ import axios from 'axios';
 import { Bell, Check, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
+import { io } from 'socket.io-client';
+
 const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5000' : '');
+
+const playNotificationSound = () => {
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.1);
+    gain.gain.setValueAtTime(0, ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.5);
+  } catch(e) {
+    console.error('Audio play failed', e);
+  }
+};
 
 export default function NotificationDropdown() {
   const [notifications, setNotifications] = useState([]);
@@ -32,7 +56,21 @@ export default function NotificationDropdown() {
   useEffect(() => {
     fetchNotifications();
     const interval = setInterval(fetchNotifications, 60000);
-    return () => clearInterval(interval);
+    
+    const token = localStorage.getItem('adminToken');
+    let socket;
+    if (token) {
+      socket = io(API_URL, { auth: { token } });
+      socket.on('notification', (newNotif) => {
+        playNotificationSound();
+        fetchNotifications(); // Refresh the list completely to ensure order
+      });
+    }
+
+    return () => {
+      clearInterval(interval);
+      if (socket) socket.disconnect();
+    };
   }, []);
 
   const markAsRead = async (id, e) => {
