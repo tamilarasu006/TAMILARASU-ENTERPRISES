@@ -24,7 +24,7 @@ try {
   auth = getAuth(app);
   auth.useDeviceLanguage();
 } catch (error) {
-  console.error('Firebase initialization error:', error.message);
+  // Mobile OTP has been removed, so we silently ignore Firebase initialization errors.
   isFirebaseInitialized = false;
   // Provide a dummy auth object so the app doesn't crash on load
   auth = {
