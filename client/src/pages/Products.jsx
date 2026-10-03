@@ -56,7 +56,9 @@ export default function Products() {
 
   // Generate dynamic categories from products to handle 'Nuts', 'Others', etc.
   const rawCategories = Array.from(new Set(products.map(p => p.category).filter(Boolean)));
-  const normalizedCategories = new Set();
+  
+  // Pre-seed with the main default categories so they always show up
+  const normalizedCategories = new Set(['Vegetables', 'Nuts', 'Grains & Pulses', 'Fruits', 'Spices']);
   
   rawCategories.forEach(cat => {
     const lower = cat.toLowerCase();
