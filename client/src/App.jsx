@@ -17,6 +17,12 @@ import { AuthProvider } from './context/AuthContext';
 
 import Contact from './pages/Contact';
 
+import FarmerLogin from './pages/farmer/FarmerLogin';
+import FarmerRegister from './pages/farmer/FarmerRegister';
+import FarmerDashboard from './pages/farmer/FarmerDashboard';
+import AddFarmerProduct from './pages/farmer/AddFarmerProduct';
+import FarmerProducts from './pages/farmer/FarmerProducts';
+import FarmerEnquiries from './pages/farmer/FarmerEnquiries';
 function AnimatedRoutes() {
   const location = useLocation();
   
@@ -36,6 +42,15 @@ function AnimatedRoutes() {
         <Route path="/orders" element={<Orders />} />
         <Route path="/invoices" element={<Invoices />} />
         <Route path="/profile" element={<Profile />} />
+        
+        {/* Farmer Portal Routes */}
+        <Route path="/farmer/login" element={<FarmerLogin />} />
+        <Route path="/farmer/register" element={<FarmerRegister />} />
+        <Route path="/farmer/dashboard" element={<FarmerDashboard />} />
+        <Route path="/farmer/products" element={<FarmerProducts />} />
+        <Route path="/farmer/products/add" element={<AddFarmerProduct />} />
+        <Route path="/farmer/enquiries" element={<FarmerEnquiries />} />
+
         <Route path="/admin/*" element={<AdminRedirect />} />
       </Routes>
     </AnimatePresence>

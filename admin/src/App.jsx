@@ -11,6 +11,7 @@ import AcceptInvite from './pages/AcceptInvite';
 import Inquiries from './pages/Inquiries';
 import InvoiceSettings from './pages/InvoiceSettings';
 import InvoicePreview from './pages/InvoicePreview';
+import FarmerProducts from './pages/FarmerProducts';
 import { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import axios from 'axios';
@@ -62,6 +63,7 @@ function AdminLayout({ children }) {
           <Link to="/invoices" className={navLinkClass('/invoices')}>Invoices</Link>
           <Link to="/products" className={navLinkClass('/products')}>Products</Link>
           <Link to="/services" className={navLinkClass('/services')}>Services</Link>
+          <Link to="/farmer-products" className={navLinkClass('/farmer-products')}>Farmer Portal</Link>
           {userRole === 'SUPER_ADMIN' && (
             <Link to="/inquiries" className={navLinkClass('/inquiries')}>Inquiries</Link>
           )}
@@ -105,6 +107,7 @@ function App() {
         <Route path="/invoices/:id" element={<AdminLayout><InvoicePreview /></AdminLayout>} />
         <Route path="/products" element={<AdminLayout><Products /></AdminLayout>} />
         <Route path="/services" element={<AdminLayout><Services /></AdminLayout>} />
+        <Route path="/farmer-products" element={<AdminLayout><FarmerProducts /></AdminLayout>} />
         <Route path="/inquiries" element={<AdminLayout><Inquiries /></AdminLayout>} />
         <Route path="/admins" element={<AdminLayout><ManageAdmins /></AdminLayout>} />
         <Route path="/settings" element={<AdminLayout><Settings /></AdminLayout>} />

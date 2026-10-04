@@ -40,6 +40,13 @@ model User {
   addresses        CustomerAddress[]
   quotations       Quotation[]
   notifications    Notification[]
+  
+  // Farmer Relations
+  farmerProfile    FarmerProfile?
+  farmerProducts   FarmerProduct[]
+  enquiries        ProductEnquiry[]
+  purchaseOrders   PurchaseOrder[]
+  
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 }
@@ -459,3 +466,173 @@ model AuditLog {
   createdAt    DateTime @default(now())
 }
 
+// ----------------------------------------------------
+// FARMER PORTAL MODELS (PHASE 3)
+// ----------------------------------------------------
+
+model FarmerProfile {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  farmName        String
+  farmLocation    String
+  district        String
+  state           String
+  pincode         String
+  farmSize        String?
+  farmingType     String?
+  mainProducts    String?
+  verificationStatus String @default("PENDING") // PENDING, VERIFIED, REJECTED
+  documents       FarmerDocument[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model FarmerDocument {
+  id              String   @id @default(uuid())
+  farmerProfileId String
+  farmerProfile   FarmerProfile @relation(fields: [farmerProfileId], references: [id], onDelete: Cascade)
+  title           String
+  url             String
+  type            String   // ID_PROOF, FARM_OWNERSHIP, OTHER
+  createdAt       DateTime @default(now())
+}
+
+model FarmerProduct {
+  id              String   @id @default(uuid())
+  farmerId        String
+  farmer          User     @relation(fields: [farmerId], references: [id], onDelete: Cascade)
+  name            String
+  category        String
+  variety         String?
+  description     String?
+  
+  // Quality
+  grade           String?
+  qualityDesc     String?
+  farmingMethod   String?
+  isOrganic       Boolean  @default(false)
+  size            String?
+  appearance      String?
+  freshness       String?
+  
+  // Availability
+  availableQty    Float
+  unit            String
+  minOrderQty     Float
+  harvestDate     DateTime?
+  readyDate       DateTime?
+  
+  // Commercial
+  expectedPrice   Float
+  priceUnit       String
+  paymentTerms    String?
+  
+  // Location
+  farmName        String?
+  farmLocation    String?
+  district        String?
+  state           String?
+  pincode         String?
+  
+  status          String   @default("DRAFT") // DRAFT, SUBMITTED, UNDER_REVIEW, MORE_INFORMATION_REQUIRED, SHORTLISTED, ENQUIRY_SENT, NEGOTIATION, PURCHASED, COMPLETED, REJECTED, CANCELLED
+  adminMessage    String?
+  
+  images          FarmerProductImage[]
+  documents       FarmerProductDocument[]
+  enquiries       ProductEnquiry[]
+  purchaseOrders  PurchaseOrder[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model FarmerProductImage {
+  id              String   @id @default(uuid())
+  farmerProductId String
+  farmerProduct   FarmerProduct @relation(fields: [farmerProductId], references: [id], onDelete: Cascade)
+  url             String
+  isPrimary       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+}
+
+model FarmerProductDocument {
+  id              String   @id @default(uuid())
+  farmerProductId String
+  farmerProduct   FarmerProduct @relation(fields: [farmerProductId], references: [id], onDelete: Cascade)
+  title           String
+  url             String
+  type            String   // QUALITY_CERT, ORGANIC_CERT, OTHER
+  createdAt       DateTime @default(now())
+}
+
+model ProductEnquiry {
+  id              String   @id @default(uuid())
+  enquiryNumber   String   @unique
+  farmerProductId String
+  farmerProduct   FarmerProduct @relation(fields: [farmerProductId], references: [id], onDelete: Cascade)
+  farmerId        String
+  farmer          User     @relation(fields: [farmerId], references: [id], onDelete: Cascade)
+  
+  reqQuantity     Float
+  targetPrice     Float
+  reqGrade        String?
+  packagingReq    String?
+  reqDeliveryDate DateTime?
+  deliveryLoc     String?
+  
+  status          String   @default("SENT") // SENT, VIEWED, RESPONDED, NEGOTIATION, ACCEPTED, DECLINED, EXPIRED, CANCELLED
+  
+  messages        EnquiryMessage[]
+  negotiations    NegotiationOffer[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model EnquiryMessage {
+  id              String   @id @default(uuid())
+  enquiryId       String
+  enquiry         ProductEnquiry @relation(fields: [enquiryId], references: [id], onDelete: Cascade)
+  senderId        String   // Can be Admin or Farmer
+  message         String
+  createdAt       DateTime @default(now())
+}
+
+model NegotiationOffer {
+  id              String   @id @default(uuid())
+  enquiryId       String
+  enquiry         ProductEnquiry @relation(fields: [enquiryId], references: [id], onDelete: Cascade)
+  offeredById     String   // Admin or Farmer ID
+  offeredQty      Float
+  offeredPrice    Float
+  message         String?
+  status          String   @default("PENDING") // PENDING, ACCEPTED, REJECTED
+  createdAt       DateTime @default(now())
+}
+
+model PurchaseOrder {
+  id              String   @id @default(uuid())
+  poNumber        String   @unique
+  farmerId        String
+  farmer          User     @relation(fields: [farmerId], references: [id])
+  farmerProductId String
+  farmerProduct   FarmerProduct @relation(fields: [farmerProductId], references: [id])
+  
+  quantity        Float
+  agreedPrice     Float
+  totalAmount     Float
+  qualityGrade    String?
+  packaging       String?
+  deliveryLoc     String?
+  expectedDate    DateTime?
+  paymentTerms    String?
+  notes           String?
+  
+  procurementStatus String @default("PURCHASE_ORDER_CREATED") // PURCHASE_ORDER_CREATED, FARMER_ACCEPTED, READY_FOR_PICKUP, PICKED_UP, QUALITY_CHECK, ACCEPTED, COMPLETED, REJECTED_AFTER_QUALITY_CHECK
+  paymentStatus     String @default("PENDING") // PENDING, PROCESSING, PAID, FAILED
+  rejectionReason   String?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}

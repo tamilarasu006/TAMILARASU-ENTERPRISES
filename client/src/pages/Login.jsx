@@ -158,7 +158,13 @@ export default function Login() {
             Don't have an account? <Link to="/register" className="text-blue-600 font-semibold hover:underline">Register here</Link>
           </div>
 
-          <div className="mt-4 pt-4 border-t border-gray-100 text-center">
+          <div className="mt-4 pt-4 border-t border-gray-100 flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-8">
+            <Link to="/farmer/login" className="text-gray-400 hover:text-green-600 text-sm font-medium transition-colors flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Farmer Login
+            </Link>
             <a href="/admin/login" className="text-gray-400 hover:text-blue-600 text-sm font-medium transition-colors flex items-center justify-center">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />

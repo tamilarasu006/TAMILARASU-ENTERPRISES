@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "skills": {
+    "postgres-pro": {
+      "source": "jeffallan/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/postgres-pro/SKILL.md",
+      "computedHash": "4cfcfed71e0ed8b1d8d493c603e253ce52e763b24f0438394717b5df57a4cb96"
+    },
+    "security-reviewer": {
+      "source": "jeffallan/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/security-reviewer/SKILL.md",
+      "computedHash": "cca56045dd49c756546d74d46034c91be2159875e358050d40c7d1905700e8fd"
+    }
+  }
+}

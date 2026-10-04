@@ -139,6 +139,8 @@ const shipmentRoutes = require('./routes/shipment.routes');
 const auditLogRoutes = require('./routes/auditLog.routes');
 const adminDashboardRoutes = require('./routes/adminDashboard.routes');
 const notificationRoutes = require('./routes/notification.routes');
+const farmerRoutes = require('./routes/farmer.routes');
+const adminFarmerRoutes = require('./routes/adminFarmer.routes');
 
 app.use('/api/', limiter); // Apply limiter only to API routes
 
@@ -157,6 +159,8 @@ app.use('/api/shipments', shipmentRoutes);
 app.use('/api/audit-logs', auditLogRoutes);
 app.use('/api/dashboard', adminDashboardRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/farmers', farmerRoutes);
+app.use('/api/admin/farmers', adminFarmerRoutes);
 
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 

@@ -13,9 +13,11 @@ export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { isLoggedIn, logout } = useAuth();
+  const { isLoggedIn, logout, user } = useAuth();
 
   const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     logout();
     navigate('/login');
   };
@@ -64,6 +66,7 @@ export default function Navbar() {
     { name: 'Products', path: '/products' },
     { name: 'Services', path: '/services' },
     { name: 'Contact', path: '/contact' },
+    { name: 'Farmer Portal', path: (isLoggedIn && user?.role === 'FARMER') ? '/farmer/dashboard' : '/farmer/login' },
   ];
 
   return (
